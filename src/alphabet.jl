@@ -61,6 +61,23 @@ bitsof(::Type{AminoAcidAlphabet}) = 8
 bitsof(::Type{CharAlphabet}) = 32
 bitsof(::Type{VoidAlphabet}) = 0
 
+"""
+The number of bits to represent the alphabet, as a Val{T} variable.
+This may be useful for defining or using trait-like interfaces.
+"""
+function bitsof_t end
+
+for n in (2, 4)
+    @eval begin
+        bitsof_t(::Type{DNAAlphabet{$n}}) = Val{$n}()
+        bitsof_t(::Type{RNAAlphabet{$n}}) = Val{$n}()
+    end
+end
+bitsof_t(::Type{AminoAcidAlphabet}) = Val{8}()
+bitsof_t(::Type{CharAlphabet}) = Val{32}()
+bitsof_t(::Type{VoidAlphabet}) = Val{0}()
+
+
 Base.eltype(::Type{DNAAlphabet}) = DNA
 Base.eltype(::Type{RNAAlphabet}) = RNA
 Base.eltype(::Type{DNAAlphabet{n}}) where {n} = DNA
