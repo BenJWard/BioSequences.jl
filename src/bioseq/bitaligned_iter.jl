@@ -92,7 +92,7 @@ function _aligned_bits(c::Channel{BitsChunk},
         println("64 - offset based mask: ", hex(mask(64 - offset(nexta))))
         =#
 
-        offset = ifelse(64 - offset(nexta) > stopa - nexta, stopa - nexta, 64 - offset(nexta))
+        offs = ifelse(64 - offset(nexta) > stopa - nexta, stopa - nexta, 64 - offset(nexta))
         #println("k: ", k)
         msk = mask(k)
         #=
@@ -101,7 +101,7 @@ function _aligned_bits(c::Channel{BitsChunk},
         println("masked y: ", hex(y & m))
         =#
 
-        put!(c, BitsChunk(x, y, offset, msk, false, true))
+        put!(c, BitsChunk(x, y, offs, msk, false, true))
 
         # Here we move our current position markers by k, meaning they move
         # to either, A). The next integer, or B). The end of the sequence if
@@ -136,13 +136,13 @@ function _aligned_bits(c::Channel{BitsChunk},
             y = b.data[index(nextb)]
             #println("y: ", hex(y))
 
-            offset = stopa - nexta
+            offs = stopa - nexta
             #println("offs: ", offs)
             msk = mask(offs)
             #println("mask: ", hex(m))
             #println("masked x: ", hex(x & m))
             #println("masked y: ", hex(y & m))
-            put!(c, BitsChunk(x, y, offset, msk, true, false))
+            put!(c, BitsChunk(x, y, offs, msk, true, false))
         end
     elseif nexta < stopa
         #println("Data are unaligned...")
@@ -185,13 +185,13 @@ function _aligned_bits(c::Channel{BitsChunk},
             end
             #println("modified y: ", hex(y))
 
-            offset = stopa - nexta
+            offs = stopa - nexta
             #println("offs: ", offs)
             msk = mask(offs)
             #println("mask: ", hex(m))
             #println("masked x: ", hex(x & m))
             #println("masked y: ", hex(y & m))
-            put!(c, BitsChunk(x, y, offset, msk, true, false))
+            put!(c, BitsChunk(x, y, offs, msk, true, false))
         end
     end
 end
