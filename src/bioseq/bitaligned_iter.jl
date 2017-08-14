@@ -2,10 +2,32 @@
 struct BitsChunk
     abits::UInt64
     bbits::UInt64
-    k::Int
-    mask::UInt64
-    istail::Bool
     ishead::Bool
+    remaining::Int
+end
+
+@inline function remaining(bc::BitsChunk)
+    return bc.remaining
+end
+
+@inline function abits(bc::BitsChunk)
+    return bc.abits
+end
+
+@inline function bbits(bc::BitsChunk)
+    return bc.bbits
+end
+
+@inline function bit_chunks(bc::BitsChunk)
+    return abits(bc), bbits(bc)
+end
+
+@inline function ishead(bc::BitsChunk)
+    return bc.ishead
+end
+
+@inline function istail(bc::BitsChunk)
+    return remaining(bc) < 64
 end
 
 function aligned_bits(a::BioSequence{A}, b::BioSequence{A}) where {A}
@@ -15,183 +37,91 @@ end
 function _aligned_bits(c::Channel{BitsChunk},
                       a::BioSequence{A},
                       b::BioSequence{A}) where {A}
-    # Ensure that `a` is always the shorter of the two sequences.
-    @assert length(a) ≤ length(b)
 
+    @assert length(a) ≤ length(b)
     nexta = bitindex(a, 1)
     stopa = bitindex(a, endof(a) + 1)
     nextb = bitindex(b, 1)
     stopb = bitindex(b, endof(b) + 1)
-#=
-    println(A)
-    println("Start indexes.")
-    println("Index A: ", index(nexta), ", Offset A: ", offset(nexta))
-    println("Index B: ", index(nextb), ", Offset B: ", offset(nextb))
-    println("Stop Index A: ", index(stopa), ", Stop Offset A:", offset(stopa))
-    println("Stop Index B: ", index(stopb), ", Stop Offset B:", offset(stopb))
-=#
+    #=
+    Note that updating `nextb` or `nexta` by 64, increases the chunk
+    index, but the `offset(nextb)` will remain the same.
 
-    # The first thing we need to sort out is to correctly align the head of
-    # sequence / subsequence `a`s data is aligned such that the offset of
-    # `nexta` is essentially reduced to 0.
-    # With sequence / subsequence `a` aligned, from there, we only need to
-    # worry about the alignment of sequence / subsequence `b` with respect
-    # to `a`.
+    The first thing we need to sort out is to correctly align the head of
+    sequence / subsequence `a`s data such that the offset of `nexta` is
+    essentially reduced to 0.
+    With sequence / subsequence `a` aligned, from there, we only need to
+    worry about the alignment of sequence / subsequence `b` with respect to `a`.
+    =#
     if nexta < stopa && offset(nexta) != 0
-
-        #println("Initial aligning, of a.data...")
-
         # Here we shift the first data chunks to the right so as the first
         # nucleotide of the seq/subseq is the first nibble / pair of bits.
         x = a.data[index(nexta)] >> offset(nexta)
         y = b.data[index(nextb)] >> offset(nextb)
-
-        #println("x: ", hex(x), "\ny: ", hex(y))
-
-        # Here it was assumed that there is something to go and get from
-        # the next chunk of `b`, yet that may not be true.
-        # We know that if this is not true of `b`, then it is certainly not
-        # true of `a`.
-
-        # We check if the end of the sequence is not contained in the same
-        # integer like so: `64 - offset(nextb) < stopb - nextb`.
-        #
-        # This edge case was found and accounted for by Ben Ward @Ward9250.
-        # Ask this maintainer for more information.
-
-        #=
-        println("64 - offset(nextb): ", 64 - offset(nextb))
-        println("stopb - nextb: ", stopb - nextb)
-        println("64 - offset(nextb) < stopb - nextb: ", 64 - offset(nextb) < stopb - nextb)
-        =#
+        # Check there is something to go and get from the next chunk of `b`.
+        # Check like so: `64 - offset(nextb) < stopb - nextb`.
+        # If this is not true of `b`, then it is certainly not true of `a`.
         if offset(nextb) > offset(nexta) && 64 - offset(nextb) < stopb - nextb
             y |= b.data[index(nextb) + 1] << (64 - offset(nextb))
-            #println("Modified y: ", hex(y))
         end
-
-        # Here we need to check something, we need to check if the
-        # integer of `a` we are currently aligning contains the end of
-        # seq/subseq `a`. Because if so it's something we need to take into
-        # account of when we mask x and y.
-        #
-        # In other words if `64 - offset(nexta) > stopa - nexta, we know
-        # seq or subseq a's data ends before the end of this data chunk,
-        # and so the mask used needs to be defined to account for this:
-        # `mask(stopa - nexta)`, otherwise the mask simply needs to be
-        # `mask(64 - offset(nexta))`.
-        #
-        # This edge case was found and accounted for by Ben Ward @Ward9250.
-        # Ask this maintainer for more information.
-
         #=
-        println("stopa and nexta stuff:")
-        println("64 - offset(nexta): ", 64 - offset(nexta))
-        println("stopa - nexta: ", stopa - nexta)
-        println("64 - offset(nexta) > stopa - nexta: ", 64 - offset(nexta) > stopa - nexta)
-        println("stopa based mask: ", hex(mask(stopa - nexta)))
-        println("64 - offset based mask: ", hex(mask(64 - offset(nexta))))
-        =#
+        Check if the chunk of `a` we are currently aligning contains the end
+        of seq/subseq `a`.
+        Check by seeing if the distance to the end of the sequence is smaller
+        than the distance to the next word.
 
-        offs = ifelse(64 - offset(nexta) > stopa - nexta, stopa - nexta, 64 - offset(nexta))
-        #println("k: ", k)
-        msk = mask(k)
-        #=
-        println("mask used: ", hex(m))
-        println("masked x: ", hex(x & m))
-        println("masked y: ", hex(y & m))
-        =#
+        If so, the mask used needs to be defined to account for this:
+        `mask(stopa - nexta)`, otherwise the mask simply needs to be
+        `mask(64 - offset(nexta))`.
 
-        put!(c, BitsChunk(x, y, offs, msk, false, true))
-
-        # Here we move our current position markers by k, meaning they move
-        # to either, A). The next integer, or B). The end of the sequence if
-        # it is in the current integer.
-        nexta += k
-        nextb += k
-        #=
-        println("Index A: ", index(nexta), ", Offset A: ", offset(nexta))
-        println("Index B: ", index(nextb), ", Offset B: ", offset(nextb))
-        println("Finished Aligning of a.data...")
+        Finally, move position markers by k, meaning they move to either the
+        next chunk, or the end of the sequence if it is in the current integer.
         =#
+        rem_word = 64 - offset(nexta)
+        rem_stop = stopa - nexta
+        rem = ifelse(rem_stop < rem_word, rem_stop, rem_word)
+        m = mask(rem)
+        put!(c, BitsChunk(x & m, y & m, true, rem))
+        nexta += rem
+        nextb += rem
     end
     @assert offset(nexta) == 0
-
-    if offset(nextb) == 0  # data are aligned with each other
-        #println("Data are aligned...")
+    if offset(nextb) == 0 # data are aligned with each other.
         while stopa - nexta ≥ 64
             x = a.data[index(nexta)]
             y = b.data[index(nextb)]
-            #println("x: ", hex(x))
-            #println("y: ", hex(y))
-            put!(c, BitsChunk(x, y, 0, 0xFFFFFFFFFFFFFFFF, false, false))
+            put!(c, BitsChunk(x, y, false, stopa - nexta))
             nexta += 64
             nextb += 64
         end
-
-        if nexta < stopa
-            #println("Processing tail...")
-
+        if nexta < stopa # process the remaining tail.
             x = a.data[index(nexta)]
-            #println("x: ", hex(x))
             y = b.data[index(nextb)]
-            #println("y: ", hex(y))
-
-            offs = stopa - nexta
-            #println("offs: ", offs)
-            msk = mask(offs)
-            #println("mask: ", hex(m))
-            #println("masked x: ", hex(x & m))
-            #println("masked y: ", hex(y & m))
-            put!(c, BitsChunk(x, y, offs, msk, true, false))
+            rem = stopa - nexta
+            m = mask(rem)
+            put!(c, BitsChunk(x & m, y & m, false, rem))
         end
-    elseif nexta < stopa
-        #println("Data are unaligned...")
-
-        #println("Index B: ", index(nextb), " Offset B: ", offset(nextb))
+    elseif nexta < stopa # b is unaligned with a.
         y = b.data[index(nextb)]
-        #println("y: ", hex(y))
         nextb += 64
-        # Note that here, updating `nextb` by 64, increases the chunk index,
-        # but the `offset(nextb)` will remain the same.
-
         while stopa - nexta ≥ 64
             x = a.data[index(nexta)]
             z = b.data[index(nextb)]
             y = y >> offset(nextb) | z << (64 - offset(nextb))
-            #println("x: ", hex(x))
-            #println("z: ", hex(z))
-            #println("y: ", hex(y))
-            put!(c, BitsChunk(x, y, 0, 0xFFFFFFFFFFFFFFFF, false, false))
+            put!(c, BitsChunk(x, y, false, stopa - nexta))
             y = z
             nexta += 64
             nextb += 64
         end
-
-        if nexta < stopa
-            #println("Processing tail...")
-
-            #println("Index A: ", index(nexta), " Offset A: ", offset(nexta))
-            #println("Index B: ", index(nextb), " Offset B: ", offset(nextb))
-
-            # Get the data chunk of `a`.
+        if nexta < stopa # process the remaining tail.
             x = a.data[index(nexta)]
-            #println("x: ", hex(x))
             y = y >> offset(nextb)
-            #println("y: ", hex(y))
-
             if 64 - offset(nextb) < stopa - nexta
-                #y |= a.data[index(nextb)] << (64 - offset(nextb))
                 y |= b.data[index(nextb)] << (64 - offset(nextb))
             end
-            #println("modified y: ", hex(y))
-
-            offs = stopa - nexta
-            #println("offs: ", offs)
-            msk = mask(offs)
-            #println("mask: ", hex(m))
-            #println("masked x: ", hex(x & m))
-            #println("masked y: ", hex(y & m))
-            put!(c, BitsChunk(x, y, offs, msk, true, false))
+            rem = stopa - nexta
+            m = mask(rem)
+            put!(c, BitsChunk(x & m, y & m, false, rem))
         end
     end
 end
