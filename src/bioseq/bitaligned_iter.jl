@@ -92,16 +92,16 @@ function _aligned_bits(c::Channel{BitsChunk},
         println("64 - offset based mask: ", hex(mask(64 - offset(nexta))))
         =#
 
-        k = ifelse(64 - offset(nexta) > stopa - nexta, stopa - nexta, 64 - offset(nexta))
+        offset = ifelse(64 - offset(nexta) > stopa - nexta, stopa - nexta, 64 - offset(nexta))
         #println("k: ", k)
-        m = mask(k)
+        msk = mask(k)
         #=
         println("mask used: ", hex(m))
         println("masked x: ", hex(x & m))
         println("masked y: ", hex(y & m))
         =#
 
-        put!(c, BitsChunk(x, y, k, m, false, true))
+        put!(c, BitsChunk(x, y, offset, msk, false, true))
 
         # Here we move our current position markers by k, meaning they move
         # to either, A). The next integer, or B). The end of the sequence if
@@ -123,7 +123,7 @@ function _aligned_bits(c::Channel{BitsChunk},
             y = b.data[index(nextb)]
             #println("x: ", hex(x))
             #println("y: ", hex(y))
-            put!(c, BitsChunk(x, y, k, m, false, false))
+            put!(c, BitsChunk(x, y, 0, 0xFFFFFFFFFFFFFFFF, false, false))
             nexta += 64
             nextb += 64
         end
@@ -136,13 +136,13 @@ function _aligned_bits(c::Channel{BitsChunk},
             y = b.data[index(nextb)]
             #println("y: ", hex(y))
 
-            offs = stopa - nexta
+            offset = stopa - nexta
             #println("offs: ", offs)
-            m = mask(offs)
+            msk = mask(offs)
             #println("mask: ", hex(m))
             #println("masked x: ", hex(x & m))
             #println("masked y: ", hex(y & m))
-            put!(c, BitsChunk(x, y, k, m, true, false))
+            put!(c, BitsChunk(x, y, offset, msk, true, false))
         end
     elseif nexta < stopa
         #println("Data are unaligned...")
@@ -161,7 +161,7 @@ function _aligned_bits(c::Channel{BitsChunk},
             #println("x: ", hex(x))
             #println("z: ", hex(z))
             #println("y: ", hex(y))
-            put!(c, BitsChunk(x, y, k, m, false, false))
+            put!(c, BitsChunk(x, y, 0, 0xFFFFFFFFFFFFFFFF, false, false))
             y = z
             nexta += 64
             nextb += 64
@@ -185,13 +185,13 @@ function _aligned_bits(c::Channel{BitsChunk},
             end
             #println("modified y: ", hex(y))
 
-            offs = stopa - nexta
+            offset = stopa - nexta
             #println("offs: ", offs)
-            m = mask(offs)
+            msk = mask(offs)
             #println("mask: ", hex(m))
             #println("masked x: ", hex(x & m))
             #println("masked y: ", hex(y & m))
-            put!(c, BitsChunk(x, y, k, m, true, false))
+            put!(c, BitsChunk(x, y, offset, msk, true, false))
         end
     end
 end
