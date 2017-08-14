@@ -9,10 +9,7 @@ struct BitsChunk
 end
 
 function aligned_bits(a::BioSequence{A}, b::BioSequence{A}) where {A}
-    function producer(c::Channel{BitsChunk})
-        return _aligned_bits(c, a, b)
-    end
-    return Channel(producer, ctype=BitsChunk)
+    return Channel((c::Channel{BitsChunk}) -> _aligned_bits(c, a, b), ctype=BitsChunk)
 end
 
 function _aligned_bits(c::Channel{BitsChunk},
