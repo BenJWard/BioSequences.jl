@@ -28,7 +28,7 @@ function bitpar_counter(::Type{S}, a::BioSequence{A}, b::BioSequence{A}) where {
         counts = bp_update_counter(counts, bp_chunk_count(S, A, x, y))
     end
     if istail(block)
-        counts = bp_update_counter(counts, bp_chunk_count(S, A, x, y))
+        #counts = bp_update_counter(counts, bp_chunk_count(S, A, x, y))
         if bp_correct_emptyspace(S, A)
             nempty = div(64, bitsof(A)) - div(remaining(block), bitsof(A))
             counts = bp_emptyspace_correction(nempty, counts)
