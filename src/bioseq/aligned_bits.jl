@@ -86,7 +86,7 @@ function _aligned_bits(c::Channel{BitsChunk},
         rem_stop = stopa - nexta
         rem = ifelse(rem_stop < rem_word, rem_stop, rem_word)
         m = mask(rem)
-        put!(c, BitsChunk(x & m, y & m, true, rem))
+        put!(c, BitsChunk(x & m, y & m, true, false, rem))
         nexta += rem
         nextb += rem
     end
