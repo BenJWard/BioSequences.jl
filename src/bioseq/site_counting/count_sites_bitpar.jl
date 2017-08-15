@@ -13,10 +13,9 @@
 @inline bp_emptyspace_correction(nempty::Int, count::Int) = count - nempty
 
 function bitpar_counter(::Type{S}, a::BioSequence{A}, b::BioSequence{A}) where {S<:Site,A}
-    println("Open channel.")
     bits_channel = aligned_bits(a, b)
     counts = bp_start_counter(S, A)
-    println("Take first block.")
+    println("Do first block.")
     block = take!(bits_channel)
     #println("Block:")
     #println(block)
@@ -31,6 +30,7 @@ function bitpar_counter(::Type{S}, a::BioSequence{A}, b::BioSequence{A}) where {
         counts = bp_emptyspace_correction(nempty, counts)
         #println("Corrected counts: ", counts)
     end
+    println("Done first block.")
     while isopen(bits_channel)
         #println("In the body code block.")
         block = take!(bits_channel)
