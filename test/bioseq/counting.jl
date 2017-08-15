@@ -74,7 +74,7 @@
         function testforencs(a::Int, b::Int, subset::Bool)
             for alphabet in (DNAAlphabet, RNAAlphabet)
                 for _ in  1:50
-                    println("TESTING SEQUENCES:")
+                    #println("TESTING SEQUENCES:")
                     seqA = random_seq(alphabet{a}, rand(10:100))
                     seqB = random_seq(alphabet{b}, rand(10:100))
                     #=
