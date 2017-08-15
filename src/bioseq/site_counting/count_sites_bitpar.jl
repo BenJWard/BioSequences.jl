@@ -31,6 +31,7 @@ function bitpar_counter(::Type{S}, a::BioSequence{A}, b::BioSequence{A}) where {
         #println("Corrected counts: ", counts)
     end
     println("Done first block.")
+    println(isopen(bits_channel))
     while isopen(bits_channel)
         #println("In the body code block.")
         block = take!(bits_channel)
