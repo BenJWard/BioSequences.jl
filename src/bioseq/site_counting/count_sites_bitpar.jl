@@ -12,6 +12,10 @@
 @inline bp_correct_emptyspace(::Type{<:Site}, ::Type{<:Alphabet}) = false
 @inline bp_emptyspace_correction(nempty::Int, count::Int) = count - nempty
 
+@inline function nempty(::Type{A}, remaining::Int) where {A<:Alphabet}
+    return div(64, bitsof(A)) - div(remaining, bitsof(A))
+end
+
 function bitpar_counter(::Type{S}, a::BioSequence{A}, b::BioSequence{A}) where {S<:Site,A<:NucAlphs}
     bits_channel = aligned_bits(a, b)
     counts = bp_start_counter(S, A)
@@ -19,16 +23,16 @@ function bitpar_counter(::Type{S}, a::BioSequence{A}, b::BioSequence{A}) where {
     x, y = bit_chunks(block)
     counts = bp_update_counter(counts, bp_chunk_count(S, A, x, y))
     if ishead(block) && bp_correct_emptyspace(S, A)
-        nempty = div(64, bitsof(A)) - div(remaining(block), bitsof(A))
-        counts = bp_emptyspace_correction(nempty, counts)
+        n_empty = nempty(A, remaining(block))
+        counts = bp_emptyspace_correction(n_empty, counts)
     end
     for block in bits_channel
         x, y = bit_chunks(block)
         counts = bp_update_counter(counts, bp_chunk_count(S, A, x, y))
     end
     if istail(block) && bp_correct_emptyspace(S, A)
-        nempty = div(64, bitsof(A)) - div(remaining(block), bitsof(A))
-        counts = bp_emptyspace_correction(nempty, counts)
+        n_empty = nempty(A, remaining(block))
+        counts = bp_emptyspace_correction(n_empty, counts)
     end
     return counts
 end
