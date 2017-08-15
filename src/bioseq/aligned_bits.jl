@@ -30,6 +30,10 @@ end
     return remaining(bc) < 64
 end
 
+@inline function nottail(bc::BitsChunk)
+    return remaining(bc) ≥ 64
+end
+
 function aligned_bits(a::BioSequence{A}, b::BioSequence{A}) where {A}
     if length(a) > length(b)
         return Channel((c::Channel{BitsChunk}) -> _aligned_bits(c, b, a), ctype=BitsChunk)
