@@ -31,9 +31,8 @@ function bitpar_counter(::Type{S}, a::BioSequence{A}, b::BioSequence{A}) where {
         counts = bp_emptyspace_correction(nempty, counts)
         println("Corrected counts: ", counts)
     end
-    while nottail(block)
+    while isopen(bits_channel)
         println("In the body code block.")
-        println("nottail: ", nottail(block))
         block = take!(bits_channel)
         println("Block: ")
         println(block)
