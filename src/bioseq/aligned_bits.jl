@@ -3,6 +3,7 @@ struct BitsChunk
     abits::UInt64
     bbits::UInt64
     ishead::Bool
+    istail::Bool
     remaining::Int
 end
 
@@ -27,11 +28,7 @@ end
 end
 
 @inline function istail(bc::BitsChunk)
-    return remaining(bc) < 64
-end
-
-@inline function nottail(bc::BitsChunk)
-    return remaining(bc) ≥ 64
+    return bc.istail
 end
 
 function aligned_bits(a::BioSequence{A}, b::BioSequence{A}) where {A}
@@ -98,7 +95,7 @@ function _aligned_bits(c::Channel{BitsChunk},
         while stopa - nexta ≥ 64
             x = a.data[index(nexta)]
             y = b.data[index(nextb)]
-            put!(c, BitsChunk(x, y, false, stopa - nexta))
+            put!(c, BitsChunk(x, y, false, false, stopa - nexta))
             nexta += 64
             nextb += 64
         end
@@ -107,7 +104,7 @@ function _aligned_bits(c::Channel{BitsChunk},
             y = b.data[index(nextb)]
             rem = stopa - nexta
             m = mask(rem)
-            put!(c, BitsChunk(x & m, y & m, false, rem))
+            put!(c, BitsChunk(x & m, y & m, false, true, rem))
         end
     elseif nexta < stopa # b is unaligned with a.
         y = b.data[index(nextb)]
@@ -116,7 +113,7 @@ function _aligned_bits(c::Channel{BitsChunk},
             x = a.data[index(nexta)]
             z = b.data[index(nextb)]
             y = y >> offset(nextb) | z << (64 - offset(nextb))
-            put!(c, BitsChunk(x, y, false, stopa - nexta))
+            put!(c, BitsChunk(x, y, false, false, stopa - nexta))
             y = z
             nexta += 64
             nextb += 64
@@ -129,7 +126,7 @@ function _aligned_bits(c::Channel{BitsChunk},
             end
             rem = stopa - nexta
             m = mask(rem)
-            put!(c, BitsChunk(x & m, y & m, false, rem))
+            put!(c, BitsChunk(x & m, y & m, false, true rem))
         end
     end
 end
