@@ -12,7 +12,7 @@
 @inline bp_correct_emptyspace(::Type{<:Site}, ::Type{<:Alphabet}) = false
 @inline bp_emptyspace_correction(nempty::Int, count::Int) = count - nempty
 
-@inline function nempty(::Type{A}, remaining::Int) where {A<:Alphabet}
+@inline function nempty(::Type{A}, remaining::Int)::Int where {A<:Alphabet}
     return div(64, bitsof(A)) - div(remaining, bitsof(A))
 end
 
