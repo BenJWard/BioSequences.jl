@@ -23,7 +23,6 @@ function bitpar_counter(::Type{S}, a::BioSequence{A}, b::BioSequence{A}) where {
         counts = bp_emptyspace_correction(nempty, counts)
     end
     for block in bits_channel
-        block = next(bits_channel)
         x, y = bit_chunks(block)
         counts = bp_update_counter(counts, bp_chunk_count(S, A, x, y))
     end
