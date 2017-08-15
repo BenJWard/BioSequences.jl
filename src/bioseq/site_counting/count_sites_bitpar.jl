@@ -12,7 +12,7 @@
 @inline bp_correct_emptyspace(::Type{<:Site}, ::Type{<:Alphabet}) = false
 @inline bp_emptyspace_correction(nempty::Int, count::Int) = count - nempty
 
-function bitpar_counter(::Type{S}, a::BioSequence{A}, b::BioSequence{A}) where {S<:Site,A}
+function bitpar_counter(::Type{S}, a::BioSequence{A}, b::BioSequence{A}) where {S<:Site,A<:NucAlphs}
     bits_channel = aligned_bits(a, b)
     counts = bp_start_counter(S, A)
     block = take!(bits_channel)
