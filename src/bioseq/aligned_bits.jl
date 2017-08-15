@@ -31,7 +31,11 @@ end
 end
 
 function aligned_bits(a::BioSequence{A}, b::BioSequence{A}) where {A}
-    return Channel((c::Channel{BitsChunk}) -> _aligned_bits(c, a, b), ctype=BitsChunk)
+    if length(a) > length(b)
+        return Channel((c::Channel{BitsChunk}) -> _aligned_bits(c, b, a), ctype=BitsChunk)
+    else
+        return Channel((c::Channel{BitsChunk}) -> _aligned_bits(c, a, b), ctype=BitsChunk)
+    end
 end
 
 function _aligned_bits(c::Channel{BitsChunk},
