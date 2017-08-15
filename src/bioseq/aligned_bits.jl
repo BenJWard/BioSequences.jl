@@ -89,10 +89,7 @@ function _aligned_bits(c::Channel{BitsChunk},
         put!(c, BitsChunk(x & m, y & m, true, false, rem))
         nexta += rem
         nextb += rem
-        println("remstop: ", rem_stop < rem_word)
     end
-    println("offset(nexta) == 0: ", offset(nexta))
-    @assert offset(nexta) == 0
     if offset(nextb) == 0 # data are aligned with each other.
         while stopa - nexta ≥ 64
             x = a.data[index(nexta)]
