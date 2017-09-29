@@ -62,21 +62,25 @@ bitsof(::Type{CharAlphabet}) = 32
 bitsof(::Type{VoidAlphabet}) = 0
 
 """
-The number of bits to represent the alphabet, as a Val{T} variable.
-This may be useful for defining or using trait-like interfaces.
+The number of bits to represent the alphabet, as a typeval.
+This may be useful for defining or using trait-like interfaces, and
+precomputing some values as constants at compile time.
 """
-function bitsof_t end
+struct BitsOf{n} end
 
+function bitsof_t end
 for n in (2, 4)
     @eval begin
-        bitsof_t(::Type{DNAAlphabet{$n}}) = Val{$n}()
-        bitsof_t(::Type{RNAAlphabet{$n}}) = Val{$n}()
+        bitsof_t(::Type{DNAAlphabet{$n}}) = BitsOf{$n}()
+        bitsof_t(::Type{RNAAlphabet{$n}}) = BitsOf{$n}()
     end
 end
-bitsof_t(::Type{AminoAcidAlphabet}) = Val{8}()
-bitsof_t(::Type{CharAlphabet}) = Val{32}()
-bitsof_t(::Type{VoidAlphabet}) = Val{0}()
+bitsof_t(::Type{AminoAcidAlphabet}) = BitsOf{8}()
+bitsof_t(::Type{CharAlphabet}) = BitsOf{32}()
+bitsof_t(::Type{VoidAlphabet}) = BitsOf{0}()
 
+elems_per_x(x, y::BitsOf{n}) where n = div(x, n)
+elems_per_chunk(::Type{A}) where A<:Alphabet = elems_per_x(64, bitsof_t(A))
 
 Base.eltype(::Type{DNAAlphabet}) = DNA
 Base.eltype(::Type{RNAAlphabet}) = RNA

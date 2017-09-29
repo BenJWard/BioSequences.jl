@@ -105,7 +105,7 @@
             println("masked x: ", hex(x & m))
             println("masked y: ", hex(y & m))
             =#
-            counts = bp_update_counter(counts, bp_chunk_count(S, A, x & m, y & m))
+            counts = bp_update_counter(counts, bp_chunk_count(S, bitsof_t(A), x & m, y & m))
             if bp_correct_emptyspace(S, A)
                 #println("Correcting for emptyspace...")
                 nempty = $n_elems - div(k, $n)
@@ -153,7 +153,7 @@
                 #println("mask: ", hex(m))
                 #println("masked x: ", hex(x & m))
                 #println("masked y: ", hex(y & m))
-                counts = bp_update_counter(counts, bp_chunk_count(S, A, x & m, y & m))
+                counts = bp_update_counter(counts, bp_chunk_count(S, bitsof_t(A), x & m, y & m))
                 #println("counts: ", counts)
                 if bp_correct_emptyspace(S, A)
                     #println("Correcting for emptyspace...")
@@ -181,7 +181,7 @@
                 #println("z: ", hex(z))
                 #println("y: ", hex(y))
 
-                counts = bp_update_counter(counts, bp_chunk_count(S, A, x, y))
+                counts = bp_update_counter(counts, bp_chunk_count(S, bitsof_t(A), x, y))
                 #println("counts: ", counts)
                 y = z
                 nexta += 64
@@ -212,7 +212,7 @@
                 #println("mask: ", hex(m))
                 #println("masked x: ", hex(x & m))
                 #println("masked y: ", hex(y & m))
-                counts = bp_update_counter(counts, bp_chunk_count(S, A, x & m, y & m))
+                counts = bp_update_counter(counts, bp_chunk_count(S, bitsof_t(A), x & m, y & m))
                 #println("counts: ", counts)
                 if bp_correct_emptyspace(S, A)
                     #println("Correcting for emptyspace...")
