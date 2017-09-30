@@ -53,7 +53,7 @@ include("position_counter.jl")
 # Requires that the alphabet of two sequences is the same.
 function Base.count(::Type{P}, a::BioSequence{A}, b::BioSequence{A}) where {P<:Position, A<:NucAlphs}
     state = PositionCounter{P}(0)
-    state = bitaln_do(state, a, b)
+    state = bitaligned_do(state, a, b)
     return state.count
 end
 
