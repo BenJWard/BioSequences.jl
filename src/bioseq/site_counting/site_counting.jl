@@ -43,80 +43,19 @@ same biological symbol.
 """
 immutable Mismatch <: Position end
 
+include("bitops.jl")
+include("position_counter.jl")
 
-# Bitparallel counting
-# --------------------
-include("count_sites_bitpar.jl")
-
-# Now we overload some internal methods for each S <: Site.
-# So as different types of site can be counted in bit-parallel
-# manner.
-
-for A in (DNAAlphabet, RNAAlphabet)
-    @eval begin
-
-        # Gaps
-        @inline function bp_chunk_count(::Type{Gap}, nbits::Val{4}, x::UInt64)
-            return count_zero_nibbles(x)
-        end
-
-        @inline function bp_chunk_count(::Type{Gap}, nbits::Val{4}, a::UInt64, b::UInt64)
-            # Count the gaps in a, count the gaps in b, subtract the number of shared gaps.
-            return count_zero_nibbles(a) + count_zero_nibbles(b) - count_zero_nibbles(a | b)
-        end
-
-        # Certain
-        @inline function bp_chunk_count(::Type{Certain}, nbits::Val{4}, x::UInt64)
-            x = enumerate_nibbles(x)
-            x = x ⊻ 0x1111111111111111
-            return count_zero_nibbles(x)
-        end
-
-        @inline function bp_chunk_count(::Type{Certain}, nbits::Val{4}, a::UInt64, b::UInt64)
-            x = enumerate_nibbles(a) ⊻ 0x1111111111111111
-            y = enumerate_nibbles(b) ⊻ 0x1111111111111111
-            return count_zero_nibbles(x | y)
-        end
-
-        # Ambiguous
-        @inline function bp_chunk_count(::Type{Ambiguous}, nbits::Val{4}, x::UInt64)
-            return count_nonzero_nibbles(enumerate_nibbles(x) & 0xEEEEEEEEEEEEEEEE)
-        end
-
-        @inline function bp_chunk_count(::Type{Ambiguous}, nbits::Val{4}, a::UInt64, b::UInt64)
-            return count_nonzero_nibbles((enumerate_nibbles(a) | enumerate_nibbles(b)) & 0xEEEEEEEEEEEEEEEE)
-        end
-
-        # Match
-        @inline function bp_chunk_count(::Type{Match}, nbits::Val{4}, a::UInt64, b::UInt64)
-            return count_zero_nibbles(a ⊻ b)
-        end
-
-        @inline function bp_chunk_count(::Type{Match}, nbits::Val{2}, a::UInt64, b::UInt64)
-            return count_zero_bitpairs(a ⊻ b)
-        end
-
-        # Mismatch
-        @inline function bp_chunk_count(::Type{Mismatch}, nbits::Val{4}, a::UInt64, b::UInt64)
-            return count_nonzero_nibbles(a ⊻ b)
-        end
-
-        @inline function bp_chunk_count(::Type{Mismatch}, nbits::Val{2}, a::UInt64, b::UInt64)
-            return count_nonzero_bitpairs(a ⊻ b)
-        end
-    end
-end
-
-for s in (Match, Gap)
-    @eval bp_correct_emptyspace(::Type{$s}, ::Type{A}) where {A<:NucAlphs} = true
-end
-
-
-# Specific Base.count methods
+# Base.count methods
 # ---------------------------
 
-# In a general case, go to the bit-parallel counting method.
-@inline Base.count(::Type{P}, a::BioSequence{A}, b::BioSequence{A}) where {P<:Position,A<:NucAlphs} = bitpar_counter(P, a, b)
+# The main bit-parallel counting method.
+# Requires that the alphabet of two sequences is the same.
+function Base.count(::Type{P}, a::BioSequence{A}, b::BioSequence{A}) where {P<:Position, A<:NucAlphs}
+    state = PositionCounter{P}(0)
+    state = bitaln_do(state, a, b)
+    return state.count
+end
 
 # Some specific edge cases...
 for A in (DNAAlphabet, RNAAlphabet)
@@ -125,11 +64,11 @@ for A in (DNAAlphabet, RNAAlphabet)
     # 2 bit encoded DNA and RNA sequences.
     seqtype = BioSequence{A{2}}
     @eval begin
-        @inline function Base.count(::Type{Certain}, a::$seqtype, b::$seqtype)
+        function Base.count(::Type{Certain}, a::$seqtype, b::$seqtype)
             return min(length(a), length(b))
         end
-        @inline Base.count(::Type{Gap}, a::$seqtype, b::$seqtype) = 0
-        @inline Base.count(::Type{Ambiguous}, a::$seqtype, b::$seqtype) = 0
+        Base.count(::Type{Gap}, a::$seqtype, b::$seqtype) = 0
+        Base.count(::Type{Ambiguous}, a::$seqtype, b::$seqtype) = 0
     end
 end
 
