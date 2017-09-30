@@ -21,7 +21,6 @@ function bitaligned_do(state::BitAlignedDoState,
     stopa = bitindex(a, endof(a) + 1)
     nextb = bitindex(b, 1)
     stopb = bitindex(b, endof(b) + 1)
-    counts = bp_start_counter(S, A)
 #=
     println(A)
     println("Start indexes.")
