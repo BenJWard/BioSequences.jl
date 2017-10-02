@@ -75,6 +75,8 @@ end
 # Specific Base.count sliding window methods
 # ------------------------------------------
 
+@inline bp_counter_type(::Type{<:Position}, ::Type{<:Alphabet}) = Int
+
 function Base.count(::Type{P}, a::BioSequence{A}, b::BioSequence{A}, width::Int, step::Int) where {P<:Position,A<:NucAlphs}
     len = min(length(a), length(b))
     ritr = StepRange(width, step, len)
