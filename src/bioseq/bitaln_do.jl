@@ -22,7 +22,7 @@ function bitaligned_do(::Type{B},
     nextb = bitindex(b, 1)
     stopb = bitindex(b, endof(b) + 1)
 
-    state = init_state(B)
+    state = init_state(B, A)
 #=
     println(A)
     println("Start indexes.")
@@ -94,14 +94,13 @@ function bitaligned_do(::Type{B},
 
         k = ifelse(64 - offset(nexta) > stopa - nexta, stopa - nexta, 64 - offset(nexta))
         #println("k: ", k)
-        m = mask(k)
         #=
         println("mask used: ", hex(m))
         println("masked x: ", hex(x & m))
         println("masked y: ", hex(y & m))
         =#
 
-        state = head_update_state(B, state, A, x, y, k, m)
+        state = head_update_state(B, state, A, x, y, k)
 
         # Here we move our current position markers by k, meaning they move
         # to either, A). The next integer, or B). The end of the sequence if
@@ -139,11 +138,10 @@ function bitaligned_do(::Type{B},
 
             offs = stopa - nexta
             #println("offs: ", offs)
-            m = mask(offs)
             #println("mask: ", hex(m))
             #println("masked x: ", hex(x & m))
             #println("masked y: ", hex(y & m))
-            state = tail_update_state(B, state, A, x, y, offs, m)
+            state = tail_update_state(B, state, A, x, y, offs)
         end
     elseif nexta < stopa
         #println("Data are unaligned...")
@@ -189,11 +187,10 @@ function bitaligned_do(::Type{B},
 
             offs = stopa - nexta
             #println("offs: ", offs)
-            m = mask(offs)
             #println("mask: ", hex(m))
             #println("masked x: ", hex(x & m))
             #println("masked y: ", hex(y & m))
-            state = tail_update_state(B, state, A, x, y, offs, m)
+            state = tail_update_state(B, state, A, x, y, offs)
         end
     end
     return state
