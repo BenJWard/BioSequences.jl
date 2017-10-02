@@ -6,14 +6,14 @@
 # This file is a part of BioJulia.
 # License is MIT: https://github.com/BioJulia/BioSequences.jl/blob/master/LICENSE.md
 
-abstract type BitAlignedDoState end
+abstract type BitAlignedDoAlgorithm end
 
-function bitaligned_do(state::BitAlignedDoState,
-                       a::BioSequence{A}, b::BioSequence{A}) where A <: Alphabet
+function bitaligned_do(::Type{B},
+    a::BioSequence{A}, b::BioSequence{A}) where {B <: BitAlignedDoAlgorithm, A <: Alphabet}
 
     # Ensure that `a` is always the shorter of the two sequences.
     if length(a) > length(b)
-        return bitaligned_do(state, b, a)
+        return bitaligned_do(B, b, a)
     end
     @assert length(a) ≤ length(b)
 
@@ -21,6 +21,8 @@ function bitaligned_do(state::BitAlignedDoState,
     stopa = bitindex(a, endof(a) + 1)
     nextb = bitindex(b, 1)
     stopb = bitindex(b, endof(b) + 1)
+
+    state = init_state(B)
 #=
     println(A)
     println("Start indexes.")
@@ -99,7 +101,7 @@ function bitaligned_do(state::BitAlignedDoState,
         println("masked y: ", hex(y & m))
         =#
 
-        state = head_update_state(state, A, x, y, k, m)
+        state = head_update_state(B, state, A, x, y, k, m)
 
         # Here we move our current position markers by k, meaning they move
         # to either, A). The next integer, or B). The end of the sequence if
@@ -121,7 +123,7 @@ function bitaligned_do(state::BitAlignedDoState,
             y = b.data[index(nextb)]
             #println("x: ", hex(x))
             #println("y: ", hex(y))
-            state = update_state(state, A, x, y)
+            state = update_state(B, state, A, x, y)
             #println("counts: ", counts)
             nexta += 64
             nextb += 64
@@ -141,7 +143,7 @@ function bitaligned_do(state::BitAlignedDoState,
             #println("mask: ", hex(m))
             #println("masked x: ", hex(x & m))
             #println("masked y: ", hex(y & m))
-            state = tail_update_state(state, A, x, y, offs, m)
+            state = tail_update_state(B, state, A, x, y, offs, m)
         end
     elseif nexta < stopa
         #println("Data are unaligned...")
@@ -160,7 +162,7 @@ function bitaligned_do(state::BitAlignedDoState,
             #println("x: ", hex(x))
             #println("z: ", hex(z))
             #println("y: ", hex(y))
-            state = update_state(state, A, x, y)
+            state = update_state(B, state, A, x, y)
             #println("counts: ", counts)
             y = z
             nexta += 64
@@ -191,7 +193,7 @@ function bitaligned_do(state::BitAlignedDoState,
             #println("mask: ", hex(m))
             #println("masked x: ", hex(x & m))
             #println("masked y: ", hex(y & m))
-            state = tail_update_state(state, A, x, y, offs, m)
+            state = tail_update_state(B, state, A, x, y, offs, m)
         end
     end
     return state

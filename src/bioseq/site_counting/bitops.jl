@@ -60,9 +60,4 @@ for A in (DNAAlphabet, RNAAlphabet)
     end
 end
 
-bp_correct_emptyspace(::Type{<:Site}, ::Type{<:Alphabet}) = false
-for s in (Match, Gap)
-    @eval bp_correct_emptyspace(::Type{$s}, ::Type{A}) where {A<:NucAlphs} = true
-end
-
 bp_emptyspace_correction(nempty::Int, count::Int) = count - nempty

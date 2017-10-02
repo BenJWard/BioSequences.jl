@@ -6,55 +6,64 @@
 # This file is a part of BioJulia.
 # License is MIT: https://github.com/BioJulia/BioSequences.jl/blob/master/LICENSE.md
 
-
-# Site types
-# ----------
-
-abstract type Site end
-abstract type Position <: Site end
-
-"""
-A `Certain` site describes a site where both of two aligned sites are not an
-ambiguity symbol or a gap.
-"""
-immutable Certain <: Position end
-
-"""
-An `Gap` site describes a site where either of two aligned sites are a
-gap symbol '-'.
-"""
-immutable Gap <: Position end
-
-"""
-An `Ambiguous` site describes a site where either of two aligned sites are an
-ambiguity symbol.
-"""
-immutable Ambiguous <: Position end
-
-"""
-A `Match` site describes a site where two aligned nucleotides are the
-same biological symbol.
-"""
-immutable Match <: Position end
-
-"""
-A `Mismatch` site describes a site where two aligned nucleotides are not the
-same biological symbol.
-"""
-immutable Mismatch <: Position end
-
+include("site_types.jl")
 include("bitops.jl")
 include("position_counter.jl")
+
+function init_state(::Type{PositionCounter{P}},
+    ::Type{A}) where {P <: Position, A <: Alphabet}
+    return bp_start_counter(P, A)
+end
+
+function head_update_state(::Type{PositionCounter{P}}, state, ::Type{A},
+    x::UInt64, y::UInt64, k::Integer) where {P <: Position, A <: Alphabet}
+
+    return _head_update_state(state, P, A, x, y, k, correct_emptyspace(P, A))
+end
+
+function _head_update_state(::Type{PositionCounter{P}}, state, ::Type{A},
+    x::UInt64, y::UInt64, k::Integer,
+    ::Type{CorrectEmptyspace{false}}) where {P <: Position, A <: Alphabet}
+
+    m = mask(k)
+    c = bp_update_counter(state, bp_chunk_count(P, A, x & m, y & m))
+    return c
+end
+
+function _head_update_state(::Type{PositionCounter{P}}, state, ::Type{A},
+    x::UInt64, y::UInt64, k::Integer,
+    ::Type{CorrectEmptyspace{true}}) where {P <: Position, A <: Alphabet}
+
+    m = mask(k)
+    c = bp_update_counter(state, bp_chunk_count(P, A, x & m, y & m))
+
+    #println("Correcting for emptyspace...")
+    nempty = elems_per_chunk(A) - elems_per_x(k, A)
+    #println("nempty: ", nempty)
+    c = bp_emptyspace_correction(nempty, c)
+    #println("counts: ", counts)
+    return c
+end
+
+function update_state(::Type{PositionCounter{P}}, state, ::Type{A}, x::UInt64,
+    y::UInt64) where {P <: Position, A <: Alphabet}
+
+    return bp_update_counter(state, bp_chunk_count(P, A, x, y))
+end
+
+function tail_update_state(::Type{PositionCounter{P}}, state ::Type{A},
+    x::UInt64, y::UInt64, k::Integer) where {P <: Position, A <: Alphabet}
+
+    return head_update_state(PositionCounter{P}, state, A, x, y, k)
+end
 
 # Base.count methods
 # ---------------------------
 
 # The main bit-parallel counting method.
 # Requires that the alphabet of two sequences is the same.
-function Base.count(::Type{P}, a::BioSequence{A}, b::BioSequence{A}) where {P<:Position, A<:NucAlphs}
-    state = PositionCounter{P}(0)
-    state = bitaligned_do(state, a, b)
-    return state.count
+function Base.count(::Type{P}, a::BioSequence{A}, b::BioSequence{A}) where {P <: Position, A <: Alphabet}
+    return bitaligned_do(PositionCounter{P}, a, b)
 end
 
 # Some specific edge cases...
@@ -74,8 +83,6 @@ end
 
 # Specific Base.count sliding window methods
 # ------------------------------------------
-
-@inline bp_counter_type(::Type{<:Position}, ::Type{<:Alphabet}) = Int
 
 function Base.count(::Type{P}, a::BioSequence{A}, b::BioSequence{A}, width::Int, step::Int) where {P<:Position,A<:NucAlphs}
     len = min(length(a), length(b))

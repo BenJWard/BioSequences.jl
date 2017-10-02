@@ -1,37 +1,20 @@
 
-struct PositionCounter{P<:Position} <: BitAlignedDoState
-    count::Int
-end
 
-function head_update_state(state::PositionCounter{P}, ::Type{A},
-                                x::UInt64, y::UInt64, k::Integer,
-                                m::UInt64) where {P <: Position, A <: Alphabet}
 
-    c = bp_chunk_count(P, A, x & m, y & m)
-    c += state.count
+struct PositionCounter{P<:Position} <: BitAlignedDoAlgorithm end
 
-    if bp_correct_emptyspace(P, A)
-        #println("Correcting for emptyspace...")
-        nempty = elems_per_chunk(A) - elems_per_x(k, A)
-        #println("nempty: ", nempty)
-        c -= nempty
-        #println("counts: ", counts)
-    end
+@inline bp_counter_type(::Type{<:Site}, ::Type{<:Alphabet}) = Int
 
-    return PositionCounter{P}(c)
-end
+@inline bp_start_counter(::Type{S}, ::Type{A}) where {S,A<:Alphabet} = zero(bp_counter_type(S, A))
 
-function update_state(state::PositionCounter{P}, ::Type{A}, x::UInt64,
-                      y::UInt64) where {P <: Position, A <: Alphabet}
+@inline bp_update_counter(acc::Int, up::Int) = acc + up
 
-    c = bp_chunk_count(P, A, x, y)
-    c += state.count
-    return PositionCounter{P}(c)
-end
+@inline bp_emptyspace_correction(nempty::Int, count::Int) = count - nempty
 
-function tail_update_state(state::PositionCounter{P}, ::Type{A},
-                           x::UInt64, y::UInt64, k::Integer,
-                           m::UInt64) where {P <: Position, A <: Alphabet}
+struct CorrectEmptyspace{v} end
 
-    return head_update_state(state, A, x, y, k, m)
+correct_emptyspace(::Type{<:Site}, ::Type{<:Alphabet}) = CorrectEmptyspace{false}
+
+for s in (Match, Gap)
+    @eval correct_emptyspace(::Type{$s}, ::Type{A}) where {A<:NucAlphs} = CorrectEmptyspace{true}
 end
