@@ -26,6 +26,7 @@ function update_state(state::PositionCounter{P}, ::Type{A}, x::UInt64,
 
     c = bp_chunk_count(P, A, x, y)
     c += state.count
+    return PositionCounter{P}(c)
 end
 
 function tail_update_state(state::PositionCounter{P}, ::Type{A},
