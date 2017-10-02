@@ -80,7 +80,8 @@ bitsof_t(::Type{CharAlphabet}) = BitsOf{32}()
 bitsof_t(::Type{VoidAlphabet}) = BitsOf{0}()
 
 elems_per_x(x, y::BitsOf{n}) where n = div(x, n)
-elems_per_chunk(::Type{A}) where A<:Alphabet = elems_per_x(64, bitsof_t(A))
+elems_per_x(x, ::Type{A}) where A<:Alphabet = elems_per_x(x, bitsof_t(A))
+elems_per_chunk(::Type{A}) where A<:Alphabet = elems_per_x(64, A)
 
 Base.eltype(::Type{DNAAlphabet}) = DNA
 Base.eltype(::Type{RNAAlphabet}) = RNA
