@@ -13,8 +13,8 @@ struct PositionCounter{P<:Position} <: BitAlignedDoAlgorithm end
 
 struct CorrectEmptyspace{v} end
 
-correct_emptyspace(::Type{<:Site}, ::Type{<:Alphabet}) = CorrectEmptyspace{false}
+bp_correct_emptyspace(::Type{<:Site}, ::Type{<:Alphabet}) = CorrectEmptyspace{false}
 
 for s in (Match, Gap)
-    @eval correct_emptyspace(::Type{$s}, ::Type{A}) where {A<:NucAlphs} = CorrectEmptyspace{true}
+    @eval bp_correct_emptyspace(::Type{$s}, ::Type{A}) where {A<:NucAlphs} = CorrectEmptyspace{true}
 end
