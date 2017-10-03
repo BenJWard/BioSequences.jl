@@ -18,7 +18,7 @@ end
 function head_update_state(::Type{PositionCounter{P}}, state, ::Type{A},
     x::UInt64, y::UInt64, k::Integer) where {P <: Position, A <: Alphabet}
 
-    return _head_update_state(P, state, A, x, y, k, correct_emptyspace(P, A))
+    return _head_update_state(PositionCounter{P}, state, A, x, y, k, correct_emptyspace(P, A))
 end
 
 function _head_update_state(::Type{PositionCounter{P}}, state, ::Type{A},
