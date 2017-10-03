@@ -59,5 +59,3 @@ for A in (DNAAlphabet, RNAAlphabet)
         end
     end
 end
-
-bp_emptyspace_correction(nempty::Int, count::Int) = count - nempty

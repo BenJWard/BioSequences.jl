@@ -51,7 +51,7 @@ function update_state(::Type{PositionCounter{P}}, state, ::Type{A}, x::UInt64,
     return bp_update_counter(state, bp_chunk_count(P, A, x, y))
 end
 
-function tail_update_state(::Type{PositionCounter{P}}, state ::Type{A},
+function tail_update_state(::Type{PositionCounter{P}}, state, ::Type{A},
     x::UInt64, y::UInt64, k::Integer) where {P <: Position, A <: Alphabet}
 
     return head_update_state(PositionCounter{P}, state, A, x, y, k)
