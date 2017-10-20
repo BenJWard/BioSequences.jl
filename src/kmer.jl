@@ -33,8 +33,9 @@ primitive type Kmer{T<:NucleicAcid, K} <: Sequence 64 end
 
 const DNAKmer{K} = Kmer{DNA, K}
 const RNAKmer{K} = Kmer{RNA, K}
-const DNACodon = DNAKmer{3}
-const RNACodon = RNAKmer{3}
+const Codon{T} = Kmer{T, 3}
+const DNACodon = Codon{DNA}
+const RNACodon = Codon{RNA}
 
 function Kmer(nts::T...) where {T<:NucleicAcid}
     return make_kmer(nts)
