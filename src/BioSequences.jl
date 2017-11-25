@@ -57,8 +57,8 @@ export
     isgap,
     ispurine,
     ispyrimidine,
-    Sequence,
     BioSequence,
+    MutableSequence,
     DNASequence,
     RNASequence,
     AminoAcidSequence,
@@ -147,9 +147,9 @@ export
 
     # Alphabets
     Alphabet,
+    NucleicAcidAlphabet,
     DNAAlphabet,
     RNAAlphabet,
-    NucAlphs,
     AminoAcidAlphabet,
     CharAlphabet,
 
@@ -206,8 +206,8 @@ gap(::Type{Char}) = '-'
 
 include("alphabet.jl")
 include("bitindex.jl")
-include("sequences/abstract_sequences/sequence.jl")
-include("bioseq/bioseq.jl")
+include("sequences/biosequences/biosequence.jl")
+include("sequences/mutablesequences/mutableseq.jl")
 include("bioseq/hash.jl")
 include("bioseq/randseq.jl")
 include("kmer.jl")

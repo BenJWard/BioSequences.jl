@@ -81,6 +81,61 @@ Base.eachindex(seq::BioSequence) = 1:endof(seq)
     throw(BoundsError(seq, i))
 end
 
+@inline function Base.checkbounds(seq::BioSequence, locs::AbstractVector{Bool})
+    if length(seq) == length(locs)
+        return true
+    end
+    throw(BoundsError(seq, locs))
+end
+
+@inline function Base.checkbounds(seq::BioSequence, locs::AbstractVector)
+    for i in locs
+        checkbounds(seq, i)
+    end
+    return true
+end
+
+@inline function Base.checkbounds(seq::BioSequence, range::UnitRange)
+    if 1 ≤ range.start && range.stop ≤ endof(seq)
+        return true
+    end
+    throw(BoundsError(seq, range))
+end
+
+function checkdimension(from::Integer, to::Integer)
+    if from == to
+        return true
+    end
+    throw(DimensionMismatch(string(
+        "attempt to assign ",
+        from, " elements to ",
+        to,   " elements")))
+end
+
+function checkdimension(seq::BioSequence, locs::AbstractVector)
+    return checkdimension(length(seq), length(locs))
+end
+
+function checkdimension(seq::BioSequence, locs::AbstractVector{Bool})
+    return checkdimension(length(seq), sum(locs))
+end
+
+# assumes `i` is positive and `bitsof(A)` is a power of 2
+@inline function BitIndex(seq::BioSequence, i::Integer)
+    return BitIndex(i, bitsof(alphabet_t(seq)))
+end
+
+@inline function bindata_mask(seq::BioSequence)
+    return bitmask(alphabet_t(seq))
+end
+
+@inline function inbounds_getindex(seq::BioSequence, i::Integer)
+    j = BitIndex(seq, i)
+    @inbounds chunk = bindata(seq)[index(j)]
+    off = offset(j)
+    return decode(alphabet_t(seq), (chunk >> off) & bindata_mask(seq))
+end
+
 @inline function Base.getindex(seq::BioSequence, i::Integer)
     @boundscheck checkbounds(seq, i)
     return inbounds_getindex(seq, i)

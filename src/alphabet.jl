@@ -8,7 +8,7 @@
 # License is MIT: https://github.com/BioJulia/BioSequences.jl/blob/master/LICENSE.md
 
 """
-Alphabet of biological characters.
+# Alphabets of biological characters.
 
 An `Alphabet` represents a domain of biological characters.
 
@@ -27,6 +27,8 @@ Any type A <: Alphabet, is expected to implement the `Base.eltype` method
 for itself, in addition to a `BioSequences.bitsof` method, and a
 `BioSequences.bitsof_t` method. See the docs of `bitsof` and `bitsof_t` for
 more detail.
+
+## Required methods and interface
 """
 abstract type Alphabet end
 
@@ -59,9 +61,6 @@ struct CharAlphabet <: Alphabet end
 Void alphabet (internal use only).
 """
 struct VoidAlphabet <: Alphabet end
-
-const TwoBitNucs = Union{DNAAlphabet{2}, RNAAlphabet{2}}
-const FourBitNucs = Union{DNAAlphabet{4}, RNAAlphabet{4}}
 
 """
 The number of bits required to represent a symbol of the alphabet, in a 
@@ -233,3 +232,6 @@ end
 @inline function decode(::Type{CharAlphabet}, x::Unsigned)
     return decode(CharAlphabet, UInt32(x))
 end
+
+include("traits.jl")
+include("operations.jl")
