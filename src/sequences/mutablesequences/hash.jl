@@ -67,15 +67,15 @@ function Base.hash(seq::BioSequence, seed::UInt64)
     c1 = 0x87c37b91114253d5
     c2 = 0x4cf5ad432745937f
 
-    next = bitindex(seq, 1)
-    last = bitindex(seq, endof(seq) + 1)
+    next = BitIndex(seq, 1)
+    last = BitIndex(seq, endof(seq) + 1)
 
     k1::UInt64 = 0
     k2::UInt64 = 0
 
     # body
     r = offset(next)
-    data = seq.data
+    data = bindata(seq)
     if last - next ≥ 128
         if r == 0
             @inbounds while last - next ≥ 128
@@ -89,8 +89,8 @@ function Base.hash(seq::BioSequence, seed::UInt64)
             x = data[index(next)]
             @inbounds while last - next ≥ 128
                 j = index(next)
-                y = data[j+1]
-                z = data[j+2]
+                y = data[j + 1]
+                z = data[j + 2]
                 k1 = x >> r | y << (64 - r)
                 k2 = y >> r | z << (64 - r)
                 @murmur

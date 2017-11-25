@@ -62,6 +62,8 @@ Void alphabet (internal use only).
 """
 struct VoidAlphabet <: Alphabet end
 
+@deprecate NucAlphs NucleicAcidAlphabet
+
 """
 The number of bits required to represent a symbol of the alphabet, in a 
 biological sequence.

@@ -21,7 +21,7 @@ end
 
 # Set a single sequence position to a single symbol value.
 function Base.setindex!(seq::MutableBioSequence, x, i::Integer)
-    checkbounds(seq, i)
+    @boundscheck checkbounds(seq, i)
     orphan!(seq)
     return unsafe_setindex!(seq, x, i)
 end
