@@ -21,6 +21,8 @@ Any subtype `S <: BioSequence` should implement the following methods:
 * `Base.length(seq::S)`: return the length of `seq`.
 * `inbounds_getindex(seq::S, i::Integer)`: return the element at `i` of `seq`
   without checking bounds.
+* `find_next_ambiguous`: return the index of the next ambiguous symbol in the
+  sequence.
 
 ## Provided, methods traits & interfaces 
   
