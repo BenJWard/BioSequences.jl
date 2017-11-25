@@ -73,7 +73,7 @@ function random_seq{A<:Alphabet}(::Type{A}, n::Integer)
     nts = alphabet(A)
     probs = Vector{Float64}(length(nts))
     fill!(probs, 1 / length(nts))
-    return BioSequence{A}(random_seq(n, nts, probs))
+    return MutableBioSequence{A}(random_seq(n, nts, probs))
 end
 
 function random_dna(n, probs=[0.24, 0.24, 0.24, 0.24, 0.04])
