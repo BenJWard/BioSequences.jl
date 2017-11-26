@@ -267,3 +267,5 @@ function string_compact(seq::BioSequence)
 end
 
 Base.parse(::Type{S}, str::AbstractString) where {S<:BioSequence} = convert(S, str)
+
+include("traits.jl")
