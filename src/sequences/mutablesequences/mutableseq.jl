@@ -54,7 +54,7 @@ mutable struct MutableBioSequence{A<:Alphabet} <: BioSequence
     end
 end
 
-const DNASequence       = MutableMutableBioSequence{DNAAlphabet{4}}
+const DNASequence       = MutableBioSequence{DNAAlphabet{4}}
 const RNASequence       = MutableBioSequence{RNAAlphabet{4}}
 const AminoAcidSequence = MutableBioSequence{AminoAcidAlphabet}
 const CharSequence      = MutableBioSequence{CharAlphabet}
