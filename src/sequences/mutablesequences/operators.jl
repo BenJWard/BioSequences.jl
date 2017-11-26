@@ -9,8 +9,8 @@ function count_gc(seq::MutableBioSequence{<:Union{DNAAlphabet{2},RNAAlphabet{2}}
         return count_ones(c ⊻ g)
     end
     n = 0
-    i = bitindex(seq, 1)
-    stop = bitindex(seq, endof(seq) + 1)
+    i = BitIndex(seq, 1)
+    stop = BitIndex(seq, endof(seq) + 1)
     if offset(i) != 0 && i < stop
         # align the bit index to the beginning of a block boundary
         o = offset(i)
@@ -38,8 +38,8 @@ function count_gc(seq::MutableBioSequence{<:Union{DNAAlphabet{4},RNAAlphabet{4}}
         return count_ones((c | g) & ~(a | t))
     end
     n = 0
-    i = bitindex(seq, 1)
-    stop = bitindex(seq, endof(seq) + 1)
+    i = BitIndex(seq, 1)
+    stop = BitIndex(seq, endof(seq) + 1)
     if offset(i) != 0 && i < stop
         # align the bit index to the beginning of a block boundary
         o = offset(i)

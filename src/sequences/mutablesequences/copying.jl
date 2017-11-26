@@ -30,8 +30,8 @@ function Base.copy!(dst::MutableBioSequence{A}, doff::Integer,
         orphan!(dst, length(dst), true)
     end
 
-    id = bitindex(dst, doff)
-    is = bitindex(src, soff)
+    id = BitIndex(dst, doff)
+    is = BitIndex(src, soff)
     rest = len * bitsof(A)
 
     while rest > 0
@@ -121,8 +121,8 @@ function encode_copy!(dst::MutableBioSequence{A}, doff::Integer,
     orphan!(dst)
     charmap = A <: DNAAlphabet ? BioSymbols.char_to_dna : BioSymbols.char_to_rna
     i = soff
-    next = bitindex(dst, doff)
-    stop = bitindex(dst, doff + len)
+    next = BitIndex(dst, doff)
+    stop = BitIndex(dst, doff + len)
 
     # head
     if offset(next) != 0

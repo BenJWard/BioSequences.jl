@@ -90,7 +90,7 @@ function Base.convert(::Type{S}, seq::ReferenceSequence) where {S<:AbstractStrin
     return S([Char(nt) for nt in seq])
 end
 
-function bitindex(seq::ReferenceSequence, i::Integer)
+function BitIndex(seq::ReferenceSequence, i::Integer)
     return BitIndex((i + first(seq.part) - 2) << 1)
 end
 
@@ -134,7 +134,7 @@ end
     if seq.nmask[i + first(seq.part) - 1]
         return DNA_N
     else
-        j = bitindex(seq, i)
+        j = BitIndex(seq, i)
         return DNA(0x01 << ((seq.data[index(j)] >> offset(j)) & 0b11))
     end
 end
