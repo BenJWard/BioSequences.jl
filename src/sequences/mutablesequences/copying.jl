@@ -45,7 +45,7 @@ function Base.copy!(dst::MutableBioSequence{A}, doff::Integer,
             y <<= offset(id) - offset(is)
             k = min(64 - offset(id), rest)
         end
-        m = mask(k) << offset(id)
+        m = bitmask(k) << offset(id)
         dst.data[index(id)] = y & m | x & ~m
 
         id += k
