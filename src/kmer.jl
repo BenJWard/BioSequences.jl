@@ -36,6 +36,7 @@ const RNAKmer{K} = Kmer{RNA, K}
 const DNACodon = DNAKmer{3}
 const RNACodon = RNAKmer{3}
 
+
 function Kmer(nts::T...) where {T<:NucleicAcid}
     return make_kmer(nts)
 end
@@ -120,6 +121,8 @@ Base.convert(::Type{S}, seq::Kmer) where {S<:AbstractString} = convert(S, [Char(
 
 alphabet(::Type{DNAKmer{k}}) where {k} = (DNA_A, DNA_C, DNA_G, DNA_T)
 alphabet(::Type{RNAKmer{k}}) where {k} = (RNA_A, RNA_C, RNA_G, RNA_U)
+alphabet_t(::Kmer{DNA, K}) where K = DNAAlphabet{2} 
+alphabet_t(::Kmer{RNA, K}) where K = RNAAlphabet{2}
 
 Base.hash(x::Kmer, h::UInt) = hash(UInt64(x), h)
 
