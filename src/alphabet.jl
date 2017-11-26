@@ -35,17 +35,17 @@ abstract type Alphabet end
 """
 Alphabet of nucleic acids.
 """
-abstract type NucleicAcidAlphabet <: Alphabet end
+abstract type NucleicAcidAlphabet{n} <: Alphabet end
 
 """
 DNA nucleotide alphabet.
 """
-struct DNAAlphabet{n} <: NucleicAcidAlphabet end
+struct DNAAlphabet{n} <: NucleicAcidAlphabet{n} end
 
 """
 RNA nucleotide alphabet.
 """
-struct RNAAlphabet{n} <: NucleicAcidAlphabet end
+struct RNAAlphabet{n} <: NucleicAcidAlphabet{n} end
 
 """
 Amino acid alphabet.
@@ -62,16 +62,14 @@ Void alphabet (internal use only).
 """
 struct VoidAlphabet <: Alphabet end
 
-@deprecate NucAlphs NucleicAcidAlphabet
-
 """
 The number of bits required to represent a symbol of the alphabet, in a 
 biological sequence.
 """
 function bitsof end
 
-bitsof(::Type{A{2}}) where A <: NucleicAcidAlphabet = 2
-bitsof(::Type{A{4}}) where A <: NucleicAcidAlphabet = 4
+bitsof(::Type{A}) where A <: NucleicAcidAlphabet{2} = 2
+bitsof(::Type{A}) where A <: NucleicAcidAlphabet{4} = 4
 bitsof(::Type{AminoAcidAlphabet}) = 8
 bitsof(::Type{CharAlphabet}) = 32
 bitsof(::Type{VoidAlphabet}) = 0
@@ -82,8 +80,8 @@ biological sequence, as a value type.
 """
 function bitsof_t end
 
-bitsof_t(::Type{A{2}}) where A <: NucleicAcidAlphabet = Val{2}
-bitsof_t(::Type{A{4}}) where A <: NucleicAcidAlphabet = Val{4}
+bitsof_t(::Type{A}) where A <: NucleicAcidAlphabet{2} = Val{2}
+bitsof_t(::Type{A}) where A <: NucleicAcidAlphabet{4} = Val{4}
 bitsof_t(::Type{AminoAcidAlphabet}) = Val{8}
 bitsof_t(::Type{CharAlphabet}) = Val{32}
 bitsof_t(::Type{VoidAlphabet}) = Val{0}
