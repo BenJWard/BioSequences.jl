@@ -201,7 +201,7 @@ Create a sequence which is the reverse of the bioloigcal sequence `seq`.
 """
 Base.reverse(seq::MutableBioSequence) = reverse!(copy(seq))
 
-@generated function Base.reverse(seq::MutableBioSequence{A}) where {A<:NucAlphs}
+@generated function Base.reverse(seq::MutableBioSequence{A}) where {A<:NucleicAcidAlphabet}
     n = bitsof(A)
     if n == 2
         nucrev = :nucrev2
