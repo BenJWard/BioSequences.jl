@@ -23,12 +23,12 @@ end
 
 Base.iteratorsize(::AmbiguousNucleicAcidIterator) = Base.SizeUnknown()
 
-function find_next_ambiguous(seq:MutableBioSequence{A}, i::Integer) where {A<:NucleicAcidAlphabet{2}}
+function find_next_ambiguous(seq::MutableBioSequence{A}, i::Integer) where {A<:NucleicAcidAlphabet{2}}
     # no ambiguity
     return 0
 end
 
-function find_next_ambiguous(seq:MutableBioSequence{A}, from::Integer) where {A<:NucleicAcidAlphabet{4}}
+function find_next_ambiguous(seq::MutableBioSequence{A}, from::Integer) where {A<:NucleicAcidAlphabet{4}}
     for i in max(from, 1):endof(seq)
         nt = inbounds_getindex(seq, i)
         if isambiguous(nt)
