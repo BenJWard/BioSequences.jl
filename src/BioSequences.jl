@@ -215,7 +215,7 @@ include("nmask.jl")
 include("refseq.jl")
 include("eachkmer.jl")
 include("composition.jl")
-include("geneticcode.jl")
+#include("geneticcode.jl")
 include("demultiplexer.jl")
 
 # Parsing file types
