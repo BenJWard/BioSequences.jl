@@ -269,3 +269,4 @@ end
 Base.parse(::Type{S}, str::AbstractString) where {S<:BioSequence} = convert(S, str)
 
 include("traits.jl")
+include("operations.jl")

@@ -233,5 +233,3 @@ end
     return decode(CharAlphabet, UInt32(x))
 end
 
-include("traits.jl")
-include("operations.jl")
