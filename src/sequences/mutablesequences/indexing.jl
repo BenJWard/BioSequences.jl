@@ -96,7 +96,7 @@ function Base.setindex!(seq::MutableBioSequence{A}, x, ::Colon) where {A}
 end
 
 # this is "unsafe" because of no bounds check and no orphan! call
-@inline function unsafe_setindex!(seq::BioSequence{A}, x, i::Integer) where {A}
+@inline function unsafe_setindex!(seq::MutableBioSequence{A}, x, i::Integer) where {A}
     bin = enc64(seq, x)
     return encoded_setindex!(seq, bin, i)
 end
