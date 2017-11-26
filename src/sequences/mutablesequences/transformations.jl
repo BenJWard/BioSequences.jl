@@ -214,8 +214,8 @@ else
     quote
         data = Vector{UInt64}(seq_data_len(A, length(seq)))
         i = 1
-        next = bitindex(seq, endof(seq))
-        stop = bitindex(seq, 0)
+        next = BitIndex(seq, endof(seq))
+        stop = BitIndex(seq, 0)
         r = rem(offset(next) + $n, 64)
         if r == 0
             @inbounds while next - stop > 0
@@ -267,7 +267,7 @@ end
 
 Make a complement sequence of `seq` in place.
 """
-function complement!(seq::MutableBioSequence{A}) where {A<:TwoBitNucs}
+function complement!(seq::MutableBioSequence{A}) where {A<:NucleicAcidAlphabet{2}}
     orphan!(seq)
     next = BitIndex(seq, 1)
     stop = BitIndex(seq, endof(seq) + 1)
