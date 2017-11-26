@@ -283,7 +283,7 @@ end
 
 Transform `seq` into it's complement.
 """
-function complement!(seq::MutableBioSequence{A}) where {A<:FourBitNucs}
+function complement!(seq::MutableBioSequence{A}) where {A<:NucleicAcidAlphabet{4}}
     orphan!(seq)
     next = BitIndex(seq, 1)
     stop = BitIndex(seq, endof(seq) + 1)
