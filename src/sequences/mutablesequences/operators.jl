@@ -207,7 +207,7 @@ end
 # ---------
 
 """
-    majorityvote(seqs::AbstractVector{MutableBioSequence{A}}) where {A<:NucAlphs}
+    majorityvote(seqs::AbstractVector{MutableBioSequence{A}}) where {A<:NucleicAcidAlphabet}
 
 Construct a sequence that is a consensus of a vector of sequences.
 
@@ -235,7 +235,7 @@ julia> majorityvote(seqs)
 MTCGAAARATCG
 ```
 """
-function majorityvote(seqs::AbstractVector{MutableBioSequence{A}}) where {A<:NucAlphs}
+function majorityvote(seqs::AbstractVector{MutableBioSequence{A}}) where {A<:NucleicAcidAlphabet}
     mat = seqmatrix(UInt8, seqs, :site)
     nsites = size(mat, 2)
     nseqs = size(mat, 1)

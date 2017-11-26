@@ -313,7 +313,7 @@ Make a reversed complement sequence of `seq` in place.
 
 Ambiguous nucleotides are left as-is.
 """
-function reverse_complement!(seq::MutableBioSequence{A}) where {A<:NucAlphs}
+function reverse_complement!(seq::MutableBioSequence{A}) where {A<:NucleicAcidAlphabet}
     return complement!(reverse!(seq))
 end
 
@@ -324,7 +324,7 @@ Make a reversed complement sequence of `seq`.
 
 Ambiguous nucleotides are left as-is.
 """
-function reverse_complement(seq::MutableBioSequence{A}) where {A<:NucAlphs}
+function reverse_complement(seq::MutableBioSequence{A}) where {A<:NucleicAcidAlphabet}
     return complement!(reverse(seq))
 end
 
