@@ -99,7 +99,7 @@
 
             k = ifelse(64 - offset(nexta) > stopa - nexta, stopa - nexta, 64 - offset(nexta))
             #println("k: ", k)
-            m = mask(k)
+            m = bitmask(k)
             #=
             println("mask used: ", hex(m))
             println("masked x: ", hex(x & m))
@@ -149,7 +149,7 @@
 
                 offs = stopa - nexta
                 #println("offs: ", offs)
-                m = mask(offs)
+                m = bitmask(offs)
                 #println("mask: ", hex(m))
                 #println("masked x: ", hex(x & m))
                 #println("masked y: ", hex(y & m))
@@ -208,7 +208,7 @@
 
                 offs = stopa - nexta
                 #println("offs: ", offs)
-                m = mask(offs)
+                m = bitmask(offs)
                 #println("mask: ", hex(m))
                 #println("masked x: ", hex(x & m))
                 #println("masked y: ", hex(y & m))
