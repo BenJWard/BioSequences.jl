@@ -13,7 +13,7 @@ struct AmbiguousNucleicAcidIterator{A<:NucleicAcidAlphabet}
     seq::MutableBioSequence{A}
 end
 
-ambiguous_positions(seq:MutableBioSequence) = AmbiguousNucleicAcidIterator(seq)
+ambiguous_positions(seq::MutableBioSequence) = AmbiguousNucleicAcidIterator(seq)
 
 Base.start(it::AmbiguousNucleicAcidIterator) = find_next_ambiguous(it.seq, 1)
 Base.done(it::AmbiguousNucleicAcidIterator, nextpos) = nextpos == 0
