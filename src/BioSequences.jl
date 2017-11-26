@@ -93,10 +93,10 @@ export
     isrepetitive,
     ambiguous_positions,
     gc_content,
-#    SequenceGenerator,
-#    randdnaseq,
-#    randrnaseq,
-#    randaaseq,
+    SequenceGenerator,
+    randdnaseq,
+    randrnaseq,
+    randaaseq,
     canonical,
     neighbors,
     eachkmer,
@@ -209,13 +209,13 @@ include("bitindex.jl")
 include("sequences/biosequences/biosequence.jl")
 include("sequences/mutablesequences/mutableseq.jl")
 include("sequences/mutablesequences/hash.jl")
-#include("sequences/mutablesequences/randseq.jl")
+include("sequences/mutablesequences/randseq.jl")
 include("kmer.jl")
 include("nmask.jl")
 include("refseq.jl")
 include("eachkmer.jl")
 include("composition.jl")
-#include("geneticcode.jl")
+include("geneticcode.jl")
 include("demultiplexer.jl")
 
 # Parsing file types
