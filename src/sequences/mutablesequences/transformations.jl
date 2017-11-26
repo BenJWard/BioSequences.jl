@@ -302,7 +302,7 @@ end
 
 Make a complement sequence of `seq`.
 """
-function complement(seq::MutableBioSequence{A}) where {A<:NucAlphs}
+function complement(seq::MutableBioSequence{A}) where {A<:NucleicAcidAlphabet}
     return complement!(copy(seq))
 end
 
