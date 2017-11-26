@@ -241,7 +241,7 @@ else
                 data[i] = $nucrev(x)
             end
         end
-        return BioSequence{A}(data, 1:length(seq), false)
+        return MutableBioSequence{A}(data, 1:length(seq), false)
     end
 end
 
