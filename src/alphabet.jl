@@ -86,8 +86,8 @@ bitsof_t(::Type{AminoAcidAlphabet}) = Val{8}
 bitsof_t(::Type{CharAlphabet}) = Val{32}
 bitsof_t(::Type{VoidAlphabet}) = Val{0}
 
-Base.eltype(::Type{DNAAlphabet{n}}) where n = DNA
-Base.eltype(::Type{RNAAlphabet{n}}) where n = RNA
+Base.eltype(::Type{A}) where A <: DNAAlphabet = DNA
+Base.eltype(::Type{A}) where A <: RNAAlphabet = RNA
 Base.eltype(::Type{AminoAcidAlphabet}) = AminoAcid
 Base.eltype(::Type{CharAlphabet}) = Char
 Base.eltype(::Type{VoidAlphabet}) = Void
