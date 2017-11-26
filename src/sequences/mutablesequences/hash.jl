@@ -106,8 +106,8 @@ function Base.hash(seq::BioSequence, seed::UInt64)
     if next < last
         x = data[index(next)]
         k1 |= x >> r
-        m1 = mask(last - next)
-        m2 = mask(max(last - (next + 64), 0))
+        m1 = bitmask(last - next)
+        m2 = bitmask(max(last - (next + 64), 0))
         next += 64 - r
         if next < last
             y = data[index(next)]
