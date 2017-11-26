@@ -16,7 +16,7 @@ struct Composition{T} <: Associative{T,Int}
     counts::Dict{T,Int}
 end
 
-function Composition(seq::BioSequence{A}) where A <: NucAlphs
+function Composition(seq::MutableBioSequence{A}) where A <: NucAlphs
     counts = zeros(Int, 16)
     @inbounds for x in seq
         counts[reinterpret(UInt8, x) + 1] += 1
@@ -86,7 +86,7 @@ end
 
 Calculate composition of biological symbols in `seq` or k-mers in `kmer_iter`.
 """
-function composition(iter::Union{Sequence,EachKmerIterator})
+function composition(iter::Union{BioSequence,EachKmerIterator})
     return Composition(iter)
 end
 

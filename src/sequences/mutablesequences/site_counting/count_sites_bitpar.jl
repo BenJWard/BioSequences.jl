@@ -12,7 +12,7 @@
 @inline bp_correct_emptyspace(::Type{<:Site}, ::Type{<:Alphabet}) = false
 @inline bp_emptyspace_correction(nempty::Int, count::Int) = count - nempty
 
-@generated function bitpar_counter(::Type{S}, a::BioSequence{A}, b::BioSequence{A}) where {S<:Site,A<:NucAlphs}
+@generated function bitpar_counter(::Type{S}, a::MutableBioSequence{A}, b::MutableBioSequence{A}) where {S<:Site,A<:NucleicAcidAlphabet}
     n = bitsof(A)
     n_elems = div(64, n)
 
@@ -23,10 +23,10 @@
         end
         @assert length(a) ≤ length(b)
 
-        nexta = bitindex(a, 1)
-        stopa = bitindex(a, endof(a) + 1)
-        nextb = bitindex(b, 1)
-        stopb = bitindex(b, endof(b) + 1)
+        nexta = BitIndex(a, 1)
+        stopa = BitIndex(a, endof(a) + 1)
+        nextb = BitIndex(b, 1)
+        stopb = BitIndex(b, endof(b) + 1)
         counts = bp_start_counter(S, A)
 #=
         println(A)
