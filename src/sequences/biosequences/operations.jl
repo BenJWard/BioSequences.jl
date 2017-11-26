@@ -1,4 +1,4 @@
-# Sequence operations
+# BioSequence operations
 # ===================
 #
 # Generalised operations on biological sequence types.
@@ -25,21 +25,21 @@ end
 # ---------------
 
 "Create a copy of a sequence with gap characters removed."
-ungap(seq::Sequence)  =  filter(x -> x != gap(eltype(seq)), seq)
+ungap(seq::BioSequence)  =  filter(x -> x != gap(eltype(seq)), seq)
 
 "Remove gap characters from a sequence. Modifies the input sequence."
-ungap!(seq::Sequence) = filter!(x -> x != gap(eltype(seq)), seq)
+ungap!(seq::BioSequence) = filter!(x -> x != gap(eltype(seq)), seq)
 
 
 # GC content
 # ----------
 
 """
-    gc_content(seq::Sequence)
+    gc_content(seq::BioSequence)
 
 Calculate GC content of `seq`.
 """
-function gc_content(seq::Sequence)
+function gc_content(seq::BioSequence)
     if !(eltype(seq) <: NucleicAcid)
         throw(ArgumentError("Not a nucleic acid sequence"))
     end
@@ -50,7 +50,7 @@ function gc_content(seq::Sequence)
     end
 end
 
-function count_gc(seq::Sequence)
+function count_gc(seq::BioSequence)
     return count(isGC, seq)
 end
 
@@ -59,11 +59,11 @@ end
 # ----------
 
 """
-    ispalindromic(seq::Sequence)
+    ispalindromic(seq::BioSequence)
 
 Return `true` if `seq` is a palindromic sequence; otherwise return `false`.
 """
-function ispalindromic(seq::Sequence)
+function ispalindromic(seq::BioSequence)
     if !(eltype(seq) <: NucleicAcid)
         error("elements must be nucleotide")
     end
@@ -78,11 +78,11 @@ function ispalindromic(seq::Sequence)
 end
 
 """
-    hasambiguity(seq::Sequence)
+    hasambiguity(seq::BioSequence)
 
     Return `true` if `seq` has an ambiguous symbol; otherwise return `false`.
 """
-function hasambiguity(seq::Sequence)
+function hasambiguity(seq::BioSequence)
     for x in seq
         if isambiguous(x)
             return true
@@ -92,11 +92,11 @@ function hasambiguity(seq::Sequence)
 end
 
 """
-    isrepetitive(seq::Sequence, n::Integer=length(seq))
+    isrepetitive(seq::BioSequence, n::Integer=length(seq))
 
 Return `true` if and only if `seq` contains a repetitive subsequence of length `≥ n`.
 """
-function isrepetitive(seq::Sequence, n::Integer=length(seq))
+function isrepetitive(seq::BioSequence, n::Integer=length(seq))
     if n < 0
         error("repetition must be non-negative")
     elseif isempty(seq)
