@@ -7,14 +7,14 @@
 # License is MIT: https://github.com/BioJulia/BioSequences.jl/blob/master/LICENSE.md
 
 # Iterate through every k-mer in a nucleotide sequence
-struct EachKmerIterator{T<:Kmer,S<:Sequence}
+struct EachKmerIterator{T<:Kmer,S<:BioSequence}
     seq::S
     step::Int
     start::Int
 end
 
 """
-    each(::Type{Kmer{T,k}}, seq::Sequence[, step=1])
+    each(::Type{Kmer{T,k}}, seq::BioSequence[, step=1])
 
 Initialize an iterator over all k-mers in a sequence `seq` skipping ambiguous
 nucleotides without changing the reading frame.
@@ -32,7 +32,7 @@ for (pos, codon) in each(DNAKmer{3}, dna"ATCCTANAGNTACT", 3)
 end
 ```
 """
-function each(::Type{Kmer{T,K}}, seq::Sequence, step::Integer=1) where {T,K}
+function each(::Type{Kmer{T,K}}, seq::BioSequence, step::Integer=1) where {T,K}
     if eltype(seq) ∉ (DNA, RNA)
         throw(ArgumentError("element type must be either DNA or RNA nucleotide"))
     elseif !(0 ≤ K ≤ 32)
