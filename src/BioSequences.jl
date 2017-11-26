@@ -58,7 +58,7 @@ export
     ispurine,
     ispyrimidine,
     BioSequence,
-    MutableSequence,
+    MutableBioSequence,
     DNASequence,
     RNASequence,
     AminoAcidSequence,
