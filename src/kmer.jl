@@ -121,8 +121,9 @@ Base.convert(::Type{S}, seq::Kmer) where {S<:AbstractString} = convert(S, [Char(
 
 alphabet(::Type{DNAKmer{k}}) where {k} = (DNA_A, DNA_C, DNA_G, DNA_T)
 alphabet(::Type{RNAKmer{k}}) where {k} = (RNA_A, RNA_C, RNA_G, RNA_U)
-alphabet_t(::Type{T}) where T <: Kmer{DNA} = DNAAlphabet{2} 
-alphabet_t(::Type{T}) where T <: Kmer{RNA} = RNAAlphabet{2}
+alphabet_t(::Type{Kmer{T,N} where T<:NucleicAcid}) where N = Any
+alphabet_t(::Type{T}) where T <: DNAKmer = DNAAlphabet{2} 
+alphabet_t(::Type{T}) where T <: RNAKmer = RNAAlphabet{2}
 
 Base.hash(x::Kmer, h::UInt) = hash(UInt64(x), h)
 
