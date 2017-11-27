@@ -30,8 +30,8 @@ reps = 10
 
     # Check that kmers can be constructed from a BioSequence
     #   BioSequence → Kmer → BioSequence
-    function check_biosequence_construction(seq::BioSequence)
-        return convert(BioSequence, convert(Kmer, seq)) == seq
+    function check_biosequence_construction(seq::MutableBioSequence)
+        return convert(MutableBioSequence, convert(Kmer, seq)) == seq
     end
 
     # Check that kmers can be constructed from an array of nucleotides
@@ -46,9 +46,9 @@ reps = 10
     function check_roundabout_construction(A, seq::AbstractString)
         T = eltype(A)
         return convert(String,
-                   convert(BioSequence{A},
+                   convert(MutableBioSequence{A},
                        convert(Kmer,
-                           convert(BioSequence{A}, seq)))) == uppercase(seq)
+                           convert(MutableBioSequence{A}, seq)))) == uppercase(seq)
     end
 
     for len in [0, 1, 16, 32]

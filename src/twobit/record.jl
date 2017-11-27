@@ -210,7 +210,7 @@ Creates a sequence record suitable for writing to 2bit, in a similar way that
 FASTA and FASTQ records are created before being written to file. i.e. by calling
 a `Record` method on a name, some sequence, and some masks.
 """
-mutable struct WriteRecord{S<:BioSequences.Sequence}
+mutable struct WriteRecord{S<:BioSequences.BioSequence}
     name::String
     seq::S
     masks::Nullable{Vector{UnitRange{Int}}}
@@ -225,13 +225,13 @@ Needs a `name`, a `sequence`, and (optionally) `masks`: a vector of
 ranges that delineate masked regions of sequence.
 """
 function Record(name::AbstractString,
-                seq::BioSequences.Sequence,
+                seq::BioSequences.BioSequence,
                 masks = Nullable{Vector{UnitRange{Int}}}())
     return WriteRecord(string(name), seq, masks)
 end
 
 function Record(name::AbstractString,
-                seq::BioSequences.Sequence,
+                seq::BioSequences.BioSequence,
                 masks::Vector{UnitRange{Int}})
     return Record(name, seq, Nullable(masks))
 end

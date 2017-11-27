@@ -207,10 +207,10 @@ end
 
 Get the sequence of `record`.
 
-`S` can be either a subtype of `BioSequences.Sequence` or `String`.
+`S` can be either a subtype of `BioSequences.BioSequence` or `String`.
 If `part` argument is given, it returns the specified part of the sequence.
 """
-function sequence{S<:BioSequences.Sequence}(::Type{S}, record::Record, part::UnitRange{Int}=1:endof(record.sequence))::S
+function sequence{S<:BioSequences.BioSequence}(::Type{S}, record::Record, part::UnitRange{Int}=1:endof(record.sequence))::S
     checkfilled(record)
     if !hassequence(record)
         missingerror(:sequence)
