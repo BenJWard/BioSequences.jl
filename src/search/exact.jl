@@ -53,14 +53,14 @@ end
 """
 Query type for exact sequence search.
 """
-struct ExactSearchQuery{S<:Sequence}
+struct ExactSearchQuery{S<:BioSequence}
     seq::S         # query sequence
     cbits::UInt32  # compatibility bits
     fshift::Int    # shift length for forward search
     bshift::Int    # shift length for backward search
 end
 
-function ExactSearchQuery(query::Sequence)
+function ExactSearchQuery(query::BioSequence)
     cbits, fshift, bshift = preprocess(query)
     return ExactSearchQuery(query, cbits, fshift, bshift)
 end
@@ -103,12 +103,12 @@ end
 
 # NOTE: the return value is a range while the counterpart for strings is an index
 """
-    search(seq::Sequence, pat[, start=1[, stop=endof(seq)]])
+    search(seq::BioSequence, pat[, start=1[, stop=endof(seq)]])
 
 Return the range of the first occurrence of `pat` in `seq[start:stop]`; symbol
 comparison is done using `BioSequences.iscompatible`.
 """
-function Base.search(seq::Sequence, val,
+function Base.search(seq::BioSequence, val,
                      start::Integer=1, stop::Integer=endof(seq))
     s = searchindex(seq, val, start, stop)
     if s == 0
@@ -118,12 +118,12 @@ function Base.search(seq::Sequence, val,
     end
 end
 
-function Base.search(seq::Sequence, pat::Sequence,
+function Base.search(seq::BioSequence, pat::BioSequence,
                      start::Integer=1, stop::Integer=endof(seq))
     return search(seq, ExactSearchQuery(pat), start, stop)
 end
 
-function Base.search(seq::Sequence, query::ExactSearchQuery,
+function Base.search(seq::BioSequence, query::ExactSearchQuery,
                      start::Integer=1, stop::Integer=endof(seq))
     s = searchindex(seq, query, start, stop)
     if s == 0
@@ -133,12 +133,12 @@ function Base.search(seq::Sequence, query::ExactSearchQuery,
 end
 
 """
-    searchindex(seq::Sequence, pat[, start=1[, stop=endof(seq)]])
+    searchindex(seq::BioSequence, pat[, start=1[, stop=endof(seq)]])
 
 Return the index of the first occurrence of `pat` in `seq[start:stop]`; symbol
 comparison is done using `BioSequences.iscompatible`.
 """
-function Base.searchindex(seq::Sequence, val,
+function Base.searchindex(seq::BioSequence, val,
                           start::Integer=1, stop::Integer=endof(seq))
     x = convert(eltype(seq), val)
     for i in max(start, 1):min(stop, endof(seq))
@@ -149,12 +149,12 @@ function Base.searchindex(seq::Sequence, val,
     return 0  # not found
 end
 
-function Base.searchindex(seq::Sequence, pat::Sequence,
+function Base.searchindex(seq::BioSequence, pat::BioSequence,
                           start::Integer=1, stop::Integer=endof(seq))
     return searchindex(seq, ExactSearchQuery(pat), start, stop)
 end
 
-function Base.searchindex(seq::Sequence, query::ExactSearchQuery,
+function Base.searchindex(seq::BioSequence, query::ExactSearchQuery,
                           start::Integer=1, stop::Integer=endof(seq))
     checkeltype(seq, query.seq)
     return quicksearch(query, seq, start, stop)
@@ -211,12 +211,12 @@ end
 
 # NOTE: the return value is a range while the counterpart for strings is an index
 """
-    rsearch(seq::Sequence, pat[, start=endof(seq)[, stop=1]])
+    rsearch(seq::BioSequence, pat[, start=endof(seq)[, stop=1]])
 
 Return the range of the last occurrence of `pat` in `seq[stop:start]`; symbol
 comparison is done using `BioSequences.iscompatible`.
 """
-function Base.rsearch(seq::Sequence, val,
+function Base.rsearch(seq::BioSequence, val,
                       start::Integer=endof(seq), stop::Integer=1)
     s = rsearchindex(seq, val, start, stop)
     if s == 0
@@ -226,12 +226,12 @@ function Base.rsearch(seq::Sequence, val,
     end
 end
 
-function Base.rsearch(seq::Sequence, pat::Sequence,
+function Base.rsearch(seq::BioSequence, pat::BioSequence,
                       start::Integer=endof(seq), stop::Integer=1)
     return rsearch(seq, ExactSearchQuery(pat), start, stop)
 end
 
-function Base.rsearch(seq::Sequence, query::ExactSearchQuery,
+function Base.rsearch(seq::BioSequence, query::ExactSearchQuery,
                       start::Integer=endof(seq), stop::Integer=1)
     s = rsearchindex(seq, query, start, stop)
     if s == 0
@@ -241,12 +241,12 @@ function Base.rsearch(seq::Sequence, query::ExactSearchQuery,
 end
 
 """
-    rsearchindex(seq::Sequence, pat[, start=1[, stop=endof(seq)]])
+    rsearchindex(seq::BioSequence, pat[, start=1[, stop=endof(seq)]])
 
 Return the index of the last occurrence of `pat` in `seq[start:stop]`; symbol
 comparison is done using `BioSequences.iscompatible`.
 """
-function Base.rsearchindex(seq::Sequence, val,
+function Base.rsearchindex(seq::BioSequence, val,
                            start::Integer=endof(seq), stop::Integer=1)
     x = convert(eltype(seq), val)
     for i in min(start, endof(seq)):-1:max(stop, 1)
@@ -257,12 +257,12 @@ function Base.rsearchindex(seq::Sequence, val,
     return 0  # not found
 end
 
-function Base.rsearchindex(seq::Sequence, pat::Sequence,
+function Base.rsearchindex(seq::BioSequence, pat::BioSequence,
                            start::Integer=endof(seq), stop::Integer=1)
     return rsearchindex(seq, ExactSearchQuery(pat), start, stop)
 end
 
-function Base.rsearchindex(seq::Sequence, query::ExactSearchQuery,
+function Base.rsearchindex(seq::BioSequence, query::ExactSearchQuery,
                            start::Integer=endof(seq), stop::Integer=1)
     checkeltype(seq, query.seq)
     return quickrsearch(seq, query, start, stop)
