@@ -71,6 +71,7 @@ end
 # Indexing and iteration
 # ----------------------
 
+Base.eltype(::Type{T}) where T<:BioSequence = eltype(alphabet_t(T))
 Base.eltype(seq::BioSequence) = eltype(alphabet_t(seq))
 Base.size(seq::BioSequence) = (length(seq),)
 Base.endof(seq::BioSequence) = length(seq)
