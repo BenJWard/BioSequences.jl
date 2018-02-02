@@ -14,7 +14,7 @@ struct BitIndex{N, W}
 end
 
 _index_shift(i::BitIndex{N, 64}) where N = 6
-_index_shift(i::Bitindex{N, 32}) where N = 5
+_index_shift(i::BitIndex{N, 32}) where N = 5
 _index_shift(i::BitIndex{N, 16}) where N = 4
 _index_shift(i::BitIndex{N, 8}) where N = 3
 _offset_mask(i::BitIndex{N, W}) where {N, W} = UInt8(W) - 0x01
@@ -37,6 +37,12 @@ Base.start(i::BitIndex) = 1
 Base.done(i::BitIndex, s) = s > 2
 Base.next(i::BitIndex, s) = ifelse(s == 1, (index(i), 2), (offset(i), 3))
 Base.show(io::IO, i::BitIndex) = print(io, '(', index(i), ", ", offset(i), ')')
+
+@inline function extract_encoded_symbol(bidx::BitIndex, data)
+    @inbounds chunk = data[index(bidx)]
+    offchunk = chunk >> offset(bidx)
+    return offchunk & bitmask(seq)
+end
 
 # Create a bit mask that fills least significant `n` bits (`n` must be a
 # non-negative integer).
