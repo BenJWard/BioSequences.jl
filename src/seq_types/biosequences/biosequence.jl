@@ -64,9 +64,52 @@ function BioSequence()
 end
 
 
+# Required type traits and methods
+# ================================
+
+@inline function Base.length(seq::BioSequence)
+    error(
+        string(
+            "Base.length has not been defined for BioSequence type: ",
+            typeof(seq),
+            ". It is required for any BioSequence subtype."
+        )
+    )
+end
+
+"""
+Return the `Alpahbet` type defining the possible biological symbols
+and their encoding for a given biological sequence.
+"""
+@inline function alphabet_t(::Type{S}) where S <: BioSequence
+    error(string("This sequence type trait has not been defined for BioSequence type: ", S))
+end
+
+@inline function alphabet_t(seq::BioSequence)
+    return alphabet_t(typeof(seq))
+end
+
+@inline function bitindex_t(seq::BioSequence)
+    error(string("This sequence type trait has not been defined for BioSequence type: ", typeof(seq)))
+end
+
+"""
+Return the data member of `seq` that stores the encoded sequence data.
+"""
+@inline function encoded_data(seq::BioSequence)
+    error(
+        string(
+            "encoded_data has not been defined for BioSequence type: ",
+            typeof(seq),
+            ". It is required for any BioSequence subtype."
+        )
+    )
+end
+
+
+
 # Base Methods
 # ============
-
 
 # Indexing and iteration
 # ----------------------
@@ -123,9 +166,14 @@ function checkdimension(seq::BioSequence, locs::AbstractVector{Bool})
     return checkdimension(length(seq), sum(locs))
 end
 
-# assumes `i` is positive and `bitsof(A)` is a power of 2
-@inline function BitIndex(seq::BioSequence, i::Integer)
-    return BitIndex(i, bitsof(alphabet_t(seq)))
+bits_per_symbol(seq::BioSequence) = bits_per_symbol(alphabet_t(seq))
+
+bits_per_symbol_t(seq::BioSequence) = bits_per_symbol_t(alphabet_t(seq))
+
+encoded_data_eltype(seq::BioSequence) = eltype(encoded_data(seq))
+
+@inline function bitindex(seq::BioSequence, i::Integer)
+    return BitIndex{bits_per_symbol(seq), encoded_data_eltype(seq)}(i)
 end
 
 @inline function bindata_mask(seq::BioSequence)
@@ -133,8 +181,8 @@ end
 end
 
 @inline function inbounds_getindex(seq::BioSequence, i::Integer)
-    j = BitIndex(seq, i)
-    @inbounds chunk = bindata(seq)[index(j)]
+    j = bitindex(seq, i)
+    @inbounds chunk = encoded_data(seq)[index(j)]
     off = offset(j)
     return decode(alphabet_t(seq), (chunk >> off) & bindata_mask(seq))
 end
@@ -269,5 +317,4 @@ end
 
 Base.parse(::Type{S}, str::AbstractString) where {S<:BioSequence} = convert(S, str)
 
-include("traits.jl")
 include("operations.jl")

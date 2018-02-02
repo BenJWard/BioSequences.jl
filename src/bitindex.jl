@@ -6,19 +6,26 @@
 # This file is a part of BioJulia.
 # License is MIT: https://github.com/BioJulia/BioSequences.jl/blob/master/LICENSE.md
 
-struct BitIndex
+struct BitIndex{N, W}
     val::Int64
+    function BitIndex{N, W}(index) where {N,W}
+        return new((index - 1) << trailing_zeros(N))
+    end
 end
 
-BitIndex(index, nbits) = BitIndex((index - 1) << trailing_zeros(nbits))
+_index_shift(i::BitIndex{N, 64}) where N = 6
+_index_shift(i::Bitindex{N, 32}) where N = 5
+_index_shift(i::BitIndex{N, 16}) where N = 4
+_index_shift(i::BitIndex{N, 8}) where N = 3
+_offset_mask(i::BitIndex{N, W}) where {N, W} = UInt8(W) - 0x01
 
 #         index(i)-1        index(i)        index(i)+1
 # ....|................|..X.............|................|....
 #                          |<-offset(i)-|
 #                      |<--- 64 bits -->|
 
-index(i::BitIndex) = (i.val >> 6) + 1
-offset(i::BitIndex) = i.val & 0b111111
+index(i::BitIndex) = (i.val >> _index_shift(i)) + 1
+offset(i::BitIndex) = i.val & _offset_mask(i)
 
 Base.:+(i::BitIndex, n::Int) = BitIndex(i.val + n)
 Base.:-(i::BitIndex, n::Int) = BitIndex(i.val - n)
@@ -33,6 +40,6 @@ Base.show(io::IO, i::BitIndex) = print(io, '(', index(i), ", ", offset(i), ')')
 
 # Create a bit mask that fills least significant `n` bits (`n` must be a
 # non-negative integer).
-bitmask(::Type{A}) where {A <: Alphabet} = bitmask(bitsof(A))
+bitmask(::Type{A}) where {A <: Alphabet} = bitmask(bits_per_symbol(A))
 bitmask(n::Integer) = bitmask(UInt64, n)
 bitmask(::Type{T}, n::Integer) where {T} = (one(T) << n) - one(T)
