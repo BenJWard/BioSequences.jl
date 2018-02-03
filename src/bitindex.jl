@@ -41,7 +41,7 @@ Base.show(io::IO, i::BitIndex) = print(io, '(', index(i), ", ", offset(i), ')')
 @inline function extract_encoded_symbol(bidx::BitIndex, data)
     @inbounds chunk = data[index(bidx)]
     offchunk = chunk >> offset(bidx)
-    return offchunk & bitmask(seq)
+    return offchunk & bitmask(bidx)
 end
 
 # Create a bit mask that fills least significant `n` bits (`n` must be a
@@ -49,3 +49,4 @@ end
 bitmask(::Type{A}) where {A <: Alphabet} = bitmask(bits_per_symbol(A))
 bitmask(n::Integer) = bitmask(UInt64, n)
 bitmask(::Type{T}, n::Integer) where {T} = (one(T) << n) - one(T)
+bitmask(bidx::BitIndex{N, W}) = bitmask(W, N)
