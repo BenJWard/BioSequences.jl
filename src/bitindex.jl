@@ -27,8 +27,8 @@ _offset_mask(i::BitIndex{N, W}) where {N, W} = UInt8(8 * sizeof(W)) - 0x01
 index(i::BitIndex) = (i.val >> _index_shift(i)) + 1
 offset(i::BitIndex) = i.val & _offset_mask(i)
 
-Base.:+(i::BitIndex, n::Int) = BitIndex(i.val + n)
-Base.:-(i::BitIndex, n::Int) = BitIndex(i.val - n)
+Base.:+(i::BitIndex{N, W}, n::Int) where {N, W} = BitIndex{N, W}(i.val + n)
+Base.:-(i::BitIndex{N, W}, n::Int) where {N, W} = BitIndex{N, W}(i.val - n)
 Base.:-(i1::BitIndex, i2::BitIndex) = i1.val - i2.val
 Base.:(==)(i1::BitIndex, i2::BitIndex) = i1.val == i2.val
 Base.isless(i1::BitIndex, i2::BitIndex) = isless(i1.val, i2.val)
