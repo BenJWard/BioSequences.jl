@@ -111,6 +111,7 @@ end
 # ------------
 
 # Bit indexing biosequence traits and trait-like methods...
+bits_per_symbol(::Type{S}) where S <: BioSequence = bits_per_symbol(alphabet_t(S))
 bits_per_symbol(seq::BioSequence) = bits_per_symbol(alphabet_t(seq))
 
 bits_per_symbol_t(seq::BioSequence) = bits_per_symbol_t(alphabet_t(S))
@@ -129,9 +130,7 @@ end
     return bitmask(alphabet_t(seq))
 end
 
-function seq_data_len(seq::BioSequence, len::Integer)
-    cld(len, symbols_per_data_element(seq))
-end
+
 
 
 

@@ -72,7 +72,9 @@ alphabet(::Type{MutableBioSequence{A}}) where {A} = alphabet(A)
 alphabet_t(::Type{MutableBioSequence{A}}) where {A <: Alphabet} = A
 encoded_data(seq::MutableBioSequence) = seq.data
 
-
+@inbounds function seq_data_len(::Type{A}, len::Integer) where A <: Alphabet
+    return cld(len, div(64, bits_per_symbol(A)))
+end
 
 
 
@@ -88,7 +90,7 @@ function orphan!(seq::MutableBioSequence{A},
     end
 
     j, r = BitIndex(seq, 1)
-    data = Vector{UInt64}(seq_data_len(A, size))
+    data = Vector{UInt64}(seq_data_len(seq, size))
 
     if !isempty(seq) && !isempty(data)
         x = seq.data[j] >> r
