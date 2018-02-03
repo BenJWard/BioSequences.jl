@@ -17,7 +17,7 @@ _index_shift(i::BitIndex{N, UInt64}) where N = 6
 _index_shift(i::BitIndex{N, UInt32}) where N = 5
 _index_shift(i::BitIndex{N, UInt16}) where N = 4
 _index_shift(i::BitIndex{N, UInt8}) where N = 3
-_offset_mask(i::BitIndex{N, W <: Unsigned}) where {N} = UInt8(8 * sizeof(W)) - 0x01
+_offset_mask(i::dex{N, W}) where {N, W} = UInt8(8 * sizeof(W)) - 0x01
 
 #         index(i)-1        index(i)        index(i)+1
 # ....|................|..X.............|................|....
