@@ -49,4 +49,4 @@ end
 bitmask(::Type{A}) where {A <: Alphabet} = bitmask(bits_per_symbol(A))
 bitmask(n::Integer) = bitmask(UInt64, n)
 bitmask(::Type{T}, n::Integer) where {T} = (one(T) << n) - one(T)
-bitmask(bidx::BitIndex{N, W}) = bitmask(W, N)
+bitmask(bidx::BitIndex{N, W}) where {N, W} = bitmask(W, N)
