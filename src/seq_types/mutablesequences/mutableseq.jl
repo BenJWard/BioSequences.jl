@@ -90,7 +90,7 @@ function orphan!(seq::MutableBioSequence{A},
     end
 
     j, r = bitindex(seq, 1)
-    data = Vector{UInt64}(seq_data_len(seq, size))
+    data = Vector{UInt64}(seq_data_len(A, size))
 
     if !isempty(seq) && !isempty(data)
         x = seq.data[j] >> r
