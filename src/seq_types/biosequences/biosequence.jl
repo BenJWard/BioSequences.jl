@@ -85,6 +85,7 @@ and their encoding for a given biological sequence.
     error(string("This sequence type trait has not been defined for BioSequence type: ", S))
 end
 
+# This version of alphabet_t is automatically defined for any BioSequence type, is more for conveinience.
 @inline function alphabet_t(seq::BioSequence)
     return alphabet_t(typeof(seq))
 end
@@ -105,6 +106,35 @@ Return the data member of `seq` that stores the encoded sequence data.
         )
     )
 end
+
+# Bit indexing
+# ------------
+
+# Bit indexing biosequence traits and trait-like methods...
+bits_per_symbol(seq::BioSequence) = bits_per_symbol(alphabet_t(seq))
+
+bits_per_symbol_t(seq::BioSequence) = bits_per_symbol_t(alphabet_t(S))
+
+encoded_data_eltype(seq::BioSequence) = eltype(encoded_data(seq))
+
+@inline function symbols_per_data_element(seq::BioSequence)
+    return div(8 * sizeof(encoded_data_eltype(seq)), bits_per_symbol(seq))
+end
+
+@inline function bitindex(seq::BioSequence, i::Integer)
+    return BitIndex{bits_per_symbol(seq), encoded_data_eltype(seq)}(i)
+end
+
+@inline function bindata_mask(seq::BioSequence)
+    return bitmask(alphabet_t(seq))
+end
+
+function seq_data_len(seq::BioSequence, len::Integer)
+    cld(len, symbols_per_data_element(seq))
+end
+
+
+
 
 
 

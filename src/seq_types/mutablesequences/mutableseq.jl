@@ -65,18 +65,16 @@ const CharSequence      = MutableBioSequence{CharAlphabet}
 Base.length(seq::MutableBioSequence) = length(seq.part)
 encoded_data(seq::MutableBioSequence) = seq.data
 
-bitindex_t(seq::MutableBioSequence) = BitIndex{}
 
 
 
 "Gets the alphabet encoding of a given BioSequence."
 alphabet(::Type{MutableBioSequence{A}}) where {A} = alphabet(A)
 alphabet_t(::Type{MutableBioSequence{A}}) where {A <: Alphabet} = A
-bindata(seq::MutableBioSequence) = seq.data
+encoded_data(seq::MutableBioSequence) = seq.data
 
-function seq_data_len(::Type{A}, len::Integer) where {A}
-    return cld(len, div(64, bitsof(A)))
-end
+
+
 
 
 # Replace a MutableBioSequence's data with a copy, copying only what's needed.

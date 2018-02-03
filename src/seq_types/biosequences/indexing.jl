@@ -64,22 +64,6 @@ function checkdimension(seq::BioSequence, locs::AbstractVector{Bool})
 end
 
 
-# Bit indexing
-# ------------
-
-bits_per_symbol(seq::BioSequence) = bits_per_symbol(alphabet_t(seq))
-
-bits_per_symbol_t(seq::BioSequence) = bits_per_symbol_t(alphabet_t(seq))
-
-encoded_data_eltype(seq::BioSequence) = eltype(encoded_data(seq))
-
-@inline function bitindex(seq::BioSequence, i::Integer)
-    return BitIndex{bits_per_symbol(seq), encoded_data_eltype(seq)}(i)
-end
-
-@inline function bindata_mask(seq::BioSequence)
-    return bitmask(alphabet_t(seq))
-end
 
 @inline function inbounds_getindex(seq::BioSequence, i::Integer)
     bidx = bitindex(seq, i)
