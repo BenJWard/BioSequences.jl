@@ -62,14 +62,13 @@ const CharSequence      = MutableBioSequence{CharAlphabet}
 
 # Required type traits and methods
 # ================================
+
 Base.length(seq::MutableBioSequence) = length(seq.part)
-encoded_data(seq::MutableBioSequence) = seq.data
-
-
-
 
 "Gets the alphabet encoding of a given BioSequence."
 alphabet(::Type{MutableBioSequence{A}}) where {A} = alphabet(A)
+
+"Get the alphabet type of a given BioSequence type."
 alphabet_t(::Type{MutableBioSequence{A}}) where {A <: Alphabet} = A
 encoded_data(seq::MutableBioSequence) = seq.data
 
