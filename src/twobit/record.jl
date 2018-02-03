@@ -150,8 +150,8 @@ end
 function decode_sequence(packeddna, seqlen, nbits, table)
     @assert nbits ∈ (2, 4)
     data = zeros(UInt64, cld(seqlen, div(64, nbits)))
-    stop = BioSequences.BitIndex{nbits, 64}(seqlen)
-    i = BioSequences.BitIndex{nbits, 64}(1)
+    stop = BioSequences.BitIndex{nbits, UInt64}(seqlen)
+    i = BioSequences.BitIndex{nbits, UInt64}(1)
     j = 1
     while i ≤ stop
         data[BioSequences.index(i)] |= table[Int(packeddna[j])+1] << BioSequences.offset(i)

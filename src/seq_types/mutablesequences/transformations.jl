@@ -147,7 +147,7 @@ function Base.filter!(f::Function, seq::MutableBioSequence{A}) where {A}
         if f(x)
             datum |= enc64(seq, x) << offset(next)
             len += 1
-            next += bitsof(A)
+            next += bits_per_symbol(A)
             if index(next) != j
                 seq.data[j] = datum
                 datum = 0
@@ -202,7 +202,7 @@ Create a sequence which is the reverse of the bioloigcal sequence `seq`.
 Base.reverse(seq::MutableBioSequence) = reverse!(copy(seq))
 
 @generated function Base.reverse(seq::MutableBioSequence{A}) where {A<:NucleicAcidAlphabet}
-    n = bitsof(A)
+    n = bits_per_symbol(A)
     if n == 2
         nucrev = :nucrev2
     elseif n == 4
