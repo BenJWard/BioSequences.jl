@@ -27,7 +27,7 @@ function Base.setindex!(seq::MutableBioSequence, x, i::Integer)
 end
 
 # Set multiple sequence positions to a single symbol value.
-function Base.setindex!(seq::MutableBioSequence{A}, x, 
+function Base.setindex!(seq::MutableBioSequence{A}, x,
 			locs::AbstractVector{<:Integer}) where {A}
 
     checkbounds(seq, locs)
@@ -55,7 +55,7 @@ end
 function Base.setindex!(seq::MutableBioSequence{A},
                         other::MutableBioSequence{A},
                         locs::AbstractVector{<:Integer}) where {A}
-    
+
     checkbounds(seq, locs)
     checkdimension(other, locs)
     orphan!(seq)
@@ -107,7 +107,7 @@ end
 
 @inline function encoded_setindex!(seq::MutableBioSequence{A},
 				   bin::UInt64, i::Integer) where {A}
-    j, r = BitIndex(seq, i)
+    j, r = bitindex(seq, i)
     data = bindata(seq)
     @inbounds data[j] = (bin << r) | (data[j] & ~(bindata_mask(seq) << r))
     return seq

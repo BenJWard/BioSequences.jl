@@ -90,7 +90,7 @@ function Base.convert(::Type{S}, seq::ReferenceSequence) where {S<:AbstractStrin
     return S([Char(nt) for nt in seq])
 end
 
-function BitIndex(seq::ReferenceSequence, i::Integer)
+function bitindex(seq::ReferenceSequence, i::Integer)
     return BitIndex((i + first(seq.part) - 2) << 1)
 end
 
@@ -98,8 +98,8 @@ end
 function encode(src::Vector{UInt8}, from::Integer, len::Integer)
     data = zeros(UInt64, cld(len, 32))
     nmask = falses(len)
-    next = BitIndex(1, 2)
-    stop = BitIndex(len + 1, 2)
+    next = bitindex(1, 2)
+    stop = bitindex(len + 1, 2)
     i = from
     while next < stop
         x = UInt64(0)
@@ -134,7 +134,7 @@ end
     if seq.nmask[i + first(seq.part) - 1]
         return DNA_N
     else
-        j = BitIndex(seq, i)
+        j = bitindex(seq, i)
         return DNA(0x01 << ((seq.data[index(j)] >> offset(j)) & 0b11))
     end
 end

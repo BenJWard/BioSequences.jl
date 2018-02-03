@@ -27,7 +27,7 @@
 # containing binary bits and bits' offset. As a whole, character extraction
 # `seq[i]` can be written as:
 #
-#     j = BitIndex(seq, i)
+#     j = bitindex(seq, i)
 #     decode(A, (seq.data[index(j)] >> offset(j)) & mask(A))
 #
 #  index :        index(j) - 1       index(j)       index(j) + 1
@@ -89,12 +89,12 @@ function orphan!(seq::MutableBioSequence{A},
         return seq
     end
 
-    j, r = BitIndex(seq, 1)
+    j, r = bitindex(seq, 1)
     data = Vector{UInt64}(seq_data_len(seq, size))
 
     if !isempty(seq) && !isempty(data)
         x = seq.data[j] >> r
-        m = index(BitIndex(seq, endof(seq))) - j + 1
+        m = index(bitindex(seq, endof(seq))) - j + 1
         l = min(endof(data), m)
         @inbounds @simd for i in 1:l-1
             y = seq.data[j + i]
