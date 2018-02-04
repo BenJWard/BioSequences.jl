@@ -63,8 +63,6 @@ function checkdimension(seq::BioSequence, locs::AbstractVector{Bool})
     return checkdimension(length(seq), sum(locs))
 end
 
-
-
 @inline function inbounds_getindex(seq::BioSequence, i::Integer)
     bidx = bitindex(seq, i)
     encoded_symbol = extract_encoded_symbol(bidx, encoded_data(seq))

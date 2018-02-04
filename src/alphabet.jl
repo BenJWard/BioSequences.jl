@@ -63,19 +63,19 @@ Void alphabet (internal use only).
 struct VoidAlphabet <: Alphabet end
 
 """
-The number of bits required to represent a symbol of the alphabet, in a 
+The number of bits required to represent a symbol of the alphabet, in a
 biological sequence.
 """
 function bits_per_symbol end
 
-bit_per_symbol(::Type{A}) where A <: NucleicAcidAlphabet{2} = 2
+bits_per_symbol(::Type{A}) where A <: NucleicAcidAlphabet{2} = 2
 bits_per_symbol(::Type{A}) where A <: NucleicAcidAlphabet{4} = 4
 bits_per_symbol(::Type{AminoAcidAlphabet}) = 8
 bits_per_symbol(::Type{CharAlphabet}) = 32
 bits_per_symbol(::Type{VoidAlphabet}) = 0
 
 """
-The number of bits required to represent a symbol of the alphabet, in a 
+The number of bits required to represent a symbol of the alphabet, in a
 biological sequence, as a value type.
 """
 function bits_per_symbol_t end
@@ -148,9 +148,9 @@ end
 # ---------------------
 
 for A in (DNAAlphabet, RNAAlphabet)
-    
+
     T = eltype(A)
-    
+
     @eval begin
 
 	# 2-bit encoding
@@ -232,4 +232,3 @@ end
 @inline function decode(::Type{CharAlphabet}, x::Unsigned)
     return decode(CharAlphabet, UInt32(x))
 end
-
