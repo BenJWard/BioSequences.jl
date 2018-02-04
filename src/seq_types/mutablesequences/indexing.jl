@@ -108,7 +108,7 @@ end
 @inline function encoded_setindex!(seq::MutableBioSequence{A},
 				   bin::UInt64, i::Integer) where {A}
     j, r = bitindex(seq, i)
-    data = bindata(seq)
+    data = encoded_data(seq)
     @inbounds data[j] = (bin << r) | (data[j] & ~(bindata_mask(seq) << r))
     return seq
 end
