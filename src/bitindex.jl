@@ -21,7 +21,9 @@ _offset_mask(i::BitIndex{N, W}) where {N, W} = UInt8(8 * sizeof(W)) - 0x01
 #                          |<-offset(i)-|
 #                      |<--- 64 bits -->|
 
-bitindex(::N, ::W, index) where {N, W} = BitIndex{N, W}((index - 1) << trailing_zeros(N))
+@inline function bitindex(::Var{N}, ::Type{W}, index) where {N, W}
+    return BitIndex{N, W}((index - 1) << trailing_zeros(N))
+end
 
 index(i::BitIndex) = (i.val >> _index_shift(i)) + 1
 offset(i::BitIndex) = i.val & _offset_mask(i)
