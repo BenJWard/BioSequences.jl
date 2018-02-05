@@ -114,7 +114,7 @@ end
 bits_per_symbol(::Type{S}) where {S <: BioSequence} = bits_per_symbol(alphabet_t(S))
 bits_per_symbol(seq::BioSequence) = bits_per_symbol(alphabet_t(seq))
 
-bits_per_symbol_t(seq::BioSequence) = bits_per_symbol_t(alphabet_t(S))
+bits_per_symbol_t(seq::BioSequence) = bits_per_symbol_t(alphabet_t(seq))
 
 encoded_data_eltype(seq::BioSequence) = eltype(encoded_data(seq))
 
