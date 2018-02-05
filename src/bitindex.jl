@@ -39,15 +39,22 @@ Base.done(i::BitIndex, s) = s > 2
 Base.next(i::BitIndex, s) = ifelse(s == 1, (index(i), 2), (offset(i), 3))
 Base.show(io::IO, i::BitIndex) = print(io, '(', index(i), ", ", offset(i), ')')
 
+# Create a bit mask that fills least significant `n` bits (`n` must be a
+# non-negative integer).
+bitmask(::Type{T}, n::Integer) where {T} = (one(T) << n) - one(T)
+bitmask(::Type{T}, ::Val{N}) where {T, N} = (one(T) << N) - one(T)
+bitmask(bidx::BitIndex{N, W}) where {N, W} = bitmask(W, N)
+
+#TODO: Possibly delete later, redunandt with BitIndex redesign.
+@inline function bitmask(::Type{A}, ::Type{U}) where {A <: Alphabet, U <: Unsigned}
+    ba = bits_per_symbol(A)
+    return bitmask(U, ba)
+end
+bitmask(::Type{A}) where {A <: Alphabet} = bitmask(bits_per_symbol(A))
+bitmask(n::Integer) = bitmask(UInt64, n)
+
 @inline function extract_encoded_symbol(bidx::BitIndex, data)
     @inbounds chunk = data[index(bidx)]
     offchunk = chunk >> offset(bidx)
     return offchunk & bitmask(bidx)
 end
-
-# Create a bit mask that fills least significant `n` bits (`n` must be a
-# non-negative integer).
-bitmask(::Type{A}) where {A <: Alphabet} = bitmask(bits_per_symbol(A))
-bitmask(n::Integer) = bitmask(UInt64, n)
-bitmask(::Type{T}, n::Integer) where {T} = (one(T) << n) - one(T)
-bitmask(bidx::BitIndex{N, W}) where {N, W} = bitmask(W, N)
