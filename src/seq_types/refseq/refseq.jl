@@ -90,19 +90,21 @@ function Base.convert(::Type{S}, seq::ReferenceSequence) where {S<:AbstractStrin
     return S([Char(nt) for nt in seq])
 end
 
-function bitindex(seq::ReferenceSequence, i::Integer)
-    return BitIndex{2, UInt64}((i + first(seq.part) - 2) << 1)
+@inline function bitindex(seq::ReferenceSequence, i::Integer)
+    return bitindex(Val{2}(), UInt64, i + first(seq.part) - 1)
 end
 
-# create ReferenceSequence object from the ascii-encoded `data`
+# Create ReferenceSequence object from the ascii-encoded `data`
 function encode(src::Vector{UInt8}, from::Integer, len::Integer)
     println("src: ", src)
     data = zeros(UInt64, cld(len, 32))
     nmask = falses(len)
     #next = bitindex(1, 2)
-    next = BitIndex{2,UInt64}(1)
+    #next = BitIndex{2,UInt64}(1)
+    next = bitindex(Val{2}(), UInt64, 1)
     #stop = bitindex(len + 1, 2)
-    stop = BitIndex{2, UInt64}(len + 1)
+    #stop = BitIndex{2, UInt64}(len + 1)
+    stop = bitindex(Val{2}(), UInt64, len + 1)
     println("next: ", next)
     println("stop: ", stop)
     i = from

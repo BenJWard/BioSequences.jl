@@ -95,34 +95,21 @@ function encode_copy!(dst::MutableBioSequence{A},
     end
 
     orphan!(dst)
-    #println("Source string: ", src)
-    #println("Length: ", len)
+
     next = bitindex(dst, doff)
     stop = bitindex(dst, doff + len)
-    #println("Next: ", next)
-    #println("Stop: ", stop)
-    #println("Typeof next: ", typeof(next))
-    #println("Typeof stop: ", typeof(stop))
 
     i = soff
     while next < stop
         x = UInt64(0)
-        #println("x: ", hex(x))
         j = index(next)
         while index(next) == j && next < stop
             char, i = Base.next(src, i)
-            #println("Char: ", char)
-            #println("Encoded: ", hex(enc64(dst, convert(Char, char))))
-
             x |= enc64(dst, convert(Char, char)) << offset(next)
-
-            #println("x: ", hex(x))
             next += bits_per_symbol(A)
-            #println("next: ", next)
         end
         dst.data[j] = x
     end
-    #println("Finished destination: ", dst)
     return dst
 end
 
