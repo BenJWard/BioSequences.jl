@@ -90,12 +90,9 @@ function Base.convert(::Type{S}, seq::ReferenceSequence) where {S<:AbstractStrin
     return S([Char(nt) for nt in seq])
 end
 
-# TODO: Delete this as new API should make it redundant.
-#=
 function bitindex(seq::ReferenceSequence, i::Integer)
     return BitIndex{2, UInt64}((i + first(seq.part) - 2) << 1)
 end
-=#
 
 # create ReferenceSequence object from the ascii-encoded `data`
 function encode(src::Vector{UInt8}, from::Integer, len::Integer)
