@@ -123,7 +123,7 @@ encoded_data_eltype(seq::BioSequence) = eltype(encoded_data(seq))
 end
 
 @inline function bitindex(seq::BioSequence, i::Integer)
-    return bitindex{bits_per_symbol(seq), encoded_data_eltype(seq)}(i)
+    return bitindex(bits_per_symbol(seq), encoded_data_eltype(seq), i)
 end
 
 @inline function bindata_mask(seq::BioSequence)
