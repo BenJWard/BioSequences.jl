@@ -96,8 +96,9 @@ function encode_copy!(dst::MutableBioSequence{A},
 
     orphan!(dst)
 
-    println("Length: ", len)
+    println("Source string: ", src)
 
+    println("Length: ", len)
 
     next = bitindex(dst, doff)
     stop = bitindex(dst, doff + len)
@@ -126,6 +127,7 @@ function encode_copy!(dst::MutableBioSequence{A},
         end
         dst.data[j] = x
     end
+    println("Finished destination: ", dst)
     return dst
 end
 
