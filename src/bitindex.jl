@@ -8,9 +8,6 @@
 
 struct BitIndex{N, W}
     val::Int64
-    function BitIndex{N, W}(index) where {N,W}
-        return new((index - 1) << trailing_zeros(N))
-    end
 end
 
 _index_shift(i::BitIndex{N, UInt64}) where N = 6
@@ -23,6 +20,8 @@ _offset_mask(i::BitIndex{N, W}) where {N, W} = UInt8(8 * sizeof(W)) - 0x01
 # ....|................|..X.............|................|....
 #                          |<-offset(i)-|
 #                      |<--- 64 bits -->|
+
+bitindex{N, W}(index) = BitIndex{N, W}((index - 1) << trailing_zeros(N))
 
 index(i::BitIndex) = (i.val >> _index_shift(i)) + 1
 offset(i::BitIndex) = i.val & _offset_mask(i)
