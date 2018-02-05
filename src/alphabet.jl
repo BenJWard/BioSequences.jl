@@ -80,11 +80,11 @@ biological sequence, as a value type.
 """
 function bits_per_symbol_t end
 
-bits_per_symbol_t(::Type{A}) where A <: NucleicAcidAlphabet{2} = Val{2}
-bits_per_symbol_t(::Type{A}) where A <: NucleicAcidAlphabet{4} = Val{4}
-bits_per_symbol_t(::Type{AminoAcidAlphabet}) = Val{8}
-bits_per_symbol_t(::Type{CharAlphabet}) = Val{32}
-bits_per_symbol_t(::Type{VoidAlphabet}) = Val{0}
+bits_per_symbol_t(::Type{A}) where A <: NucleicAcidAlphabet{2} = Val{2}()
+bits_per_symbol_t(::Type{A}) where A <: NucleicAcidAlphabet{4} = Val{4}()
+bits_per_symbol_t(::Type{AminoAcidAlphabet}) = Val{8}()
+bits_per_symbol_t(::Type{CharAlphabet}) = Val{32}()
+bits_per_symbol_t(::Type{VoidAlphabet}) = Val{0}()
 
 Base.eltype(::Type{A}) where A <: DNAAlphabet = DNA
 Base.eltype(::Type{A}) where A <: RNAAlphabet = RNA
