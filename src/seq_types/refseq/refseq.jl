@@ -98,8 +98,10 @@ end
 function encode(src::Vector{UInt8}, from::Integer, len::Integer)
     data = zeros(UInt64, cld(len, 32))
     nmask = falses(len)
-    next = bitindex(1, 2)
-    stop = bitindex(len + 1, 2)
+    #next = bitindex(1, 2)
+    next = BitIndex{2,UInt64}(1)
+    #stop = bitindex(len + 1, 2)
+    stop = BitIndex{2, UInt64}(len + 1)
     i = from
     while next < stop
         x = UInt64(0)
