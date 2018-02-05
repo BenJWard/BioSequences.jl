@@ -119,7 +119,7 @@ function encode(src::Vector{UInt8}, from::Integer, len::Integer)
             println("nt: ", nt)
             println("!isambiguous: ", !isambiguous(nt))
             if !isambiguous(nt)
-                println("Encoded nt: ", hex(encode(DNAAlphabet{2}, nt)) << offset(next))
+                println("Encoded nt: ", hex(encode(DNAAlphabet{2}, nt) << offset(next)))
                 x |= UInt64(encode(DNAAlphabet{2}, nt)) << offset(next)
             elseif nt == DNA_N
                 nmask[i] = true
