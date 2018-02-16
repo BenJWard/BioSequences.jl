@@ -10,6 +10,7 @@
     reader = TwoBit.Reader(buffer)
     @test length(reader) == 2
     @test TwoBit.seqnames(reader) == ["chr1", "chr2"]
+    println(typeof(TwoBit.sequence(reader["chr1"])))
     @test TwoBit.sequence(reader["chr1"]) == chr1
     @test TwoBit.sequence(reader["chr2"]) == chr2
     @test TwoBit.sequence(reader["chr1"]) == chr1
