@@ -2,7 +2,6 @@
     buffer = IOBuffer()
     writer = TwoBit.Writer(buffer, ["chr1", "chr2"])
     chr1 = dna"ACGTNN"
-    println(chr1)
     chr2 = dna"N" ^ 100 * dna"ACGT" ^ 100 * dna"N" ^ 100
     write(writer, TwoBit.Record("chr1", chr1))
     write(writer, TwoBit.Record("chr2", chr2))
@@ -10,7 +9,6 @@
     reader = TwoBit.Reader(buffer)
     @test length(reader) == 2
     @test TwoBit.seqnames(reader) == ["chr1", "chr2"]
-    println(typeof(TwoBit.sequence(reader["chr1"])))
     @test TwoBit.sequence(reader["chr1"]) == chr1
     @test TwoBit.sequence(reader["chr2"]) == chr2
     @test TwoBit.sequence(reader["chr1"]) == chr1

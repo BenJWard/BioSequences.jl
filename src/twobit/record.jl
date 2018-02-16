@@ -79,7 +79,7 @@ end
 
 function truncate(seq, len)
     if length(seq) > len
-        return "$(seq[1:len-1])…"
+        return "$(seq[1:len - 1])…"
     else
         return string(seq)
     end
@@ -154,11 +154,7 @@ function decode_sequence(packeddna::Vector{UInt8}, seqlen::UInt32, nbits::Val{n}
     i = BioSequences.bitindex(nbits, UInt64, 1)
     j = 1
     while i ≤ stop
-        println("i: ", i)
-        println("twobit record data: ", bits(packeddna[j]))
-        println("twobit decoded data: ", bits(table[Int(packeddna[j])+1]))
-        data[BioSequences.index(i)] |= table[Int(packeddna[j])+1] << BioSequences.offset(i)
-        println("data[index(i)]: ", bits(data[BioSequences.index(i)]))
+        data[BioSequences.index(i)] |= table[Int(packeddna[j]) + 1] << BioSequences.offset(i)
         i += 4 * n
         j += 1
     end

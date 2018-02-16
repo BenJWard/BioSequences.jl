@@ -145,21 +145,18 @@ function write_masked_blocks(output, masks)
 end
 
 function write_twobit_sequence(output, seq)
-    println("Sequence: ", seq)
     n = 0
     i = 4
     while i ≤ endof(seq)
         x::UInt8 = 0
-        x |= nuc2twobit(seq[i-3]) << 6
-        x |= nuc2twobit(seq[i-2]) << 4
-        x |= nuc2twobit(seq[i-1]) << 2
-        x |= nuc2twobit(seq[i-0]) << 0
+        x |= nuc2twobit(seq[i - 3]) << 6
+        x |= nuc2twobit(seq[i - 2]) << 4
+        x |= nuc2twobit(seq[i - 1]) << 2
+        x |= nuc2twobit(seq[i - 0]) << 0
         n += write(output, x)
         i += 4
-        #println("x: ", bits(x))
     end
     r = length(seq) % 4
-    #println("r: ", r)
     if r > 0
         let x::UInt8 = 0
             i = endof(seq) - r + 1
@@ -167,10 +164,7 @@ function write_twobit_sequence(output, seq)
                 x = x << 2 | nuc2twobit(seq[i])
                 i += 1
             end
-            #println("x: ", bits(x))
-            #println("(4 - r) * 2: ", (4 - r) * 2)
             x <<= (4 - r) * 2
-            #println("x: ", bits(x))
             n += write(output, x)
         end
     end
@@ -178,14 +172,11 @@ function write_twobit_sequence(output, seq)
 end
 
 function nuc2twobit(nt::BioSequences.DNA)
-    #println("Nuc: ", nt)
-    bin = (
+    return (
         nt == BioSequences.DNA_A ? 0b10 :
         nt == BioSequences.DNA_C ? 0b01 :
         nt == BioSequences.DNA_G ? 0b11 :
         nt == BioSequences.DNA_T ? 0b00 :
         nt == BioSequences.DNA_N ? 0b00 : error()
     )
-    #println("Bin: ", bits(bin))
-    return bin
 end
