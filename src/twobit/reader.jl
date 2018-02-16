@@ -159,7 +159,6 @@ function Base.read!(reader::Reader, record::Record)
         resize!(record.packeddna, datalen)
     end
     unsafe_read(reader.input, pointer(record.packeddna), datalen)
-    println("READ TWOBIT DATA: ", (bits(x) for x in record.packeddna)...)
     record.filled = true
     return record
 end
