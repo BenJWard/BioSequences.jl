@@ -232,4 +232,3 @@ end
 @inline function decode(::Type{CharAlphabet}, x::Unsigned)
     return decode(CharAlphabet, UInt32(x))
 end
-
