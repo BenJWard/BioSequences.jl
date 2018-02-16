@@ -156,8 +156,8 @@ function write_twobit_sequence(output, seq)
         x |= nuc2twobit(seq[i-0]) << 0
         n += write(output, x)
         i += 4
+        println("x: ", bits(x))
     end
-    println("x: ", bits(x))
     r = length(seq) % 4
     println("r: ", r)
     if r > 0
