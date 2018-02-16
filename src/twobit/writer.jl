@@ -149,10 +149,10 @@ function write_twobit_sequence(output, seq)
     i = 4
     while i ≤ endof(seq)
         x::UInt8 = 0
-        x |= nuc2twobit(seq[i-3]) << 6
-        x |= nuc2twobit(seq[i-2]) << 4
-        x |= nuc2twobit(seq[i-1]) << 2
-        x |= nuc2twobit(seq[i-0]) << 0
+        x |= nuc2twobit(seq[i - 3]) << 6
+        x |= nuc2twobit(seq[i - 2]) << 4
+        x |= nuc2twobit(seq[i - 1]) << 2
+        x |= nuc2twobit(seq[i - 0]) << 0
         n += write(output, x)
         i += 4
     end
@@ -177,5 +177,6 @@ function nuc2twobit(nt::BioSequences.DNA)
         nt == BioSequences.DNA_C ? 0b01 :
         nt == BioSequences.DNA_G ? 0b11 :
         nt == BioSequences.DNA_T ? 0b00 :
-        nt == BioSequences.DNA_N ? 0b00 : error())
+        nt == BioSequences.DNA_N ? 0b00 : error()
+    )
 end

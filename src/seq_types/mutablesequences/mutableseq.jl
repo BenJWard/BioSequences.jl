@@ -27,7 +27,7 @@
 # containing binary bits and bits' offset. As a whole, character extraction
 # `seq[i]` can be written as:
 #
-#     j = BitIndex(seq, i)
+#     j = bitindex(seq, i)
 #     decode(A, (seq.data[index(j)] >> offset(j)) & mask(A))
 #
 #  index :        index(j) - 1       index(j)       index(j) + 1
@@ -59,15 +59,24 @@ const RNASequence       = MutableBioSequence{RNAAlphabet{4}}
 const AminoAcidSequence = MutableBioSequence{AminoAcidAlphabet}
 const CharSequence      = MutableBioSequence{CharAlphabet}
 
+
+# Required type traits and methods
+# ================================
+
+Base.length(seq::MutableBioSequence) = length(seq.part)
+
 "Gets the alphabet encoding of a given BioSequence."
 alphabet(::Type{MutableBioSequence{A}}) where {A} = alphabet(A)
-alphabet_t(::Type{MutableBioSequence{A}}) where {A <: Alphabet} = A
-Base.length(seq::MutableBioSequence) = length(seq.part)
-bindata(seq::MutableBioSequence) = seq.data
 
-function seq_data_len(::Type{A}, len::Integer) where {A}
-    return cld(len, div(64, bitsof(A)))
+"Get the alphabet type of a given BioSequence type."
+alphabet_t(::Type{MutableBioSequence{A}}) where {A <: Alphabet} = A
+encoded_data(seq::MutableBioSequence) = seq.data
+
+@inbounds function seq_data_len(::Type{A}, len::Integer) where A <: Alphabet
+    return cld(len, div(64, bits_per_symbol(A)))
 end
+
+
 
 # Replace a MutableBioSequence's data with a copy, copying only what's needed.
 # The user should never need to call this, as it has no outward effect on the
@@ -80,12 +89,12 @@ function orphan!(seq::MutableBioSequence{A},
         return seq
     end
 
-    j, r = BitIndex(seq, 1)
+    j, r = bitindex(seq, 1)
     data = Vector{UInt64}(seq_data_len(A, size))
 
     if !isempty(seq) && !isempty(data)
         x = seq.data[j] >> r
-        m = index(BitIndex(seq, endof(seq))) - j + 1
+        m = index(bitindex(seq, endof(seq))) - j + 1
         l = min(endof(data), m)
         @inbounds @simd for i in 1:l-1
             y = seq.data[j + i]

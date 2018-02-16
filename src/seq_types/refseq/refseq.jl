@@ -90,25 +90,38 @@ function Base.convert(::Type{S}, seq::ReferenceSequence) where {S<:AbstractStrin
     return S([Char(nt) for nt in seq])
 end
 
-function BitIndex(seq::ReferenceSequence, i::Integer)
-    return BitIndex((i + first(seq.part) - 2) << 1)
+@inline function bitindex(seq::ReferenceSequence, i::Integer)
+    return bitindex(Val{2}(), UInt64, i + first(seq.part) - 1)
 end
 
-# create ReferenceSequence object from the ascii-encoded `data`
+# Create ReferenceSequence object from the ascii-encoded `data`
 function encode(src::Vector{UInt8}, from::Integer, len::Integer)
+    #println("src: ", src)
     data = zeros(UInt64, cld(len, 32))
     nmask = falses(len)
-    next = BitIndex(1, 2)
-    stop = BitIndex(len + 1, 2)
+    #next = bitindex(1, 2)
+    #next = BitIndex{2,UInt64}(1)
+    next = bitindex(Val{2}(), UInt64, 1)
+    #stop = bitindex(len + 1, 2)
+    #stop = BitIndex{2, UInt64}(len + 1)
+    stop = bitindex(Val{2}(), UInt64, len + 1)
+    #println("next: ", next)
+    #println("stop: ", stop)
     i = from
     while next < stop
         x = UInt64(0)
         j = index(next)
+        #println("x: ", x)
+        #println("j: ", j)
         while index(next) == j && next < stop
             # FIXME: Hotspot
             char = convert(Char, src[i])
             nt = convert(DNA, char)
+            #println("char: ", char)
+            #println("nt: ", nt)
+            #println("!isambiguous: ", !isambiguous(nt))
             if !isambiguous(nt)
+                #println("Encoded nt: ", hex(encode(DNAAlphabet{2}, nt) << offset(next)))
                 x |= UInt64(encode(DNAAlphabet{2}, nt)) << offset(next)
             elseif nt == DNA_N
                 nmask[i] = true
@@ -117,6 +130,7 @@ function encode(src::Vector{UInt8}, from::Integer, len::Integer)
             end
             i += 1
             next += 2
+            #println("i and next: ", i, ", ", next)
         end
         data[j] = x
     end
@@ -134,7 +148,7 @@ end
     if seq.nmask[i + first(seq.part) - 1]
         return DNA_N
     else
-        j = BitIndex(seq, i)
+        j = bitindex(seq, i)
         return DNA(0x01 << ((seq.data[index(j)] >> offset(j)) & 0b11))
     end
 end

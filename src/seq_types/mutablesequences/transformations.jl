@@ -139,7 +139,7 @@ function Base.filter!(f::Function, seq::MutableBioSequence{A}) where {A}
     orphan!(seq)
 
     len = 0
-    next = BitIndex(seq, 1)
+    next = bitindex(seq, 1)
     j = index(next)
     datum::UInt64 = 0
     for i in 1:endof(seq)
@@ -147,7 +147,7 @@ function Base.filter!(f::Function, seq::MutableBioSequence{A}) where {A}
         if f(x)
             datum |= enc64(seq, x) << offset(next)
             len += 1
-            next += bitsof(A)
+            next += bits_per_symbol(A)
             if index(next) != j
                 seq.data[j] = datum
                 datum = 0
@@ -202,7 +202,7 @@ Create a sequence which is the reverse of the bioloigcal sequence `seq`.
 Base.reverse(seq::MutableBioSequence) = reverse!(copy(seq))
 
 @generated function Base.reverse(seq::MutableBioSequence{A}) where {A<:NucleicAcidAlphabet}
-    n = bitsof(A)
+    n = bits_per_symbol(A)
     if n == 2
         nucrev = :nucrev2
     elseif n == 4
@@ -214,8 +214,8 @@ else
     quote
         data = Vector{UInt64}(seq_data_len(A, length(seq)))
         i = 1
-        next = BitIndex(seq, endof(seq))
-        stop = BitIndex(seq, 0)
+        next = bitindex(seq, endof(seq))
+        stop = bitindex(seq, 0)
         r = rem(offset(next) + $n, 64)
         if r == 0
             @inbounds while next - stop > 0
@@ -269,8 +269,8 @@ Make a complement sequence of `seq` in place.
 """
 function complement!(seq::MutableBioSequence{A}) where {A<:NucleicAcidAlphabet{2}}
     orphan!(seq)
-    next = BitIndex(seq, 1)
-    stop = BitIndex(seq, endof(seq) + 1)
+    next = bitindex(seq, 1)
+    stop = bitindex(seq, endof(seq) + 1)
     @inbounds while next < stop
         seq.data[index(next)] = ~seq.data[index(next)]
         next += 64
@@ -285,8 +285,8 @@ Transform `seq` into it's complement.
 """
 function complement!(seq::MutableBioSequence{A}) where {A<:NucleicAcidAlphabet{4}}
     orphan!(seq)
-    next = BitIndex(seq, 1)
-    stop = BitIndex(seq, endof(seq) + 1)
+    next = bitindex(seq, 1)
+    stop = bitindex(seq, endof(seq) + 1)
     @inbounds while next < stop
         x = seq.data[index(next)]
         seq.data[index(next)] = (
