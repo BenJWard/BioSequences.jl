@@ -157,7 +157,7 @@ function write_twobit_sequence(output, seq)
         n += write(output, x)
         i += 4
     end
-    println("x: ", hex(x))
+    println("x: ", bits(x))
     r = length(seq) % 4
     println("r: ", r)
     if r > 0
@@ -167,10 +167,10 @@ function write_twobit_sequence(output, seq)
                 x = x << 2 | nuc2twobit(seq[i])
                 i += 1
             end
-            println("x: ", x)
+            println("x: ", bits(x))
             println("(4 - r) * 2: ", (4 - r) * 2)
             x <<= (4 - r) * 2
-            println("x: ", x)
+            println("x: ", bits(x))
             n += write(output, x)
         end
     end
@@ -186,6 +186,6 @@ function nuc2twobit(nt::BioSequences.DNA)
         nt == BioSequences.DNA_T ? 0b00 :
         nt == BioSequences.DNA_N ? 0b00 : error()
     )
-    println("Bin: ", bin)
+    println("Bin: ", bits(bin))
     return bin
 end
