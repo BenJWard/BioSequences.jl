@@ -159,7 +159,7 @@ function decode_sequence(packeddna, seqlen, nbits, table)
         println("twobit record data: ", bits(packeddna[j]))
         println("twobit decoded data: ", bits(table[Int(packeddna[j])+1]))
         data[BioSequences.index(i)] |= table[Int(packeddna[j])+1] << BioSequences.offset(i)
-        println("data[index(i)]: ", data[BioSequences.index(i)])
+        println("data[index(i)]: ", bits(data[BioSequences.index(i)]))
         i += 4 * nbits
         j += 1
     end
