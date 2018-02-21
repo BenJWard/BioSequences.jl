@@ -17,7 +17,7 @@
 
 Any subtype `S <: BioSequence` should implement the following methods:
 
-* `alphabet_t(seq::S)`: return the type of the alphabet of `seq`.
+* `Alphabet(seq::S)`: return the type of the alphabet of `seq`.
 * `Base.length(seq::S)`: return the length of `seq`.
 * `inbounds_getindex(seq::S, i::Integer)`: return the element at `i` of `seq`
   without checking bounds.
@@ -81,13 +81,14 @@ end
 Return the `Alpahbet` type defining the possible biological symbols
 and their encoding for a given biological sequence.
 """
-@inline function alphabet_t(::Type{S}) where S <: BioSequence
+@inline function Alphabet(::Type{S}) where S <: BioSequence
     error(string("This sequence type trait has not been defined for BioSequence type: ", S))
 end
 
-# This version of alphabet_t is automatically defined for any BioSequence type, is more for conveinience.
-@inline function alphabet_t(seq::BioSequence)
-    return alphabet_t(typeof(seq))
+# This version of Alphabet is automatically defined for any BioSequence type.
+# Is more for conveinience.
+@inline function Alphabet(seq::BioSequence)
+    return Alphabet(typeof(seq))
 end
 
 @inline function bitindex_t(seq::BioSequence)
@@ -111,10 +112,10 @@ end
 # ------------
 
 # Bit indexing biosequence traits and trait-like methods...
-bits_per_symbol(::Type{S}) where {S <: BioSequence} = bits_per_symbol(alphabet_t(S))
-bits_per_symbol(seq::BioSequence) = bits_per_symbol(alphabet_t(seq))
+bits_per_symbol(::Type{S}) where {S <: BioSequence} = bits_per_symbol(Alphabet(S))
+bits_per_symbol(seq::BioSequence) = bits_per_symbol(Alphabet(seq))
 
-bits_per_symbol_t(seq::BioSequence) = bits_per_symbol_t(alphabet_t(seq))
+bits_per_symbol_t(seq::BioSequence) = bits_per_symbol_t(Alphabet(seq))
 
 encoded_data_eltype(seq::BioSequence) = eltype(encoded_data(seq))
 
@@ -127,7 +128,7 @@ end
 end
 
 @inline function bindata_mask(seq::BioSequence)
-    return bitmask(alphabet_t(seq))
+    return bitmask(Alphabet(seq))
 end
 
 

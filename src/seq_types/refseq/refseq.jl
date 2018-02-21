@@ -21,7 +21,7 @@ struct ReferenceSequence <: BioSequence
 end
 
 Base.length(seq::ReferenceSequence) = length(seq.part)
-alphabet_t(::Type{ReferenceSequence}) = DNAAlphabet{2}
+Alphabet(::Type{ReferenceSequence}) = DNAAlphabet{2}
 Base.summary(seq::ReferenceSequence) = string(length(seq), "nt Reference Sequence")
 
 function Base.copy(seq::ReferenceSequence)
