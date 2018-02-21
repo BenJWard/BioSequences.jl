@@ -69,11 +69,14 @@ Base.length(seq::MutableBioSequence) = length(seq.part)
 alphabet(::Type{MutableBioSequence{A}}) where {A} = alphabet(A)
 
 "Get the alphabet type of a given BioSequence type."
-Alphabet(::Type{MutableBioSequence{A}}) where {A <: Alphabet} = A
+Alphabet(::Type{MutableBioSequence{A}}) where {A <: Alphabet} = A()
+
+
 encoded_data(seq::MutableBioSequence) = seq.data
 
 @inbounds function seq_data_len(::Type{A}, len::Integer) where A <: Alphabet
-    return cld(len, div(64, bits_per_symbol(A)))
+    #TODO: Resolve this use of bits_per_symbol.
+    return cld(len, div(64, bits_per_symbol(A())))
 end
 
 

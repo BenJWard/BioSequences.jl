@@ -32,7 +32,8 @@ function Base.copy!(dst::MutableBioSequence{A}, doff::Integer,
 
     id = bitindex(dst, doff)
     is = bitindex(src, soff)
-    rest = len * bits_per_symbol(A)
+    #TODO: Resolve this use of bits_per_symbol
+    rest = len * bits_per_symbol(A())
 
     while rest > 0
         # move `k` bits from `src` to `dst`
@@ -106,7 +107,8 @@ function encode_copy!(dst::MutableBioSequence{A},
         while index(next) == j && next < stop
             char, i = Base.next(src, i)
             x |= enc64(dst, convert(Char, char)) << offset(next)
-            next += bits_per_symbol(A)
+            #TODO: Resolve this use of bits_per_symbol...
+            next += bits_per_symbol(A())
         end
         dst.data[j] = x
     end

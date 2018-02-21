@@ -77,20 +77,6 @@ end
     )
 end
 
-"""
-Return the `Alpahbet` type defining the possible biological symbols
-and their encoding for a given biological sequence.
-"""
-@inline function Alphabet(::Type{S}) where S <: BioSequence
-    error(string("This sequence type trait has not been defined for BioSequence type: ", S))
-end
-
-# This version of Alphabet is automatically defined for any BioSequence type.
-# Is more for conveinience.
-@inline function Alphabet(seq::BioSequence)
-    return Alphabet(typeof(seq))
-end
-
 @inline function bitindex_t(seq::BioSequence)
     error(string("This sequence type trait has not been defined for BioSequence type: ", typeof(seq)))
 end
@@ -107,6 +93,25 @@ Return the data member of `seq` that stores the encoded sequence data.
         )
     )
 end
+
+
+# Alphabet
+# --------
+
+"""
+Return the `Alpahbet` type defining the possible biological symbols
+and their encoding for a given biological sequence.
+"""
+@inline function Alphabet(::Type{S}) where S <: BioSequence
+    error(string("This sequence type trait has not been defined for BioSequence type: ", S))
+end
+
+# This version of Alphabet is automatically defined for any BioSequence type.
+# Is more for conveinience.
+@inline function Alphabet(seq::BioSequence)
+    return Alphabet(typeof(seq))
+end
+
 
 # Bit indexing
 # ------------

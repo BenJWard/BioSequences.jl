@@ -102,7 +102,8 @@ end
 end
 
 function enc64(::MutableBioSequence{A}, x) where {A}
-    return UInt64(encode(A, convert(eltype(A), x)))
+    #TODO: Resolve these two use cases of A().
+    return UInt64(encode(A(), convert(eltype(A()), x)))
 end
 
 @inline function encoded_setindex!(seq::MutableBioSequence{A},

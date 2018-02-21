@@ -11,7 +11,7 @@
 
 for alph in (DNAAlphabet, RNAAlphabet)
     @eval function Base.promote_rule(::Type{MutableBioSequence{A}}, ::Type{MutableBioSequence{B}}) where {A<:$alph,B<:$alph}
-        return MutableBioSequence{promote_rule(A,B)}
+        return MutableBioSequence{promote_rule(A, B)}
     end
 end
 

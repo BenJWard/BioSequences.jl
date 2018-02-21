@@ -21,7 +21,8 @@ function Composition(seq::MutableBioSequence{A}) where A <: NucleicAcidAlphabet
     @inbounds for x in seq
         counts[reinterpret(UInt8, x) + 1] += 1
     end
-    return Composition{eltype(A)}(count_array2dict(counts, alphabet(A)))
+    # TODO: resolve use of alphabet(A()).
+    return Composition{eltype(A)}(count_array2dict(counts, alphabet(A())))
 end
 
 function Composition(seq::ReferenceSequence)

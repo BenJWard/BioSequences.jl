@@ -23,7 +23,7 @@ the master branch to try new features before release.
 
 ## Testing
 
-The package is tested against Julia `0.6` and current `0.7-dev` on Linux, OS X, and Windows.
+BioSequences.jl is tested against Julia `0.6` and current `0.7-dev` on Linux, OS X, and Windows.
 
 | **PackageEvaluator**                                            | **Latest Build Status**                                                                                |
 |:---------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------:|
@@ -61,10 +61,10 @@ site](https://discourse.julialang.org/c/domain/bio).
 [pkg-0.7-img]: https://pkg.julialang.org/badges/BioSequences_0.7.svg
 [pkg-0.7-url]: https://pkg.julialang.org/detail/BioSequences
 
-[travis-img]: https://travis-ci.org/BioJulia/BioSequences.jl.svg?branch=master
+[travis-img]: https://img.shields.io/travis/BioJulia/BioSequences.jl/master.svg?label=Linux+/+macOS
 [travis-url]: https://travis-ci.org/BioJulia/BioSequences.jl
 
-[appveyor-img]: https://ci.appveyor.com/api/projects/status/m4o4t50l3ih35jrt/branch/master?svg=true
+[appveyor-img]: https://img.shields.io/appveyor/ci/BioJulia/BioSequences.jl/master.svg?label=Windows
 [appveyor-url]: https://ci.appveyor.com/project/Ward9250/biosequences-jl/branch/master
 
 [codecov-img]: https://codecov.io/gh/BioJulia/BioSequences.jl/branch/master/graph/badge.svg

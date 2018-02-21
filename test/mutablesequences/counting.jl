@@ -6,7 +6,8 @@
     @testset "Specific count methods" begin
 
         function generate_possibilities_tester{A<:NucleicAcidAlphabet}(::Type{A})
-            symbols = alphabet(A)
+            # TODO: Resolve this use of alphabet(A()).
+            symbols = alphabet(A())
             arra = Vector{eltype(A)}()
             arrb = Vector{eltype(A)}()
             for i in 1:length(symbols), j in i:length(symbols)
@@ -26,16 +27,16 @@
             @test count(Certain, seqA, seqB) == count(Certain, seqB, seqA) == 10
             @test count(Gap, seqA, seqB) == count(Gap, seqB, seqA) == 16
             @test count(Ambiguous, seqA, seqB) == count(Ambiguous, seqB, seqA) == 121
-            @test count(Match, seqA, seqB) == count(Match, seqB, seqA) == length(alphabet(alphset[1]))
-            @test count(Mismatch, seqA, seqB) == count(Mismatch, seqB, seqA) == (length(seqA) - length(alphabet(alphset[1])))
+            @test count(Match, seqA, seqB) == count(Match, seqB, seqA) == length(alphabet(alphset[1]()))
+            @test count(Mismatch, seqA, seqB) == count(Mismatch, seqB, seqA) == (length(seqA) - length(alphabet(alphset[1]())))
 
             # 2 bit encoded sequences
             seqA, seqB = generate_possibilities_tester(alphset[2])
             @test count(Certain, seqA, seqB) == count(Certain, seqB, seqA) == 10
             @test count(Gap, seqA, seqB) == count(Gap, seqB, seqA) == 0
             @test count(Ambiguous, seqA, seqB) == count(Ambiguous, seqB, seqA) == 0
-            @test count(Match, seqA, seqB) == count(Match, seqB, seqA) == length(alphabet(alphset[2]))
-            @test count(Mismatch, seqA, seqB) == count(Mismatch, seqB, seqA) == (length(seqA) - length(alphabet(alphset[2])))
+            @test count(Match, seqA, seqB) == count(Match, seqB, seqA) == length(alphabet(alphset[2]()))
+            @test count(Mismatch, seqA, seqB) == count(Mismatch, seqB, seqA) == (length(seqA) - length(alphabet(alphset[2]())))
         end
     end
 

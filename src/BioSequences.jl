@@ -204,7 +204,7 @@ import Twiddle: enumerate_nibbles,
 
 gap(::Type{Char}) = '-'
 
-include("alphabet.jl")
+include("sequence_traits/alphabet.jl")
 include("bitindex.jl")
 include("seq_types/biosequences/biosequence.jl")
 include("seq_types/mutablesequences/mutableseq.jl")

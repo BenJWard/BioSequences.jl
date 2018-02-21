@@ -51,10 +51,13 @@ bitmask(::Type{T}, n::Integer) where {T} = (one(T) << n) - one(T)
 bitmask(::Type{T}, ::Val{N}) where {T, N} = (one(T) << N) - one(T)
 bitmask(bidx::BitIndex{N, W}) where {N, W} = bitmask(W, N)
 
-#TODO: Possibly delete later, redundant with BitIndex redesign.
+# TODO: Possibly delete later, redundant with BitIndex redesign.
 #@inline function bitmask(::Type{A}, ::Type{U}) where {A <: Alphabet, U <: Unsigned}
 #    ba = bits_per_symbol(A)
 #    return bitmask(U, ba)
 #end
-bitmask(::Type{A}) where {A <: Alphabet} = bitmask(bits_per_symbol(A))
+# TODO: Work out places this is used and see if it is really nessecery given the
+# bitmask methods above.
+# TODO: Resolve this use of bits_per_symbol and A().
+bitmask(::A) where {A <: Alphabet} = bitmask(bits_per_symbol(A()))
 bitmask(n::Integer) = bitmask(UInt64, n)
