@@ -11,7 +11,7 @@ mutable struct Reader <: BioCore.IO.AbstractReader
 end
 
 """
-    FASTA.Reader(input::IO; index=nothing)
+    FASTA.Reader(input::IO; index = nothing)
 
 Create a data reader of the FASTA file format.
 
@@ -19,7 +19,7 @@ Create a data reader of the FASTA file format.
 * `input`: data source
 * `index=nothing`: filepath to a random access index (currently *fai* is supported)
 """
-function Reader(input::IO; index=nothing)
+function Reader(input::IO; index = nothing)
     if isa(index, AbstractString)
         index = Index(index)
     else

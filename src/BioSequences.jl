@@ -79,7 +79,8 @@ export
     @kmer_str,
     matched,
     captured,
-    alphabet,
+    alphabet, # TODO: Resolve this export.
+    characters,
     gap,
     complement,
     complement!,

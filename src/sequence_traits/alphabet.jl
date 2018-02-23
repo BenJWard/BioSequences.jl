@@ -96,14 +96,14 @@ Base.eltype(::Type{CharAlphabet}) = Char
 Base.eltype(::Type{VoidAlphabet}) = Void
 Base.eltype(::A) where A <: Alphabet = eltype(A)
 
-alphabet(::DNAAlphabet{2}) = ACGT
-alphabet(::RNAAlphabet{2}) = ACGU
-alphabet(::DNAAlphabet{4}) = alphabet(DNA)
-alphabet(::RNAAlphabet{4}) = alphabet(RNA)
-alphabet(::AminoAcidAlphabet) = alphabet(AminoAcid)
+characters(::DNAAlphabet{2}) = ACGT
+characters(::RNAAlphabet{2}) = ACGU
+characters(::DNAAlphabet{4}) = alphabet(DNA)
+characters(::RNAAlphabet{4}) = alphabet(RNA)
+characters(::AminoAcidAlphabet) = alphabet(AminoAcid)
 # TODO: this alphabet includes invalid Unicode scalar values
-alphabet(::CharAlphabet) = typemin(Char):typemax(Char)
-alphabet(::VoidAlphabet) = nothing
+characters(::CharAlphabet) = typemin(Char):typemax(Char)
+characters(::VoidAlphabet) = nothing
 
 # Promotion of Alphabets
 # ----------------------

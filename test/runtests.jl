@@ -70,8 +70,8 @@ function random_seq(n::Integer, nts, probs)
 end
 
 function random_seq{A<:Alphabet}(::Type{A}, n::Integer)
-    # TODO: Resolve the use of alphabet(A()).
-    nts = alphabet(A())
+    # TODO: Resolve the use of characters(A()).
+    nts = characters(A())
     probs = Vector{Float64}(length(nts))
     fill!(probs, 1 / length(nts))
     return MutableBioSequence{A}(random_seq(n, nts, probs))
