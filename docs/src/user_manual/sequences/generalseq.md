@@ -6,24 +6,25 @@ end
 ```
 # General-purpose sequences
 
-`BioSequence{A}` is a generic sequence type parameterized by an alphabet type
-`A` that defines the domain (or set) of biological symbols, and each alphabet
-has an associated symbol type. For example, `AminoAcidAlphabet` is associated
-with `AminoAcid` and hence an object of the `BioSequence{AminoAcidAlphabet}`
-type represents a sequence of amino acids.  Symbols from multiple alphabets
-can't be intermixed in one sequence type.
+`GeneralSequence{A}` is a generic sequence type parameterized by an
+[alphabet](@ref alphabet) type `A` that defines the domain (or set) of
+biological symbols, and each alphabet has an associated symbol type.
+For example, `AminoAcidAlphabet` is associated with `AminoAcid` and hence an
+object of the `BioSequence{AminoAcidAlphabet}` type represents a sequence of
+amino acids.  Symbols from multiple alphabets can't be intermixed in one
+sequence type.
 
 The following table summarizes common sequence types that are defined in the
 `BioSequences` module:
 
-| Type                               | Symbol type | Type alias          |
-| :--------------------------------- | :---------- | :------------------ |
-| `BioSequence{DNAAlphabet{4}}`      | `DNA`       | `DNASequence`       |
-| `BioSequence{RNAAlphabet{4}}`      | `RNA`       | `RNASequence`       |
-| `BioSequence{AminoAcidAlphabet}`   | `AminoAcid` | `AminoAcidSequence` |
-| `BioSequence{CharAlphabet}`        | `Char`      | `CharSequence`      |
+| Type                                   | Symbol type | Type alias          |
+| :------------------------------------- | :---------- | :------------------ |
+| `GeneralSequence{DNAAlphabet{4}}`      | `DNA`       | `DNASequence`       |
+| `GeneralSequence{RNAAlphabet{4}}`      | `RNA`       | `RNASequence`       |
+| `GeneralSequence{AminoAcidAlphabet}`   | `AminoAcid` | `AminoAcidSequence` |
+| `GeneralSequence{CharAlphabet}`        | `Char`      | `CharSequence`      |
 
-Parameterized definition of the `BioSequence{A}` type is for the purpose of
+Parameterized definition of the `GeneralSequence{A}` type is for the purpose of
 unifying the data structure and operations of any symbol type. In most cases,
 users don't have to care about it and can use *type aliases* listed above.
 However, the alphabet type fixes the internal memory encoding and plays an
@@ -61,7 +62,7 @@ julia> char"αβγδϵ"
 ```
 
 However it should be noted that by default these sequence literals
-allocate the `BioSequence` object before the code containing the sequence
+allocate the `GeneralSequence` object before the code containing the sequence
 literal is run.
 This means there may be occasions where your program does not behave as you
 first expect.
@@ -581,32 +582,3 @@ of memory footprint compared to `BioSequence{DNAAlphabet{4}}`. If you need to
 handle reference genomes that are composed of five nucleotides, ACGTN,
 consider to use the `ReferenceSequence` type described in the [Reference
 sequences](@ref) section.
-
-
-## Defining a new alphabet
-
-The alphabet type parameter `A` of `BioSequence{A}` enables a user to extend
-functionality of `BioSequence` with minimum effort. As an example, definition of
-a new alphabet type representing a sequence of boolean values is shown below:
-
-```jldoctest
-julia> immutable BoolAlphabet <: Alphabet end
-
-julia> BioSequences.bitsof(::Type{BoolAlphabet}) = 1
-
-julia> BioSequences.eltype(::Type{BoolAlphabet}) = Bool
-
-julia> BioSequences.alphabet(::Type{BoolAlphabet}) = false:true
-
-julia> function BioSequences.encode(::Type{BoolAlphabet}, x::Bool)
-           return UInt64(ifelse(x, 0x01, 0x00))
-       end
-
-julia> function BioSequences.decode(::Type{BoolAlphabet}, x::UInt64)
-           if x > 0x01
-               throw(BioSequences.DecodeError(BoolAlphabet, x))
-           end
-           return ifelse(x == 0x00, false, true)
-       end
-
-```
