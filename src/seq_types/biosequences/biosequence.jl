@@ -77,10 +77,6 @@ end
     )
 end
 
-@inline function bitindex_t(seq::BioSequence)
-    error(string("This sequence type trait has not been defined for BioSequence type: ", typeof(seq)))
-end
-
 """
 Return the data member of `seq` that stores the encoded sequence data.
 """
@@ -125,6 +121,8 @@ encoded_data_eltype(seq::BioSequence) = eltype(encoded_data(seq))
 @inline function symbols_per_data_element(seq::BioSequence)
     return div(8 * sizeof(encoded_data_eltype(seq)), bits_per_symbol(seq))
 end
+
+include("bitindex.jl")
 
 @inline function bitindex(seq::BioSequence, i::Integer)
     return bitindex(BitsPerSymbol(seq), encoded_data_eltype(seq), i)

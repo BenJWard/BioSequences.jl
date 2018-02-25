@@ -48,6 +48,7 @@ end
 # Create a bit mask that fills least significant `n` bits (`n` must be a
 # non-negative integer).
 bitmask(::Type{T}, n::Integer) where {T} = (one(T) << n) - one(T)
+bitmask(n::Integer) = bitmask(UInt64, n)
 bitmask(::Type{T}, ::Val{N}) where {T, N} = (one(T) << N) - one(T)
 bitmask(bidx::BitIndex{N, W}) where {N, W} = bitmask(W, N)
 
@@ -60,4 +61,3 @@ bitmask(bidx::BitIndex{N, W}) where {N, W} = bitmask(W, N)
 # bitmask methods above.
 # TODO: Resolve this use of bits_per_symbol and A().
 bitmask(::A) where {A <: Alphabet} = bitmask(bits_per_symbol(A()))
-bitmask(n::Integer) = bitmask(UInt64, n)
