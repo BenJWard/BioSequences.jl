@@ -28,7 +28,7 @@ between biological symbol values and a binary representation of the symbol.
 
 Any type A <: Alphabet, is expected to implement the `Base.eltype` method
 for itself, in addition to a `BioSequences.bits_per_symbol` method, and a
-`BioSequences.bits_per_symbol_t` method. See the docs of `bits_per_symbol` and `bits_per_symbol_t` for
+`BioSequences.BitsPerSymbol` method. See the docs of `BitsPerSymbol` and `BitsPerSymbol` for
 more detail.
 
 ## Required methods and interface
@@ -65,29 +65,26 @@ Void alphabet (internal use only).
 """
 struct VoidAlphabet <: Alphabet end
 
-"""
-The number of bits required to represent a symbol of the alphabet, in a
-biological sequence.
-"""
-function bits_per_symbol end
-
-bits_per_symbol(::A) where A <: NucleicAcidAlphabet{2} = 2
-bits_per_symbol(::A) where A <: NucleicAcidAlphabet{4} = 4
-bits_per_symbol(::AminoAcidAlphabet) = 8
-bits_per_symbol(::CharAlphabet) = 32
-bits_per_symbol(::VoidAlphabet) = 0
 
 """
 The number of bits required to represent a symbol of the alphabet, in a
 biological sequence, as a value type.
 """
-function bits_per_symbol_t end
+struct BitsPerSymbol{n} end
 
-bits_per_symbol_t(::A) where A <: NucleicAcidAlphabet{2} = Val{2}()
-bits_per_symbol_t(::A) where A <: NucleicAcidAlphabet{4} = Val{4}()
-bits_per_symbol_t(::AminoAcidAlphabet) = Val{8}()
-bits_per_symbol_t(::CharAlphabet) = Val{32}()
-bits_per_symbol_t(::VoidAlphabet) = Val{0}()
+BitsPerSymbol(::A) where A <: NucleicAcidAlphabet{2} = BitsPerSymbol{2}()
+BitsPerSymbol(::A) where A <: NucleicAcidAlphabet{4} = BitsPerSymbol{4}()
+BitsPerSymbol(::AminoAcidAlphabet) = BitsPerSymbol{8}()
+BitsPerSymbol(::CharAlphabet) = BitsPerSymbol{32}()
+BitsPerSymbol(::VoidAlphabet) = BitsPerSymbol{0}()
+
+bits_per_symbol(::BitsPerSymbol{n}) where n = n
+
+"""
+The number of bits required to represent a symbol of the alphabet, in a
+biological sequence.
+"""
+bits_per_symbol(::A) where A <: Alphabet = bits_per_symbol(BitsPerSymbol(A()))
 
 Base.eltype(::Type{A}) where A <: DNAAlphabet = DNA
 Base.eltype(::Type{A}) where A <: RNAAlphabet = RNA
