@@ -6,13 +6,13 @@
     @testset "Specific count methods" begin
 
         function generate_possibilities_tester{A<:NucleicAcidAlphabet}(::Type{A})
-            # TODO: Resolve this use of characters(A()).
-            symbols = characters(A())
+            # TODO: Resolve this use of symbols(A()).
+            symbolset = symbols(A())
             arra = Vector{eltype(A)}()
             arrb = Vector{eltype(A)}()
-            for i in 1:length(symbols), j in i:length(symbols)
-                push!(arra, symbols[i])
-                push!(arrb, symbols[j])
+            for i in 1:length(symbolset), j in i:length(symbolset)
+                push!(arra, symbolset[i])
+                push!(arrb, symbolset[j])
             end
             return MutableBioSequence{A}(arra), MutableBioSequence{A}(arrb)
         end
@@ -27,16 +27,16 @@
             @test count(Certain, seqA, seqB) == count(Certain, seqB, seqA) == 10
             @test count(Gap, seqA, seqB) == count(Gap, seqB, seqA) == 16
             @test count(Ambiguous, seqA, seqB) == count(Ambiguous, seqB, seqA) == 121
-            @test count(Match, seqA, seqB) == count(Match, seqB, seqA) == length(characters(alphset[1]()))
-            @test count(Mismatch, seqA, seqB) == count(Mismatch, seqB, seqA) == (length(seqA) - length(characters(alphset[1]())))
+            @test count(Match, seqA, seqB) == count(Match, seqB, seqA) == length(symbols(alphset[1]()))
+            @test count(Mismatch, seqA, seqB) == count(Mismatch, seqB, seqA) == (length(seqA) - length(symbols(alphset[1]())))
 
             # 2 bit encoded sequences
             seqA, seqB = generate_possibilities_tester(alphset[2])
             @test count(Certain, seqA, seqB) == count(Certain, seqB, seqA) == 10
             @test count(Gap, seqA, seqB) == count(Gap, seqB, seqA) == 0
             @test count(Ambiguous, seqA, seqB) == count(Ambiguous, seqB, seqA) == 0
-            @test count(Match, seqA, seqB) == count(Match, seqB, seqA) == length(characters(alphset[2]()))
-            @test count(Mismatch, seqA, seqB) == count(Mismatch, seqB, seqA) == (length(seqA) - length(characters(alphset[2]())))
+            @test count(Match, seqA, seqB) == count(Match, seqB, seqA) == length(symbols(alphset[2]()))
+            @test count(Mismatch, seqA, seqB) == count(Mismatch, seqB, seqA) == (length(seqA) - length(symbols(alphset[2]())))
         end
     end
 

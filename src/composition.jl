@@ -21,8 +21,8 @@ function Composition(seq::MutableBioSequence{A}) where A <: NucleicAcidAlphabet
     @inbounds for x in seq
         counts[reinterpret(UInt8, x) + 1] += 1
     end
-    # TODO: resolve use of characters(A()).
-    return Composition{eltype(A)}(count_array2dict(counts, characters(A())))
+    # TODO: resolve use of symbols(A()).
+    return Composition{eltype(A)}(count_array2dict(counts, symbols(A())))
 end
 
 function Composition(seq::ReferenceSequence)
@@ -52,12 +52,12 @@ function Composition(kmer::RNAKmer)
 end
 
 function Composition(seq::AminoAcidSequence)
-    # TODO: Resolve use of characters AminoAcid.
-    counts = zeros(Int, length(characters(AminoAcidAlphabet())))
+    # TODO: Resolve use of symbols AminoAcid.
+    counts = zeros(Int, length(symbols(AminoAcidAlphabet())))
     @inbounds for x in seq
         counts[reinterpret(UInt8, x) + 1] += 1
     end
-    return Composition{AminoAcid}(count_array2dict(counts, characters(AminoAcidAlphabet())))
+    return Composition{AminoAcid}(count_array2dict(counts, symbols(AminoAcidAlphabet())))
 end
 
 function Composition(iter::EachKmerIterator{T}) where {T<:Kmer}

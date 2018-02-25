@@ -8,12 +8,12 @@
 # License is MIT: https://github.com/BioJulia/BioSequences.jl/blob/master/LICENSE.md
 
 """
-# Alphabets of biological characters.
+# Alphabets of biological symbols.
 
 `Alphabet` is perhaps the most important type trait for biological sequences in
 BioSequences.jl.
 
-An `Alphabet` represents a domain of biological characters.
+An `Alphabet` represents a domain of biological symbols.
 
 For example, `DNAAlphabet{2}` has a domain of unambiguous nucleotides
 (i.e. A, C, G, and T).
@@ -27,11 +27,10 @@ of associated `encoder` and `decoder` methods. These paired methods map
 between biological symbol values and a binary representation of the symbol.
 
 Any type A <: Alphabet, is expected to implement the `Base.eltype` method
-for itself, in addition to a `BioSequences.bits_per_symbol` method, and a
-`BioSequences.BitsPerSymbol` method. See the docs of `BitsPerSymbol` and `BitsPerSymbol` for
-more detail.
+for itself.
+It is also expected to implement the `BitsPerSymbol` method.
 
-## Required methods and interface
+
 """
 abstract type Alphabet end
 
@@ -93,14 +92,14 @@ Base.eltype(::Type{CharAlphabet}) = Char
 Base.eltype(::Type{VoidAlphabet}) = Void
 Base.eltype(::A) where A <: Alphabet = eltype(A)
 
-characters(::DNAAlphabet{2}) = ACGT
-characters(::RNAAlphabet{2}) = ACGU
-characters(::DNAAlphabet{4}) = alphabet(DNA)
-characters(::RNAAlphabet{4}) = alphabet(RNA)
-characters(::AminoAcidAlphabet) = alphabet(AminoAcid)
+symbols(::DNAAlphabet{2}) = ACGT
+symbols(::RNAAlphabet{2}) = ACGU
+symbols(::DNAAlphabet{4}) = alphabet(DNA)
+symbols(::RNAAlphabet{4}) = alphabet(RNA)
+symbols(::AminoAcidAlphabet) = alphabet(AminoAcid)
 # TODO: this alphabet includes invalid Unicode scalar values
-characters(::CharAlphabet) = typemin(Char):typemax(Char)
-characters(::VoidAlphabet) = nothing
+symbols(::CharAlphabet) = typemin(Char):typemax(Char)
+symbols(::VoidAlphabet) = nothing
 
 # Promotion of Alphabets
 # ----------------------
@@ -116,7 +115,7 @@ end
 # -------------------
 
 """
-Encode biological characters to binary representation.
+Encode biological symbols to binary representation.
 """
 function encode end
 
@@ -131,7 +130,7 @@ function Base.showerror(io::IO, err::EncodeError{A}) where {A}
 end
 
 """
-Decode biological characters from binary representation.
+Decode biological symbols from binary representation.
 """
 function decode end
 

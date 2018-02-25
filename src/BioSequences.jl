@@ -79,8 +79,8 @@ export
     @kmer_str,
     matched,
     captured,
-    alphabet, # TODO: Resolve this export.
-    characters,
+    alphabet, # TODO: Resolve the use of alphabet - it's from BioSymbols.jl
+    symbols,
     gap,
     complement,
     complement!,
