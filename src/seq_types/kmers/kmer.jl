@@ -4,7 +4,7 @@
 # Compact k-mer sequence type.
 #
 # A Kmer is a sequence ≤ 32nt, without any 'N's, packed in a single 64 bit
-# value.  While `MutableBioSequence` is an efficient general-purpose sequence
+# value.  While `GeneralSequence` is an efficient general-purpose sequence
 # representation, Kmer is useful for applications like assembly, k-mer counting,
 # k-mer based quantification in RNA-Seq, etc that rely on manipulating many
 # short sequences as efficiently (space and time) as possible.
@@ -70,19 +70,19 @@ function Base.convert(::Type{Kmer{T,K}}, seq::AbstractString) where {T,K}
     return make_kmer(Kmer{T,K}, seq)
 end
 
-function Base.convert(::Type{Kmer{T,K}}, seq::MutableBioSequence{A}) where {T,K,A<:DNAAlphabet}
+function Base.convert(::Type{Kmer{T,K}}, seq::GeneralSequence{A}) where {T,K,A<:DNAAlphabet}
     return make_kmer(Kmer{DNA,K}, seq)
 end
 
-function Base.convert(::Type{Kmer{T,K}}, seq::MutableBioSequence{A}) where {T,K,A<:RNAAlphabet}
+function Base.convert(::Type{Kmer{T,K}}, seq::GeneralSequence{A}) where {T,K,A<:RNAAlphabet}
     return make_kmer(Kmer{RNA,K}, seq)
 end
 
 Base.convert(::Type{Kmer{T}}, seq::AbstractString) where {T} = convert(Kmer{T,length(seq)}, seq)
-Base.convert(::Type{Kmer}, seq::MutableBioSequence{A}) where {A<:DNAAlphabet} = convert(Kmer{DNA,length(seq)}, seq)
-Base.convert(::Type{Kmer}, seq::MutableBioSequence{A}) where {A<:RNAAlphabet} = convert(Kmer{RNA,length(seq)}, seq)
-Base.convert(::Type{DNAKmer}, seq::MutableBioSequence{A}) where {A<:DNAAlphabet} = convert(DNAKmer{length(seq)}, seq)
-Base.convert(::Type{RNAKmer}, seq::MutableBioSequence{A}) where {A<:RNAAlphabet} = convert(RNAKmer{length(seq)}, seq)
+Base.convert(::Type{Kmer}, seq::GeneralSequence{A}) where {A<:DNAAlphabet} = convert(Kmer{DNA,length(seq)}, seq)
+Base.convert(::Type{Kmer}, seq::GeneralSequence{A}) where {A<:RNAAlphabet} = convert(Kmer{RNA,length(seq)}, seq)
+Base.convert(::Type{DNAKmer}, seq::GeneralSequence{A}) where {A<:DNAAlphabet} = convert(DNAKmer{length(seq)}, seq)
+Base.convert(::Type{RNAKmer}, seq::GeneralSequence{A}) where {A<:RNAAlphabet} = convert(RNAKmer{length(seq)}, seq)
 
 # create a kmer from a sequence whose elements are convertible to a nucleotide
 function make_kmer(::Type{Kmer{T,K}}, seq) where {T,K}
@@ -109,10 +109,10 @@ end
 
 make_kmer(seq::NTuple{K,T}) where {K,T} = make_kmer(Kmer{T,K}, seq)
 
-Base.convert(::Type{MutableBioSequence}, x::DNAKmer{K}) where {K} = DNASequence(x)
-Base.convert(::Type{MutableBioSequence}, x::RNAKmer{K}) where {K} = RNASequence(x)
-Base.convert(::Type{MutableBioSequence{A}}, x::DNAKmer{K}) where {A<:DNAAlphabet,K} = MutableBioSequence{A}([nt for nt in x])
-Base.convert(::Type{MutableBioSequence{A}}, x::RNAKmer{K}) where {A<:RNAAlphabet,K} = MutableBioSequence{A}([nt for nt in x])
+Base.convert(::Type{GeneralSequence}, x::DNAKmer{K}) where {K} = DNASequence(x)
+Base.convert(::Type{GeneralSequence}, x::RNAKmer{K}) where {K} = RNASequence(x)
+Base.convert(::Type{GeneralSequence{A}}, x::DNAKmer{K}) where {A<:DNAAlphabet,K} = GeneralSequence{A}([nt for nt in x])
+Base.convert(::Type{GeneralSequence{A}}, x::RNAKmer{K}) where {A<:RNAAlphabet,K} = GeneralSequence{A}([nt for nt in x])
 Base.convert(::Type{S}, seq::Kmer) where {S<:AbstractString} = convert(S, [Char(x) for x in seq])
 
 

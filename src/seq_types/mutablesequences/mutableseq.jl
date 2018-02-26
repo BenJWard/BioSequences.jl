@@ -1,4 +1,4 @@
-# MutableBioSequence
+# GeneralSequence
 # ==================
 #
 # A general purpose biological sequence representation.
@@ -16,7 +16,7 @@
 # About Internals
 # ---------------
 #
-# The `data` field of a `MutableBioSequence{A}` object contains binary representation
+# The `data` field of a `GeneralSequence{A}` object contains binary representation
 # of a biological character sequence. Each character is encoded with an encoder
 # corresponding to the alphabet `A` and compactly packed into `data`. To extract
 # a character from a sequence, you should decode this binary sequence with a
@@ -42,37 +42,37 @@
 """
 Biological sequence data structure indexed by an alphabet type `A`.
 """
-mutable struct MutableBioSequence{A<:Alphabet} <: BioSequence
+mutable struct GeneralSequence{A<:Alphabet} <: BioSequence
     data::Vector{UInt64}  # encoded character sequence data
     part::UnitRange{Int}  # interval within `data` defining the (sub)sequence
     shared::Bool          # true if and only if `data` is shared between sequences
 
-    function MutableBioSequence{A}(data::Vector{UInt64},
+    function GeneralSequence{A}(data::Vector{UInt64},
                             part::UnitRange{Int},
                             shared::Bool) where A
         return new(data, part, shared)
     end
 end
 
-const DNASequence       = MutableBioSequence{DNAAlphabet{4}}
-const RNASequence       = MutableBioSequence{RNAAlphabet{4}}
-const AminoAcidSequence = MutableBioSequence{AminoAcidAlphabet}
-const CharSequence      = MutableBioSequence{CharAlphabet}
+const DNASequence       = GeneralSequence{DNAAlphabet{4}}
+const RNASequence       = GeneralSequence{RNAAlphabet{4}}
+const AminoAcidSequence = GeneralSequence{AminoAcidAlphabet}
+const CharSequence      = GeneralSequence{CharAlphabet}
 
 
 # Required type traits and methods
 # ================================
 
-Base.length(seq::MutableBioSequence) = length(seq.part)
+Base.length(seq::GeneralSequence) = length(seq.part)
 
 "Gets the alphabet encoding of a given BioSequence."
-alphabet(::Type{MutableBioSequence{A}}) where {A} = alphabet(A)
+alphabet(::Type{GeneralSequence{A}}) where {A} = alphabet(A)
 
 "Get the alphabet type of a given BioSequence type."
-Alphabet(::Type{MutableBioSequence{A}}) where {A <: Alphabet} = A()
+Alphabet(::Type{GeneralSequence{A}}) where {A <: Alphabet} = A()
 
 
-encoded_data(seq::MutableBioSequence) = seq.data
+encoded_data(seq::GeneralSequence) = seq.data
 
 @inbounds function seq_data_len(::Type{A}, len::Integer) where A <: Alphabet
     #TODO: Resolve this use of bits_per_symbol.
@@ -81,10 +81,10 @@ end
 
 
 
-# Replace a MutableBioSequence's data with a copy, copying only what's needed.
+# Replace a GeneralSequence's data with a copy, copying only what's needed.
 # The user should never need to call this, as it has no outward effect on the
 # sequence.
-function orphan!(seq::MutableBioSequence{A},
+function orphan!(seq::GeneralSequence{A},
 		 size::Integer = length(seq),
 		 force::Bool = false) where {A}
 
@@ -122,8 +122,8 @@ end
 # Summaries
 # ---------
 
-Base.summary(seq::MutableBioSequence{<:DNAAlphabet}) = string(length(seq), "nt ", "DNA Sequence")
-Base.summary(seq::MutableBioSequence{<:RNAAlphabet}) = string(length(seq), "nt ", "RNA Sequence")
+Base.summary(seq::GeneralSequence{<:DNAAlphabet}) = string(length(seq), "nt ", "DNA Sequence")
+Base.summary(seq::GeneralSequence{<:RNAAlphabet}) = string(length(seq), "nt ", "RNA Sequence")
 Base.summary(seq::AminoAcidSequence) = string(length(seq), "aa ", "Amino Acid Sequence")
 Base.summary(seq::CharSequence) = string(length(seq), "char ", "Char Sequence")
 

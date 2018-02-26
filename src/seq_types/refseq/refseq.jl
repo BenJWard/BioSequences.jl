@@ -41,7 +41,7 @@ function ReferenceSequence(src::Vector{UInt8}, startpos::Integer=1,
     return encode(src, startpos, len)
 end
 
-function Base.convert(::Type{ReferenceSequence}, seq::MutableBioSequence{<:DNAAlphabet})
+function Base.convert(::Type{ReferenceSequence}, seq::GeneralSequence{<:DNAAlphabet})
     data = Vector{UInt64}(cld(length(seq), 32))
     nmask = falses(length(seq))
     i = 1

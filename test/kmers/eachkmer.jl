@@ -21,13 +21,13 @@
     end
 
     for k in [0, 1, 3, 16, 32], step in 1:3, len in [1, 2, 3, 5, 10, 100, 1000]
-        test_eachkmer(MutableBioSequence{DNAAlphabet{4}}, random_dna(len), k, step)
-        test_eachkmer(MutableBioSequence{RNAAlphabet{4}}, random_rna(len), k, step)
+        test_eachkmer(GeneralSequence{DNAAlphabet{4}}, random_dna(len), k, step)
+        test_eachkmer(GeneralSequence{RNAAlphabet{4}}, random_rna(len), k, step)
         test_eachkmer(ReferenceSequence, random_dna(len), k, step)
 
         probs = [0.25, 0.25, 0.25, 0.25, 0.00]
-        test_eachkmer(MutableBioSequence{DNAAlphabet{2}}, random_dna(len, probs), k, step)
-        test_eachkmer(MutableBioSequence{RNAAlphabet{2}}, random_rna(len, probs), k, step)
+        test_eachkmer(GeneralSequence{DNAAlphabet{2}}, random_dna(len, probs), k, step)
+        test_eachkmer(GeneralSequence{RNAAlphabet{2}}, random_rna(len, probs), k, step)
     end
 
     @test isempty(collect(each(DNAKmer{1}, dna"")))

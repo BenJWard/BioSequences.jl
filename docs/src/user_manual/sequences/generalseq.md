@@ -10,7 +10,7 @@ end
 [alphabet](@ref alphabet) type `A` that defines the domain (or set) of
 biological symbols, and each alphabet has an associated symbol type.
 For example, `AminoAcidAlphabet` is associated with `AminoAcid` and hence an
-object of the `BioSequence{AminoAcidAlphabet}` type represents a sequence of
+object of the `GeneralSequence{AminoAcidAlphabet}` type represents a sequence of
 amino acids.  Symbols from multiple alphabets can't be intermixed in one
 sequence type.
 
@@ -35,7 +35,7 @@ defining few numbers of methods.
 This is described in [Defining a new alphabet](@ref) section.
 
 
-## Constructing sequences
+## Constructing `GeneralSequence`s
 
 ### Using string literals
 

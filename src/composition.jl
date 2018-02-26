@@ -16,7 +16,7 @@ struct Composition{T} <: Associative{T,Int}
     counts::Dict{T,Int}
 end
 
-function Composition(seq::MutableBioSequence{A}) where A <: NucleicAcidAlphabet
+function Composition(seq::GeneralSequence{A}) where A <: NucleicAcidAlphabet
     counts = zeros(Int, 16)
     @inbounds for x in seq
         counts[reinterpret(UInt8, x) + 1] += 1

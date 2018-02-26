@@ -10,10 +10,10 @@
 # ------------------------------
 
 struct AmbiguousNucleicAcidIterator{A<:NucleicAcidAlphabet}
-    seq::MutableBioSequence{A}
+    seq::GeneralSequence{A}
 end
 
-ambiguous_positions(seq::MutableBioSequence) = AmbiguousNucleicAcidIterator(seq)
+ambiguous_positions(seq::GeneralSequence) = AmbiguousNucleicAcidIterator(seq)
 
 Base.start(it::AmbiguousNucleicAcidIterator) = find_next_ambiguous(it.seq, 1)
 Base.done(it::AmbiguousNucleicAcidIterator, nextpos) = nextpos == 0
@@ -23,12 +23,12 @@ end
 
 Base.iteratorsize(::AmbiguousNucleicAcidIterator) = Base.SizeUnknown()
 
-function find_next_ambiguous(seq::MutableBioSequence{A}, i::Integer) where {A<:NucleicAcidAlphabet{2}}
+function find_next_ambiguous(seq::GeneralSequence{A}, i::Integer) where {A<:NucleicAcidAlphabet{2}}
     # no ambiguity
     return 0
 end
 
-function find_next_ambiguous(seq::MutableBioSequence{A}, from::Integer) where {A<:NucleicAcidAlphabet{4}}
+function find_next_ambiguous(seq::GeneralSequence{A}, from::Integer) where {A<:NucleicAcidAlphabet{4}}
     for i in max(from, 1):endof(seq)
         nt = inbounds_getindex(seq, i)
         if isambiguous(nt)
