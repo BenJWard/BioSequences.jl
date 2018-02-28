@@ -256,7 +256,7 @@ function BioCore.sequence(record::Record)
     return sequence(record)
 end
 
-function BioCore.sequence(::Type{S}, record::Record) where S <: BioSequences.Sequence
+function BioCore.sequence(::Type{S}, record::Record) where S <: BioSequences.GeneralSequence
     return sequence(S, record)
 end
 

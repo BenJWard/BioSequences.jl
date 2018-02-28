@@ -5,7 +5,7 @@ makedocs(
     sitename = "BioSequences.jl",
     pages = [
         "Home" => "index.md",
-        
+
         "User Manual" => [
             "Biological Symbols" => "user_manual/symbols.md",
             "Sequence types" => [
@@ -14,6 +14,7 @@ makedocs(
                 "Reference Sequences" => "user_manual/sequences/refseq.md",
                 "Nucleic acid k-mers" => "user_manual/sequences/kmer.md"
             ],
+            "Indexing sequences" => "user/manual/indexing.md",
             "IO" => [
                 "FASTA formatted files" => "user_manual/io/fasta.md",
                 "FASTQ formatted files" => "user_manual/io/fastq.md",

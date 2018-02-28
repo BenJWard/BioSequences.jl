@@ -30,7 +30,7 @@ users don't have to care about it and can use *type aliases* listed above.
 However, the alphabet type fixes the internal memory encoding and plays an
 important role when optimizing performance of a program
 (see [Using a more compact sequence representation](@ref) section for low-memory
-encodings).  It also enables a user to define their own alphabet only by
+encodings).  It also enables a developer to define their own alphabet only by
 defining few numbers of methods.
 This is described in [Defining a new alphabet](@ref) section.
 
@@ -202,8 +202,8 @@ the bodies of things like for loops. And if you use them and are unsure, use the
 
 ### Other constructors and conversion
 
-Sequences can also be constructed from strings or arrays of nucleotide or amino
-acid symbols using constructors or the `convert` function:
+`GeneralSequence`s can also be constructed from strings or arrays of nucleotide
+or amino acid symbols using constructors or the `convert` function:
 
 ```jldoctest
 julia> DNASequence("TTANC")
@@ -284,199 +284,15 @@ A translatable `RNASequence` can also be converted to an `AminoAcidSequence`
 using the [`translate`](@ref) function.
 
 
-## Indexing, modifying and transformations
 
-### Getindex
 
-Sequences for the most part behave like other vector or string types. They can
-be indexed using integers or ranges:
-
-```jldoctest
-julia> seq = dna"ACGTTTANAGTNNAGTACC"
-19nt DNA Sequence:
-ACGTTTANAGTNNAGTACC
-
-julia> seq[5]
-DNA_T
-
-julia> seq[6:end]
-14nt DNA Sequence:
-TANAGTNNAGTACC
-
-```
-
-Note that, indexing a biological sequence by range creates a subsequence of the
-original sequence. Unlike `Arrays` in the standard library, creating a
-subsequence is copy-free: a subsequence simply points to the original sequence
-data with its range. You may think that this is unsafe because modifying
-subsequences propagates to the original sequence, but this doesn't happen
-actually:
-
-```jldoctest
-julia> seq = dna"AAAA"    # create a sequence
-4nt DNA Sequence:
-AAAA
-
-julia> subseq = seq[1:2]  # create a subsequence from `seq`
-2nt DNA Sequence:
-AA
-
-julia> subseq[2] = DNA_T  # modify the second element of it
-DNA_T
-
-julia> subseq             # the subsequence is modified
-2nt DNA Sequence:
-AT
-
-julia> seq                # but the original sequence is not
-4nt DNA Sequence:
-AAAA
-
-```
-
-This is because modifying a sequence checks whether its underlying data are
-shared with other sequences under the hood. If and only if the data are shared,
-the subsequence creates a copy of itself. Any modifying operation does this
-check. This is called *copy-on-write* strategy and users don't need to care
-about it because it is transparent: If the user modifies a sequence with or
-subsequence, the job of managing and protecting the underlying data of sequences
-is handled for them.
 
 
 ### Setindex and modifying DNA sequences
 
-The biological symbol at a given locus in a biological sequence can be set using
-setindex:
 
-```jldoctest
-julia> seq = dna"ACGTTTANAGTNNAGTACC"
-19nt DNA Sequence:
-ACGTTTANAGTNNAGTACC
 
-julia> seq[5] = DNA_A
-DNA_A
 
-```
-
-In addition, many other modifying operations are possible for biological
-sequences such as `push!`, `pop!`, and `insert!`, which should be familiar to
-people used to editing arrays.
-
-```@docs
-push!
-pop!
-shift!
-unshift!
-insert!
-deleteat!(::BioSequences.BioSequence, ::Integer)
-append!
-resize!
-```
-
-Here are some examples:
-
-```jldoctest
-julia> seq = dna"ACG"
-3nt DNA Sequence:
-ACG
-
-julia> push!(seq, DNA_T)
-4nt DNA Sequence:
-ACGT
-
-julia> append!(seq, dna"AT")
-6nt DNA Sequence:
-ACGTAT
-
-julia> deleteat!(seq, 2)
-5nt DNA Sequence:
-AGTAT
-
-julia> deleteat!(seq, 2:3)
-3nt DNA Sequence:
-AAT
-
-```
-
-### Additional transformations
-
-In addition to these basic modifying functions, other sequence transformations
-which are common in bioinformatics are also provided.
-
-```@docs
-reverse!(::BioSequences.BioSequence)
-complement!
-reverse_complement!
-ungap!
-empty!
-```
-
-Some examples:
-
-```jldoctest
-julia> seq = dna"ACGTAT"
-6nt DNA Sequence:
-ACGTAT
-
-julia> reverse!(seq)
-6nt DNA Sequence:
-TATGCA
-
-julia> complement!(seq)
-6nt DNA Sequence:
-ATACGT
-
-julia> reverse_complement!(seq)
-6nt DNA Sequence:
-ACGTAT
-
-```
-
-Many of these methods also have a version which makes a copy of the input
-sequence, so you get a modified copy, and don't alter the original sequence.
-Such methods are named the same, but without the exclamation mark.
-E.g. `reverse` instead of `reverse!`, and `ungap` instead of `ungap!`.  
-
-#### Translation
-
-Translation is a slightly more complex transformation for RNA Sequences and so
-we describe it here in more detail.
-
-The [`translate`](@ref) funtion translates a sequence of codons in a RNA sequence
-to a amino acid sequence besed on a genetic code mapping. The `BioSequences` module
-contains all NCBI defined genetic codes and they are registered in
-[`ncbi_trans_table`](@ref).
-
-```@docs
-translate
-ncbi_trans_table
-```
-
-```jldoctest
-julia> ncbi_trans_table
-Translation Tables:
-  1. The Standard Code (standard_genetic_code)
-  2. The Vertebrate Mitochondrial Code (vertebrate_mitochondrial_genetic_code)
-  3. The Yeast Mitochondrial Code (yeast_mitochondrial_genetic_code)
-  4. The Mold, Protozoan, and Coelenterate Mitochondrial Code and the Mycoplasma/Spiroplasma Code (mold_mitochondrial_genetic_code)
-  5. The Invertebrate Mitochondrial Code (invertebrate_mitochondrial_genetic_code)
-  6. The Ciliate, Dasycladacean and Hexamita Nuclear Code (ciliate_nuclear_genetic_code)
-  9. The Echinoderm and Flatworm Mitochondrial Code (echinoderm_mitochondrial_genetic_code)
- 10. The Euplotid Nuclear Code (euplotid_nuclear_genetic_code)
- 11. The Bacterial, Archaeal and Plant Plastid Code (bacterial_plastid_genetic_code)
- 12. The Alternative Yeast Nuclear Code (alternative_yeast_nuclear_genetic_code)
- 13. The Ascidian Mitochondrial Code (ascidian_mitochondrial_genetic_code)
- 14. The Alternative Flatworm Mitochondrial Code (alternative_flatworm_mitochondrial_genetic_code)
- 16. Chlorophycean Mitochondrial Code (chlorophycean_mitochondrial_genetic_code)
- 21. Trematode Mitochondrial Code (trematode_mitochondrial_genetic_code)
- 22. Scenedesmus obliquus Mitochondrial Code (scenedesmus_obliquus_mitochondrial_genetic_code)
- 23. Thraustochytrium Mitochondrial Code (thraustochytrium_mitochondrial_genetic_code)
- 24. Pterobranchia Mitochondrial Code (pterobrachia_mitochondrial_genetic_code)
- 25. Candidate Division SR1 and Gracilibacteria Code (candidate_division_sr1_genetic_code)
-
-```
-
-<https://www.ncbi.nlm.nih.gov/Taxonomy/taxonomyhome.html/index.cgi?chapter=cgencodes>
 
 ## Site counting
 
@@ -562,23 +378,25 @@ julia> n
 ## Using a more compact sequence representation
 
 As we saw above, DNA and RNA sequences can store any ambiguous nucleotides like
-'N'.  If you are sure that nucleotide sequences store unambiguous nucleotides
-only, you can save the memory space of sequences. `DNAAlphabet{2}` is an
-alphabet that uses two bits per base and limits to only unambiguous nucleotide
-symbols (ACGT in DNA and ACGU in RNA). To create a sequence of this
-alphabet, you need to explicitly pass `DNAAlphabet{2}` to `BioSequence` as its
-type parameter:
+'N'.
+If you are sure that nucleotide sequences store unambiguous nucleotides
+only, you can save the memory space of sequences by using a slightly different
+type:
+`DNAAlphabet{2}` is an alphabet that uses two bits per base and limits to only
+unambiguous nucleotide symbols (ACGT in DNA and ACGU in RNA).
+To create a sequence of this alphabet, you need to explicitly pass
+`DNAAlphabet{2}` to `BioSequence` as its type parameter:
 
 ```jldoctest
-julia> seq = BioSequence{DNAAlphabet{2}}("ACGT")
+julia> seq = GeneralSequence{DNAAlphabet{2}}("ACGT")
 4nt DNA Sequence:
 ACGT
 
 ```
 
-Recall that `DNASequence` is a type alias of `BioSequence{DNAAlphabet{4}}`,
-which uses four bits per base. That is, `BioSequence{DNAAlphabet{2}}` saves half
-of memory footprint compared to `BioSequence{DNAAlphabet{4}}`. If you need to
+Recall that `DNASequence` is a type alias of `GeneralSequence{DNAAlphabet{4}}`,
+which uses four bits per base. That is, `GeneralSequence{DNAAlphabet{2}}` saves half
+of memory footprint compared to `GeneralSequence{DNAAlphabet{4}}`. If you need to
 handle reference genomes that are composed of five nucleotides, ACGTN,
 consider to use the `ReferenceSequence` type described in the [Reference
 sequences](@ref) section.
