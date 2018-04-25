@@ -31,7 +31,6 @@ makedocs(
                 "BioSequence" => "dev_docs/sequences/biosequence.md"
             ],
         ]
-        "Contributing" => "contributing.md"
     ],
     authors = "Ben J. Ward, D.C.Jones, Kenta Sato, The BioJulia Organisation and other contributors."
 )
