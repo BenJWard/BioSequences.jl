@@ -43,8 +43,8 @@ function each(::Type{Kmer{T,K}}, seq::BioSequence, step::Integer=1) where {T,K}
     return EachKmerIterator{Kmer{T,K},typeof(seq)}(seq, step, 1)
 end
 
-eachkmer(seq::MutableBioSequence{A}, K::Integer, step::Integer=1) where {A<:DNAAlphabet} = each(DNAKmer{Int(K)}, seq, step)
-eachkmer(seq::MutableBioSequence{A}, K::Integer, step::Integer=1) where {A<:RNAAlphabet} = each(RNAKmer{Int(K)}, seq, step)
+eachkmer(seq::GeneralSequence{A}, K::Integer, step::Integer=1) where {A<:DNAAlphabet} = each(DNAKmer{Int(K)}, seq, step)
+eachkmer(seq::GeneralSequence{A}, K::Integer, step::Integer=1) where {A<:RNAAlphabet} = each(RNAKmer{Int(K)}, seq, step)
 eachkmer(seq::ReferenceSequence, K::Integer, step::Integer=1) = each(DNAKmer{Int(K)}, seq, step)
 
 Base.eltype(::Type{EachKmerIterator{T,S}}) where {T,S} = Tuple{Int,T}
