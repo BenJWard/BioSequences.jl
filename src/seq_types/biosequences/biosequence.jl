@@ -33,7 +33,7 @@ required `Base` methods above.
 
 * `Base.eltype(::Type{S})`: return the element type of `S`.
 * `Base.size(seq::S)`: Return the size of `seq`.
-* `Base.endof(seq::S)`: Return the last index of `seq`.
+* `Base.lastindex(seq::S)`: Return the last index of `seq`.
 * `Base.eachindex(seq::S)`: Return an iterator over all indicies of `seq`.
 * `Base.getindex(seq::S, i::Integer)`: Return the biological symbol `seq`
   contains at position `i`.
@@ -61,27 +61,6 @@ abstract type BioSequence end
 # able to construct a `Sequence`.
 function BioSequence()
     return DNASequence()
-end
-
-
-# Base Methods
-# ============
-
-
-# Indexing and iteration
-# ----------------------
-
-Base.eltype(::Type{T}) where T <: BioSequence = eltype(alphabet_t(T))
-Base.eltype(seq::BioSequence) = eltype(alphabet_t(seq))
-Base.size(seq::BioSequence) = (length(seq),)
-Base.lastindex(seq::BioSequence) = length(seq)
-Base.eachindex(seq::BioSequence) = 1:lastindex(seq)
-
-@inline function Base.checkbounds(seq::BioSequence, i::Integer)
-    if 1 ≤ i ≤ endof(seq)
-        return true
-    end
-    throw(BoundsError(seq, i))
 end
 
 """
@@ -167,8 +146,8 @@ end
 # ------------------------
 
 function Base.cmp(seq1::BioSequence, seq2::BioSequence)
-    m = endof(seq1)
-    n = endof(seq2)
+    m = lastindex(seq1)
+    n = lastindex(seq2)
     for i in 1:min(m, n)
         c = cmp(inbounds_getindex(seq1, i),
                 inbounds_getindex(seq2, i))

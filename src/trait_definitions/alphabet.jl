@@ -224,7 +224,8 @@ end
 end
 
 @inline function decode(::CharAlphabet, x::UInt32)
-    if x > 0x10ffff
+    c = reinterpret(Char, x)
+    if !isvalid(c)
         throw(DecodeError(CharAlphabet(), x))
     end
     return c

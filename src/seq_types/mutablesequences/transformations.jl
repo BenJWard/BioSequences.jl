@@ -218,8 +218,8 @@ else
     quote
         data = Vector{UInt64}(undef, seq_data_len(A, length(seq)))
         i = 1
-        next = BitIndex(seq, lastindex(seq))
-        stop = BitIndex(seq, 0)
+        next = bitindex(seq, lastindex(seq))
+        stop = bitindex(seq, 0)
         r = rem(offset(next) + $n, 64)
         if r == 0
             @inbounds while next - stop > 0
@@ -273,8 +273,8 @@ Make a complement sequence of `seq` in place.
 """
 function complement!(seq::GeneralSequence{A}) where {A<:NucleicAcidAlphabet{2}}
     orphan!(seq)
-    next = BitIndex(seq, 1)
-    stop = BitIndex(seq, lastindex(seq) + 1)
+    next = bitindex(seq, 1)
+    stop = bitindex(seq, lastindex(seq) + 1)
     @inbounds while next < stop
         seq.data[index(next)] = ~seq.data[index(next)]
         next += 64
@@ -289,8 +289,8 @@ Transform `seq` into it's complement.
 """
 function complement!(seq::GeneralSequence{A}) where {A<:NucleicAcidAlphabet{4}}
     orphan!(seq)
-    next = BitIndex(seq, 1)
-    stop = BitIndex(seq, lastindex(seq) + 1)
+    next = bitindex(seq, 1)
+    stop = bitindex(seq, lastindex(seq) + 1)
     @inbounds while next < stop
         x = seq.data[index(next)]
         seq.data[index(next)] = (

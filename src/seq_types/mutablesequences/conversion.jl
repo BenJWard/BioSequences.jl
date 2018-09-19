@@ -36,7 +36,7 @@ for (alpha, alphb) in [(DNAAlphabet{4}, DNAAlphabet{2}), # DNA to DNA
     end
 end
 
-# Convert from a MutableBioSequence to to a DNA or RNA vector
+# Convert from a GeneralSequence to to a DNA or RNA vector
 function Base.convert(::Type{GeneralSequence{A}}, seq::Vector) where A<:Alphabet
     return GeneralSequence{A}(seq)
 end

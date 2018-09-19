@@ -115,8 +115,8 @@ make_kmer(seq::NTuple{K,T}) where {K,T} = make_kmer(Kmer{T,K}, seq)
 
 GeneralSequence(x::DNAKmer{K}) where {K} = DNASequence(x)
 GeneralSequence(x::RNAKmer{K}) where {K} = RNASequence(x)
-GeneralSequence{A}(x::DNAKmer{K}) where {A<:DNAAlphabet,K} = MutableBioSequence{A}([nt for nt in x])
-GeneralSequence{A}(x::RNAKmer{K}) where {A<:RNAAlphabet,K} = MutableBioSequence{A}([nt for nt in x])
+GeneralSequence{A}(x::DNAKmer{K}) where {A<:DNAAlphabet,K} = GeneralSequence{A}([nt for nt in x])
+GeneralSequence{A}(x::RNAKmer{K}) where {A<:RNAAlphabet,K} = GeneralSequence{A}([nt for nt in x])
 Base.convert(::Type{S}, seq::Kmer) where {S<:AbstractString} = S([Char(x) for x in seq])
 Base.String(seq::Kmer) = convert(String, seq)
 

@@ -108,7 +108,7 @@ function isrepetitive(seq::BioSequence, n::Integer=length(seq))
         return true
     end
     last = first(seq)
-    for i in 2:endof(seq)
+    for i in 2:lastindex(seq)
         x = seq[i]
         if x == last
             rep += 1
