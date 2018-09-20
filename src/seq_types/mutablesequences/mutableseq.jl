@@ -23,7 +23,7 @@
 # decoder that is a pair of the encoder. The length of encoded binary bits is
 # fixed, and hence a character at arbitrary position can be extracted in a
 # constant time. To know the exact location of a character at a position, you
-# can use the `bitsof(seq, i)` function, which returns a pair of element's index
+# can use the `bitindex(seq, i)` function, which returns a pair of element's index
 # containing binary bits and bits' offset. As a whole, character extraction
 # `seq[i]` can be written as:
 #
