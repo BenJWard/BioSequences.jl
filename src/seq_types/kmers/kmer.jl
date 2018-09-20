@@ -182,7 +182,7 @@ BioSymbols.complement(x::Kmer{T,k}) where {T,k} = Kmer{T,k}(~UInt64(x))
 
 Return the reverse of `kmer`.
 """
-Base.reverse(x::Kmer{T,k}) where {T,k} = Kmer{T,k}(nucrev2(UInt64(x)) >> (64 - 2k))
+Base.reverse(x::Kmer{T,k}) where {T,k} = Kmer{T,k}(nucrev(UInt64(x), BitsPerSymbol{2}()) >> (64 - 2k))
 
 """
     reverse_complement(kmer::Kmer)
