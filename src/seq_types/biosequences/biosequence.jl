@@ -114,6 +114,14 @@ include("bitindex.jl")
     return bitindex(BitsPerSymbol(seq), encoded_data_eltype(seq), i)
 end
 
+@inline function firstbitindex(seq::BioSequence)
+    return bitindex(seq, 1)
+end
+
+@inline function lastbitindex(seq::BioSequence)
+    return bitindex(seq, lastindex(seq))
+end
+
 @inline function bindata_mask(seq::BioSequence)
     return bitmask(Alphabet(seq))
 end

@@ -35,6 +35,14 @@ Base.:(==)(i1::BitIndex, i2::BitIndex) = i1.val == i2.val
 Base.isless(i1::BitIndex, i2::BitIndex) = isless(i1.val, i2.val)
 Base.cmp(i1::BitIndex, i2::BitIndex) = cmp(i1.val, i2.val)
 
+@inline function nextposition(i::BitIndex{N, W}) where {N, W}
+    return i + N
+end
+
+@inline function prevposition(i::BitIndex{N, W}) where {N, W}
+    return i - N
+end
+
 function Base.iterate(i::BitIndex, s = 1)
     if s == 1
         return (index(i), 2)
