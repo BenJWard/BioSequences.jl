@@ -257,7 +257,7 @@ function gc_content(kmer::Kmer{T,k}) where {T,k}
     if k == 0
         return 0.0
     else
-        return (count_g(kmer) + count_c(kmer)) / k
+        return gc_bitcount(UInt64(kmer, BitsPerSymbol(kmer))) / k
     end
 end
 
