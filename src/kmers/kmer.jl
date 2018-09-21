@@ -127,8 +127,8 @@ Base.String(seq::Kmer) = convert(String, seq)
 BioSymbols.alphabet(::Type{DNAKmer{k}}) where {k} = (DNA_A, DNA_C, DNA_G, DNA_T)
 BioSymbols.alphabet(::Type{RNAKmer{k}}) where {k} = (RNA_A, RNA_C, RNA_G, RNA_U)
 Alphabet(::Type{Kmer{T,N} where T<:NucleicAcid}) where N = Any
-Alphabet(::Type{T}) where T <: DNAKmer = DNAAlphabet{2}
-Alphabet(::Type{T}) where T <: RNAKmer = RNAAlphabet{2}
+Alphabet(::Type{T}) where T <: DNAKmer = DNAAlphabet{2}()
+Alphabet(::Type{T}) where T <: RNAKmer = RNAAlphabet{2}()
 
 Base.hash(x::Kmer, h::UInt) = hash(UInt64(x), h)
 
@@ -257,7 +257,7 @@ function gc_content(kmer::Kmer{T,k}) where {T,k}
     if k == 0
         return 0.0
     else
-        return gc_bitcount(UInt64(kmer, BitsPerSymbol(kmer))) / k
+        return gc_bitcount(UInt64(kmer), BitsPerSymbol(kmer)) / k
     end
 end
 
