@@ -282,9 +282,9 @@ function count_a(x::UInt64)
     xinv = ~x
     return count_ones(((xinv >>> 1) & xinv) & 0x5555555555555555)
 end
-count_c(x::UInt64) = count_ones((((~x) >>> 1) & x) & 0x5555555555555555)
-count_g(x::UInt64) = count_ones(((x >>> 1) & (~x)) & 0x5555555555555555)
-count_t(x::UInt64) = count_ones((x    & (x >>> 1)) & 0x5555555555555555)
+count_c(x::UInt64) = count_ones((((~x) >>> 1)    &   x       ) & 0x5555555555555555)
+count_g(x::UInt64) = count_ones(((  x  >>> 1)    & (~x      )) & 0x5555555555555555)
+count_t(x::UInt64) = count_ones((   x            & ( x >>> 1)) & 0x5555555555555555)
 
 
 # Shuffle
