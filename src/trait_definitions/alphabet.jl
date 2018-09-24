@@ -163,7 +163,7 @@ for A in (DNAAlphabet, RNAAlphabet)
             return reinterpret($(T), 0x01 << x)
         end
 
-	@inline decode(::$(A){2}, x::Unsigned) = decode($(A){2}(), UInt8(x))
+	    @inline decode(::$(A){2}, x::Unsigned) = decode($(A){2}(), UInt8(x))
 
         # 4-bit encoding
         @inline function encode(::$(A){4}, nt::$(T))

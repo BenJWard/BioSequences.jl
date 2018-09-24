@@ -15,8 +15,8 @@ struct BitIndex{N, W}
     val::Int64
 end
 
-@inline function bitindex(::BitsPerSymbol{N}, ::Type{W}, index) where {N, W}
-    return BitIndex{N, W}((index - 1) << trailing_zeros(N))
+@inline function bitindex(::BitsPerSymbol{N}, ::Type{W}, i) where {N, W}
+    return BitIndex{N, W}((i - 1) << trailing_zeros(N))
 end
 
 index_shift(i::BitIndex{N, UInt64}) where N = 6
