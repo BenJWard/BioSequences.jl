@@ -29,7 +29,7 @@
 #   64-bit: 0b 00 00 … 00 11 00 01 10
 #    4-mer:                T  A  C  G
 
-primitive type Kmer{T <: NucleicAcid, K} <: BioSequence 64 end
+primitive type Kmer{T <: NucleicAcid, K} <: ShortSequence{64} 64 end
 
 const DNAKmer{K} = Kmer{DNA, K}
 const RNAKmer{K} = Kmer{RNA, K}
