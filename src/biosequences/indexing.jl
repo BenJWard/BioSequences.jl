@@ -71,22 +71,11 @@ end
     return inbounds_getindex(seq, i)
 end
 
-#=
 @inline function Base.iterate(seq::BioSequence, i::Int = firstindex(seq))
     if i > lastindex(seq)
         return nothing
     else
         return inbounds_getindex(seq, i), i + 1
-    end
-end
-=#
-
-@inline function Base.iterate(seq::BioSequence, i = firstbitindex(seq))
-    if i < bitindex(seq, lastindex(seq) + 1)
-        encoded_symbol = extract_encoded_symbol(i, encoded_data(seq))
-        return decode(Alphabet(seq), encoded_symbol), nextposition(i)
-    else
-        return nothing
     end
 end
     
