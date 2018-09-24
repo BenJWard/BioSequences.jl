@@ -7,7 +7,7 @@
 # value.  While `GeneralSequence` is an efficient general-purpose sequence
 # representation, Kmer is useful for applications like assembly, k-mer counting,
 # k-mer based quantification in RNA-Seq, etc that rely on manipulating many
-# short sequences as efficiently (space and time) as possible.
+# short sequences as efficiently in space and time as possible.
 #
 # This file is a part of BioJulia.
 # License is MIT: https://github.com/BioJulia/BioSequences.jl/blob/master/LICENSE.md
@@ -182,7 +182,9 @@ BioSymbols.complement(x::Kmer{T,k}) where {T,k} = Kmer{T,k}(~UInt64(x))
 
 Return the reverse of `kmer`.
 """
-Base.reverse(x::Kmer{T,k}) where {T,k} = Kmer{T,k}(nucrev(UInt64(x), BitsPerSymbol{2}()) >> (64 - 2k))
+function Base.reverse(x::Kmer{T,k}) where {T,k}
+    return Kmer{T,k}(reversebits(UInt64(x), BitsPerSymbol{2}()) >> (64 - 2k))
+end
 
 """
     reverse_complement(kmer::Kmer)
