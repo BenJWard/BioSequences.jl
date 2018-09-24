@@ -205,6 +205,7 @@ using Random
 BioSymbols.gap(::Type{Char}) = '-'
 
 include("trait_definitions/alphabet.jl")
+include("bit-manipulation/bit-manipulation.jl")
 include("biosequences/biosequence.jl")
 include("mutablesequences/mutableseq.jl")
 include("mutablesequences/hash.jl")

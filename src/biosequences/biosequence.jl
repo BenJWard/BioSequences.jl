@@ -109,8 +109,6 @@ bits_per_symbol(seq::BioSequence) = bits_per_symbol(Alphabet(seq))
     return div(8 * sizeof(encoded_data_eltype(seq)), bits_per_symbol(seq))
 end
 
-include("bitindex.jl")
-
 @inline function bitindex(seq::BioSequence, i::Integer)
     return bitindex(BitsPerSymbol(seq), encoded_data_eltype(seq), i)
 end

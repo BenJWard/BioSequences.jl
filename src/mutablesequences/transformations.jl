@@ -212,15 +212,15 @@ function Base.reverse(seq::GeneralSequence{A}) where {A<:NucleicAcidAlphabet}
     if r == 0
         @inbounds while next - stop > 0
             x = seq.data[index(next)]
-            data[i] = nucrev(x, BitsPerSymbol(seq))
+            data[i] = reversebits(x, BitsPerSymbol(seq))
             i += 1
             next -= 64
         end
     else
         @inbounds while next - stop > 64
             j = index(next)
-            x = (seq.data[j] << (64 - r)) | (seq.data[j-1] >> r)
-            data[i] = nucrev(x, BitsPerSymbol(seq))
+            x = (seq.data[j] << (64 - r)) | (seq.data[j - 1] >> r)
+            data[i] = reversebits(x, BitsPerSymbol(seq))
             i += 1
             next -= 64
         end
@@ -228,26 +228,12 @@ function Base.reverse(seq::GeneralSequence{A}) where {A<:NucleicAcidAlphabet}
             j = index(next)
             x = seq.data[j] << (64 - r)
             if r < next - stop
-                x |= seq.data[j-1] >> r
+                x |= seq.data[j - 1] >> r
             end
-            data[i] = nucrev(x, BitsPerSymbol(seq))
+            data[i] = reversebits(x, BitsPerSymbol(seq))
         end
     end
     return GeneralSequence{A}(data, 1:length(seq), false)
-end
-
-@inline function nucrev(x::UInt64, ::BitsPerSymbol{2})
-     x = (x & 0x3333333333333333) <<  2 | (x & 0xCCCCCCCCCCCCCCCC) >>  2
-     x = nucrev(x, BitsPerSymbol{4}())
-     return x
-end
-
-@inline function nucrev(x::UInt64, ::BitsPerSymbol{4})
-     x = (x & 0x0F0F0F0F0F0F0F0F) <<  4 | (x & 0xF0F0F0F0F0F0F0F0) >>  4
-     x = (x & 0x00FF00FF00FF00FF) <<  8 | (x & 0xFF00FF00FF00FF00) >>  8
-     x = (x & 0x0000FFFF0000FFFF) << 16 | (x & 0xFFFF0000FFFF0000) >> 16
-     x = (x & 0x00000000FFFFFFFF) << 32 | (x & 0xFFFFFFFF00000000) >> 32
-     return x
 end
 
 """
