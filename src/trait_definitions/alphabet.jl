@@ -29,56 +29,54 @@ between biological symbol values and a binary representation of the symbol.
 Any type A <: Alphabet, is expected to implement the `Base.eltype` method
 for itself.
 It is also expected to implement the `BitsPerSymbol` method.
-
-
 """
 abstract type Alphabet end
+Base.eltype(::A) where A <: Alphabet = eltype(A)
+Base.firstindex(x::Alphabet) = 1
+Base.lastindex(x::Alphabet) = length(x)
+symbols(x::Alphabet) = tuple(collect(x)...)
+
+
+# Nucleic acid alphabets
+# ====================== 
 
 """
 Alphabet of nucleic acids.
 """
 abstract type NucleicAcidAlphabet{n} <: Alphabet end
 
+@inline function Base.iterate(x::A, state = 0x00) where {A <: NucleicAcidAlphabet{4}}
+    state > 0x0F ? nothing : (reinterpret(eltype(x), state), state + 0x01)
+end
+
+@inline function Base.iterate(x::A, state = 0x01) where {A <: NucleicAcidAlphabet{2}}
+    state > 0x08 ? nothing : (reinterpret(eltype(x), state), state << 0x01)
+end
+
+Base.length(x::A) where {A <: NucleicAcidAlphabet{2}} = 4
+Base.length(x::A) where {A <: NucleicAcidAlphabet{4}} = 16
+
+@inline function Base.getindex(x::NucleicAcidAlphabet{2}, i::Int)
+    return reinterpret(eltype(x), 0x01 << (i - 1))
+end
+@inline function Base.getindex(x::NucleicAcidAlphabet{4}, i::Int)
+    return reinterpret(eltype(x), i - 1)
+end
+
+
 """
 DNA nucleotide alphabet.
 """
 struct DNAAlphabet{n} <: NucleicAcidAlphabet{n} end
+Base.eltype(::Type{A}) where A <: DNAAlphabet = DNA
+
 
 """
 RNA nucleotide alphabet.
 """
 struct RNAAlphabet{n} <: NucleicAcidAlphabet{n} end
-
-"""
-Amino acid alphabet.
-"""
-struct AminoAcidAlphabet <: Alphabet end
-
-"""
-General character alphabet.
-"""
-struct CharAlphabet <: Alphabet end
-
-"""
-Void alphabet (internal use only).
-"""
-struct VoidAlphabet <: Alphabet end
-
-Base.eltype(::Type{A}) where A <: DNAAlphabet = DNA
 Base.eltype(::Type{A}) where A <: RNAAlphabet = RNA
-Base.eltype(::Type{AminoAcidAlphabet}) = AminoAcid
-Base.eltype(::Type{CharAlphabet}) = Char
-Base.eltype(::Type{VoidAlphabet}) = Nothing
-Base.eltype(::A) where A <: Alphabet = eltype(A)
 
-symbols(::DNAAlphabet{2}) = ACGT
-symbols(::RNAAlphabet{2}) = ACGU
-symbols(::DNAAlphabet{4}) = alphabet(DNA)
-symbols(::RNAAlphabet{4}) = alphabet(RNA)
-symbols(::AminoAcidAlphabet) = alphabet(AminoAcid)
-# TODO: this alphabet includes invalid Unicode scalar values
-symbols(::CharAlphabet) = typemin(Char):typemax(Char)
-symbols(::VoidAlphabet) = nothing
 
 # Promotion of Alphabets
 # ----------------------
@@ -90,8 +88,58 @@ for alph in (DNAAlphabet, RNAAlphabet)
     end
 end
 
+
+# Amino acid alphabet
+# ===================
+
+"""
+Amino acid alphabet.
+"""
+struct AminoAcidAlphabet <: Alphabet end
+Base.eltype(::Type{AminoAcidAlphabet}) = AminoAcid
+Base.length(x::AminoAcidAlphabet) = 28
+
+@inline function Base.iterate(x::AminoAcidAlphabet, state = 0x00)
+    state > 0x1b ? nothing : (reinterpret(AminoAcid, state), state + 0x01)
+end
+
+@inline function Base.getindex(x::AminoAcidAlphabet, i)
+    return reinterpret(AminoAcid, i - 1)
+end
+
+
+# Generic character alphabet
+# ==========================
+
+"""
+General character alphabet.
+"""
+struct CharAlphabet <: Alphabet end
+Base.eltype(::Type{CharAlphabet}) = Char
+Base.length(::CharAlphabet) = 1114112
+
+@inline function Base.iterate(::CharAlphabet, state = '\0')
+    state > '\U10ffff' ? nothing : (state, state + UInt32(1))
+end
+
+@inline function Base.getindex(::CharAlphabet, i)
+    return reinterpret(Char, i - 1)
+end
+
+
+# The void alphabet
+# =================
+
+"""
+Void alphabet (internal use only).
+"""
+struct VoidAlphabet <: Alphabet end
+Base.eltype(::Type{VoidAlphabet}) = Nothing
+symbols(::VoidAlphabet) = nothing
+
+
 # Encoders & Decoders
-# -------------------
+# ===================
 
 """
 Encode biological symbols to binary representation.
