@@ -39,6 +39,7 @@ encoded_data(x::ShortSequence{8})  = reinterpret(UInt8, x)
 
 encoded_data_eltype(x::ShortSequence) = eltype(encoded_data(x))
 
+
 """
     complement(x::T) where {T <: ShortSequence}
 
@@ -47,6 +48,7 @@ Return the complement of a short sequence type `x`.
 function BioSymbols.complement(x::T) where {T <: ShortSequence}
     return T(~encoded_data(x))
 end
+
 
 """
     reverse(x::T) where {T <: ShortSequence}
@@ -66,4 +68,15 @@ end
 Return the reverse complement of `x`.
 """
 reverse_complement(x::ShortSequence) = complement(reverse(x))
+
+
+function swap(kmer::T, i, j) where {T <: ShortSequence}
+    i = 2 * length(kmer) - 2i
+    j = 2 * length(kmer) - 2j
+    b = encoded_data(kmer)
+    x = ((b >> i) ⊻ (b >> j)) & encoded_data_eltype(kmer)(0x03)
+    return T(b ⊻ ((x << i) | (x << j)))
+end
+
+
 
