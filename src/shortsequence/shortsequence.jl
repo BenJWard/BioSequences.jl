@@ -89,4 +89,14 @@ function Random.shuffle(x::T) where {T <: ShortSequence}
     return x
 end
 
+function count_c(x::ShortSequence)
+    return count_c(encoded_data(x))
+end
 
+function count_g(x::ShortSequence)
+    return count_g(encoded_data(x))
+end
+
+function count_t(x::ShortSequence)
+    return count_t(encoded_data(x))
+end

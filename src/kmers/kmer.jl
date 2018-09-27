@@ -237,31 +237,33 @@ function gc_content(kmer::Kmer{T,k}) where {T,k}
     end
 end
 
-function count_a(kmer::Kmer{T,k}) where {T,k}
-    return count_a(reinterpret(UInt64, kmer)) - (32 - k)
-end
 
+function count_a(kmer::Kmer{T,k}) where {T,k}
+    return count_a(encoded_data(kmer)) - (32 - k)
+end
+#=
 function count_c(kmer::Kmer{T,k}) where {T,k}
-    return count_c(reinterpret(UInt64, kmer))
+    return count_c(encoded_data(kmer))
 end
 
 function count_g(kmer::Kmer{T,k}) where {T,k}
-    return count_g(reinterpret(UInt64, kmer))
+    return count_g(encoded_data(kmer))
 end
 
 function count_t(kmer::Kmer{T,k}) where {T,k}
-    return count_t(reinterpret(UInt64, kmer))
+    return count_t(encoded_data(kmer))
 end
+
 
 # Count A, C, T/U, G respectively in a kmer stored in a UInt64
 function count_a(x::UInt64)
     xinv = ~x
-    return count_ones(((xinv >>> 1) & xinv) & 0x5555555555555555)
+    return count_ones(((xinv >>> 1) & xinv) & Twiddle.repeatbyte(0x55))
 end
 count_c(x::UInt64) = count_ones((((~x) >>> 1)    &   x       ) & 0x5555555555555555)
 count_g(x::UInt64) = count_ones(((  x  >>> 1)    & (~x      )) & 0x5555555555555555)
 count_t(x::UInt64) = count_ones((   x            & ( x >>> 1)) & 0x5555555555555555)
-
+=#
 
 # Shuffle
 # -------
