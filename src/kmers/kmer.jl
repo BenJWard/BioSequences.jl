@@ -141,13 +141,16 @@ end
 # Other functions
 # ---------------
 
+#=
 """
     complement(kmer::Kmer)
 
 Return the complement of `kmer`.
 """
 BioSymbols.complement(x::Kmer{T,k}) where {T,k} = Kmer{T,k}(~UInt64(x))
+=#
 
+#=
 """
     reverse(kmer::Kmer)
 
@@ -163,7 +166,7 @@ end
 Return the reverse complement of `kmer`
 """
 reverse_complement(x::Kmer) = complement(reverse(x))
-
+=#
 """
     mismatches(a::Kmer, b::Kmer)
 

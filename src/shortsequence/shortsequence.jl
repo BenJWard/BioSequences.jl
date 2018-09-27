@@ -39,3 +39,31 @@ encoded_data(x::ShortSequence{8})  = reinterpret(UInt8, x)
 
 encoded_data_eltype(x::ShortSequence) = eltype(encoded_data(x))
 
+"""
+    complement(x::T) where {T <: ShortSequence}
+
+Return the complement of a short sequence type `x`.
+"""
+function BioSymbols.complement(x::T) where {T <: ShortSequence}
+    return T(~encoded_data(x))
+end
+
+"""
+    reverse(x::T) where {T <: ShortSequence}
+
+Return the reverse of short sequence type variable `x`.
+"""
+function Base.reverse(x::T) where {T <: ShortSequence}
+    bits = encoded_data(x)
+    rbits = reversebits(bits, BitsPerSymbol{2}())
+    return T(rbits >> (sizeof(bits) * 8 - 2 * length(x)))
+end
+
+
+"""
+    reverse_complement(x::ShortSequence)
+
+Return the reverse complement of `x`.
+"""
+reverse_complement(x::ShortSequence) = complement(reverse(x))
+
