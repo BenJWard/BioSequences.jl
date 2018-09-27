@@ -1,8 +1,7 @@
 # Alphabet
 # ========
 #
-# Alphabet of biological symbols.
-#
+# Alphabets of biological symbols.
 #
 # This file is a part of BioJulia.
 # License is MIT: https://github.com/BioJulia/BioSequences.jl/blob/master/LICENSE.md
@@ -37,6 +36,14 @@ Base.lastindex(x::Alphabet) = length(x)
 symbols(x::Alphabet) = tuple(collect(x)...)
 
 
+"""
+The number of bits required to represent a packed symbol in a vector of bits.
+"""
+struct BitsPerSymbol{N} end
+bits_per_symbol(::BitsPerSymbol{N}) where N = N
+bits_per_symbol(::A) where A <: Alphabet = bits_per_symbol(BitsPerSymbol(A()))
+
+
 # Nucleic acid alphabets
 # ====================== 
 
@@ -44,6 +51,9 @@ symbols(x::Alphabet) = tuple(collect(x)...)
 Alphabet of nucleic acids.
 """
 abstract type NucleicAcidAlphabet{n} <: Alphabet end
+
+BitsPerSymbol(::A) where A <: NucleicAcidAlphabet{2} = BitsPerSymbol{2}()
+BitsPerSymbol(::A) where A <: NucleicAcidAlphabet{4} = BitsPerSymbol{4}()
 
 @inline function Base.iterate(x::A, state = 0x00) where {A <: NucleicAcidAlphabet{4}}
     state > 0x0F ? nothing : (reinterpret(eltype(x), state), state + 0x01)
@@ -96,6 +106,7 @@ end
 Amino acid alphabet.
 """
 struct AminoAcidAlphabet <: Alphabet end
+BitsPerSymbol(::AminoAcidAlphabet) = BitsPerSymbol{8}()
 Base.eltype(::Type{AminoAcidAlphabet}) = AminoAcid
 Base.length(x::AminoAcidAlphabet) = 28
 
@@ -115,6 +126,7 @@ end
 General character alphabet.
 """
 struct CharAlphabet <: Alphabet end
+BitsPerSymbol(::CharAlphabet) = BitsPerSymbol{32}()
 Base.eltype(::Type{CharAlphabet}) = Char
 Base.length(::CharAlphabet) = 1114112
 
@@ -134,6 +146,7 @@ end
 Void alphabet (internal use only).
 """
 struct VoidAlphabet <: Alphabet end
+BitsPerSymbol(::VoidAlphabet) = BitsPerSymbol{0}()
 Base.eltype(::Type{VoidAlphabet}) = Nothing
 symbols(::VoidAlphabet) = nothing
 

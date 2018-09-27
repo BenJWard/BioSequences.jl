@@ -1,5 +1,4 @@
 
-include("bits-per-symbol.jl")
 include("bitindex.jl")
 
 @inline function reversebits(x::UInt64, ::BitsPerSymbol{2})
