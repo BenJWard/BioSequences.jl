@@ -277,10 +277,10 @@ end
 
 # Swap two nucleotides at `i` and `j`.
 function swap(kmer::Kmer{T,k}, i, j) where {T,k}
-    i = 2k - 2i
-    j = 2k - 2j
-    b = convert(UInt64, kmer)
-    x = ((b >> i) ⊻ (b >> j)) & UInt64(0x03)
+    i = 2 * length(kmer) - 2i
+    j = 2 * length(kmer) - 2j
+    b = encoded_data(kmer)
+    x = ((b >> i) ⊻ (b >> j)) & encoded_data_eltype(kmer)(0x03)
     return Kmer{T,k}(b ⊻ ((x << i) | (x << j)))
 end
 
