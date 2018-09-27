@@ -70,13 +70,23 @@ Return the reverse complement of `x`.
 reverse_complement(x::ShortSequence) = complement(reverse(x))
 
 
-function swap(kmer::T, i, j) where {T <: ShortSequence}
-    i = 2 * length(kmer) - 2i
-    j = 2 * length(kmer) - 2j
-    b = encoded_data(kmer)
-    x = ((b >> i) ⊻ (b >> j)) & encoded_data_eltype(kmer)(0x03)
+function swap(x::T, i, j) where {T <: ShortSequence}
+    i = 2 * length(x) - 2i
+    j = 2 * length(x) - 2j
+    b = encoded_data(x)
+    x = ((b >> i) ⊻ (b >> j)) & encoded_data_eltype(x)(0x03)
     return T(b ⊻ ((x << i) | (x << j)))
 end
 
+
+function Random.shuffle(x::T) where {T <: ShortSequence}
+    # Fisher-Yates shuffle
+    j = lastindex(x)
+    for i in firstindex(x):(j - 1)
+        j′ = rand(i:j)
+        x = swap(x, i, j′)
+    end
+    return x
+end
 
 

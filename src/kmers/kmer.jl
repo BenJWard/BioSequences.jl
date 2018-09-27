@@ -266,6 +266,7 @@ count_t(x::UInt64) = count_ones((   x            & ( x >>> 1)) & 0x5555555555555
 # Shuffle
 # -------
 
+#=
 function Random.shuffle(kmer::Kmer{T,k}) where {T,k}
     # Fisher-Yates shuffle
     for i in 1:k-1
@@ -283,6 +284,7 @@ function swap(kmer::Kmer{T,k}, i, j) where {T,k}
     x = ((b >> i) ⊻ (b >> j)) & encoded_data_eltype(kmer)(0x03)
     return Kmer{T,k}(b ⊻ ((x << i) | (x << j)))
 end
+=#
 
 # String literal
 # --------------
