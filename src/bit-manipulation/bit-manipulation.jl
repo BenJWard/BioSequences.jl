@@ -17,8 +17,8 @@ end
 
 function count_a(x::UInt64)
     xinv = ~x
-    return count_ones(((xinv >>> 1) & xinv) & repeatbyte(0x55))
+    return count_ones(((xinv >>> 1) & xinv) & repeatbyte(typeof(x), 0x55))
 end
-count_c(x::UInt64) = count_ones((((~x) >>> 1)    &   x       ) & repeatbyte(0x55))
-count_g(x::UInt64) = count_ones(((  x  >>> 1)    & (~x      )) & repeatbyte(0x55))
-count_t(x::UInt64) = count_ones((   x            & ( x >>> 1)) & repeatbyte(0x55))
+count_c(x::UInt64) = count_ones((((~x) >>> 1)    &   x       ) & repeatbyte(typeof(x), 0x55))
+count_g(x::UInt64) = count_ones(((  x  >>> 1)    & (~x      )) & repeatbyte(typeof(x), 0x55))
+count_t(x::UInt64) = count_ones((   x            & ( x >>> 1)) & repeatbyte(typeof(x), 0x55))
