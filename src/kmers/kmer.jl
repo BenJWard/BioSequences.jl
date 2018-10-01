@@ -237,11 +237,11 @@ function gc_content(kmer::Kmer{T,k}) where {T,k}
     end
 end
 
-
+#=
 function count_a(kmer::Kmer{T,k}) where {T,k}
     return count_a(encoded_data(kmer)) - (32 - k)
 end
-#=
+
 function count_c(kmer::Kmer{T,k}) where {T,k}
     return count_c(encoded_data(kmer))
 end

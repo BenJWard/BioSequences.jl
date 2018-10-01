@@ -16,20 +16,6 @@ function Base.count(f::Function, seq::BioSequence)
     return n
 end
 
-function gc_bitcount(x::UInt64, ::BitsPerSymbol{2})
-    c = x & 0x5555555555555555
-    g = (x & 0xAAAAAAAAAAAAAAAA) >> 1
-    return count_ones(c ⊻ g)
-end
-
-function gc_bitcount(x::UInt64, ::BitsPerSymbol{4})
-    a =  x & 0x1111111111111111
-    c = (x & 0x2222222222222222) >> 1
-    g = (x & 0x4444444444444444) >> 2
-    t = (x & 0x8888888888888888) >> 3
-    return count_ones((c | g) & ~(a | t))
-end
-
 function count_gc(seq::GeneralSequence{A}) where A <: NucleicAcidAlphabet
     n = 0
     i = bitindex(seq, 1)
