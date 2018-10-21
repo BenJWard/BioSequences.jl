@@ -1,41 +1,12 @@
 # K-mer
 # =====
-#
-# Compact k-mer sequence type.
-#
-# A Kmer is a sequence ≤ 32nt, without any 'N's, packed in a single 64 bit
-# value.  While `GeneralSequence` is an efficient general-purpose sequence
-# representation, Kmer is useful for applications like assembly, k-mer counting,
-# k-mer based quantification in RNA-Seq, etc that rely on manipulating many
-# short sequences as efficiently (space and time) as possible.
-#
-# This file is a part of BioJulia.
-# License is MIT: https://github.com/BioJulia/BioSequences.jl/blob/master/LICENSE.md
 
-# Representation
-# --------------
-#
-# Four kinds of nucleotides are encoded as follows:
-#
-#   nucleotide | binary
-#   ---------- | ------
-#       A      |   00
-#       C      |   01
-#       G      |   10
-#     T / U    |   11
-#
-# NucleicAcids are filled from MSBs to LSBs and right-aligned so that all k-mers
-# are lexicographically ordered. For example, the memory layout of "TACG" is:
-#   64-bit: 0b 00 00 … 00 11 00 01 10
-#    4-mer:                T  A  C  G
-
-primitive type Kmer{T <: NucleicAcid, K} <: BioSequence 64 end
+primitive type Kmer{T <: NucleicAcid, K} <: ShortSequence{64} 64 end
 
 const DNAKmer{K} = Kmer{DNA, K}
 const RNAKmer{K} = Kmer{RNA, K}
 const DNACodon = DNAKmer{3}
 const RNACodon = RNAKmer{3}
-
 
 function Kmer(nts::T...) where {T<:NucleicAcid}
     return make_kmer(nts)
@@ -127,8 +98,8 @@ Base.String(seq::Kmer) = convert(String, seq)
 BioSymbols.alphabet(::Type{DNAKmer{k}}) where {k} = (DNA_A, DNA_C, DNA_G, DNA_T)
 BioSymbols.alphabet(::Type{RNAKmer{k}}) where {k} = (RNA_A, RNA_C, RNA_G, RNA_U)
 Alphabet(::Type{Kmer{T,N} where T<:NucleicAcid}) where N = Any
-Alphabet(::Type{T}) where T <: DNAKmer = DNAAlphabet{2}
-Alphabet(::Type{T}) where T <: RNAKmer = RNAAlphabet{2}
+Alphabet(::Type{T}) where T <: DNAKmer = DNAAlphabet{2}()
+Alphabet(::Type{T}) where T <: RNAKmer = RNAAlphabet{2}()
 
 Base.hash(x::Kmer, h::UInt) = hash(UInt64(x), h)
 
@@ -170,19 +141,24 @@ end
 # Other functions
 # ---------------
 
+#=
 """
     complement(kmer::Kmer)
 
 Return the complement of `kmer`.
 """
 BioSymbols.complement(x::Kmer{T,k}) where {T,k} = Kmer{T,k}(~UInt64(x))
+=#
 
+#=
 """
     reverse(kmer::Kmer)
 
 Return the reverse of `kmer`.
 """
-Base.reverse(x::Kmer{T,k}) where {T,k} = Kmer{T,k}(nucrev2(UInt64(x)) >> (64 - 2k))
+function Base.reverse(x::Kmer{T,k}) where {T,k}
+    return Kmer{T,k}(reversebits(UInt64(x), BitsPerSymbol{2}()) >> (64 - 2k))
+end
 
 """
     reverse_complement(kmer::Kmer)
@@ -190,7 +166,7 @@ Base.reverse(x::Kmer{T,k}) where {T,k} = Kmer{T,k}(nucrev2(UInt64(x)) >> (64 - 2
 Return the reverse complement of `kmer`
 """
 reverse_complement(x::Kmer) = complement(reverse(x))
-
+=#
 """
     mismatches(a::Kmer, b::Kmer)
 
@@ -257,39 +233,42 @@ function gc_content(kmer::Kmer{T,k}) where {T,k}
     if k == 0
         return 0.0
     else
-        return (count_g(kmer) + count_c(kmer)) / k
+        return gc_bitcount(UInt64(kmer), BitsPerSymbol(kmer)) / k
     end
 end
 
+#=
 function count_a(kmer::Kmer{T,k}) where {T,k}
-    return count_a(reinterpret(UInt64, kmer)) - (32 - k)
+    return count_a(encoded_data(kmer)) - (32 - k)
 end
 
 function count_c(kmer::Kmer{T,k}) where {T,k}
-    return count_c(reinterpret(UInt64, kmer))
+    return count_c(encoded_data(kmer))
 end
 
 function count_g(kmer::Kmer{T,k}) where {T,k}
-    return count_g(reinterpret(UInt64, kmer))
+    return count_g(encoded_data(kmer))
 end
 
 function count_t(kmer::Kmer{T,k}) where {T,k}
-    return count_t(reinterpret(UInt64, kmer))
+    return count_t(encoded_data(kmer))
 end
+
 
 # Count A, C, T/U, G respectively in a kmer stored in a UInt64
 function count_a(x::UInt64)
     xinv = ~x
-    return count_ones(((xinv >>> 1) & xinv) & 0x5555555555555555)
+    return count_ones(((xinv >>> 1) & xinv) & Twiddle.repeatbyte(0x55))
 end
-count_c(x::UInt64) = count_ones((((~x) >>> 1) & x) & 0x5555555555555555)
-count_g(x::UInt64) = count_ones(((x >>> 1) & (~x)) & 0x5555555555555555)
-count_t(x::UInt64) = count_ones((x    & (x >>> 1)) & 0x5555555555555555)
-
+count_c(x::UInt64) = count_ones((((~x) >>> 1)    &   x       ) & 0x5555555555555555)
+count_g(x::UInt64) = count_ones(((  x  >>> 1)    & (~x      )) & 0x5555555555555555)
+count_t(x::UInt64) = count_ones((   x            & ( x >>> 1)) & 0x5555555555555555)
+=#
 
 # Shuffle
 # -------
 
+#=
 function Random.shuffle(kmer::Kmer{T,k}) where {T,k}
     # Fisher-Yates shuffle
     for i in 1:k-1
@@ -301,12 +280,13 @@ end
 
 # Swap two nucleotides at `i` and `j`.
 function swap(kmer::Kmer{T,k}, i, j) where {T,k}
-    i = 2k - 2i
-    j = 2k - 2j
-    b = convert(UInt64, kmer)
-    x = ((b >> i) ⊻ (b >> j)) & UInt64(0x03)
+    i = 2 * length(kmer) - 2i
+    j = 2 * length(kmer) - 2j
+    b = encoded_data(kmer)
+    x = ((b >> i) ⊻ (b >> j)) & encoded_data_eltype(kmer)(0x03)
     return Kmer{T,k}(b ⊻ ((x << i) | (x << j)))
 end
+=#
 
 # String literal
 # --------------

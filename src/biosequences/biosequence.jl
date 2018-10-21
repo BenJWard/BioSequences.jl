@@ -13,26 +13,37 @@
 """
 # An abstract biological sequence type.
 
-## Required methods, traits & interfaces
+## Required interface
 
-Any subtype `S <: BioSequence` should implement the following methods:
+Any subtype of `BioSequence` should implement the following methods:
 
-* `Alphabet(seq::S)`: return the type of the alphabet of `seq`.
-* `Base.length(seq::S)`: return the length of `seq`.
-* `inbounds_getindex(seq::S, i::Integer)`: return the element at `i` of `seq`
-  without checking bounds.
-* `find_next_ambiguous(seq::S)`: return the index of the next ambiguous symbol in the
+* `encoded_data(seq)`: return the thing containing the encoded elements of `seq`. 
+* `Alphabet(typeof(seq))`: return the type of the alphabet of the type of `seq`.
+* `Base.length(seq)`: return the length of `seq`.
+* `inbounds_getindex(seq, i)`: return the i'th element of `seq`, without checking bounds.
+* `find_next_ambiguous(seq)`: return the index of the next ambiguous symbol in the
   sequence.
 
-## Provided, methods traits & interfaces
+  Any sequence type that adheres to the above can be expected to have the
+  following implemented "for free".
 
-As a result you can expect any variable of type S <: BioSequence to implement
-the above `Base` methods, as well as the following `Base` methods which are
-implemetned in BioSequences.jl for any S<:BioSequence which implements said
-required `Base` methods above.
+## Provided, BioSequences traits
 
-* `Base.eltype(::Type{S})`: return the element type of `S`.
-* `Base.size(seq::S)`: Return the size of `seq`.
+* `encoded_data_eltype(seq)`: return the element type of the thing contaning encoded elements of `seq`.
+* `Alphabet(seq)`: return the type of the alphabet of `seq`.
+* `BitsPerSymbol(seq)`: return the number of bits `seq` uses to encode each element, as a type trait.
+* `bits_per_symbol(seq)`: return the number of bits `seq` uses to encode each element, as a value.
+* `symbols_per_data_element(seq)`: return the number of elements that can be encoded into each element in `encoded_data(seq)`.
+* `bitindex(seq, i)`: return the BitIndex value corresponding to the i'th element in `seq`.
+* `firstbitindex(seq)`: return the BitIndex value corresponding to the first element in `seq`.
+* `lastbitindex(seq)`: return the BitIndex value corresponding to the last element in `seq`.
+
+## Provided Base traits & methods
+
+* `Base.eltype(typeof(seq))`: return the element type for the type of `seq`.
+* `Base.eltype(seq)`: return the element type of `seq`.
+* `Base.size(seq)`: Return the size of `seq`.
+* `Base.firstindex(seq)`: Return the first index of `seq`.
 * `Base.lastindex(seq::S)`: Return the last index of `seq`.
 * `Base.eachindex(seq::S)`: Return an iterator over all indicies of `seq`.
 * `Base.getindex(seq::S, i::Integer)`: Return the biological symbol `seq`
@@ -53,7 +64,6 @@ required `Base` methods above.
   `val` in `seq`.
 * `Base.isempty(seq::S)`: Determine whether `seq` has no elements.
 """
-
 abstract type BioSequence end
 
 # This is useful for obscure reasons. We use SeqRecord{BioSequence} for reading
@@ -76,9 +86,7 @@ Return the data member of `seq` that stores the encoded sequence data.
     )
 end
 
-
-# Alphabet
-# --------
+encoded_data_eltype(seq::BioSequence) = eltype(encoded_data(seq))
 
 """
 Return the `Alpahbet` type defining the possible biological symbols
@@ -94,24 +102,23 @@ end
     return Alphabet(typeof(seq))
 end
 
-
-# Bit indexing
-# ------------
-
-# Bit indexing biosequence traits and trait-like methods...
 BitsPerSymbol(seq::BioSequence) = BitsPerSymbol(Alphabet(seq))
 bits_per_symbol(seq::BioSequence) = bits_per_symbol(Alphabet(seq))
-
-encoded_data_eltype(seq::BioSequence) = eltype(encoded_data(seq))
 
 @inline function symbols_per_data_element(seq::BioSequence)
     return div(8 * sizeof(encoded_data_eltype(seq)), bits_per_symbol(seq))
 end
 
-include("bitindex.jl")
-
 @inline function bitindex(seq::BioSequence, i::Integer)
     return bitindex(BitsPerSymbol(seq), encoded_data_eltype(seq), i)
+end
+
+@inline function firstbitindex(seq::BioSequence)
+    return bitindex(seq, 1)
+end
+
+@inline function lastbitindex(seq::BioSequence)
+    return bitindex(seq, lastindex(seq))
 end
 
 @inline function bindata_mask(seq::BioSequence)
@@ -119,57 +126,15 @@ end
 end
 
 
+# Provided Base traits & methods
+# ------------------------------
 
-
-
-
-
-
-# Base Methods
-# ============
-
-# Indexing and iteration
-# ----------------------
+Base.eltype(::Type{T}) where T <: BioSequence = eltype(Alphabet(T))
+Base.eltype(seq::BioSequence) = eltype(Alphabet(seq))
+Base.size(seq::BioSequence) = (length(seq),)
 
 include("indexing.jl")
-
-function Base.iterate(seq::BioSequence, i::Int = 1)
-    if i > lastindex(seq)
-        return nothing
-    else
-        return inbounds_getindex(seq, i), i + 1
-    end
-end
-
-
-# Predicates & comparisons
-# ------------------------
-
-function Base.cmp(seq1::BioSequence, seq2::BioSequence)
-    m = lastindex(seq1)
-    n = lastindex(seq2)
-    for i in 1:min(m, n)
-        c = cmp(inbounds_getindex(seq1, i),
-                inbounds_getindex(seq2, i))
-        if c != 0
-            return c
-        end
-    end
-    return cmp(m, n)
-end
-
-function Base.:(==)(seq1::BioSequence, seq2::BioSequence)
-    return eltype(seq1)    == eltype(seq2) &&
-           length(seq1)    == length(seq2) &&
-           cmp(seq1, seq2) == 0
-end
-
-Base.isless(seq1::BioSequence, seq2::BioSequence) = cmp(seq1, seq2) < 0
-
-function Base.isempty(seq::BioSequence)
-    return length(seq) == 0
-end
-
+include("predicates.jl")
 
 # Finders
 # -------
@@ -199,58 +164,5 @@ end
 Base.findfirst(val, seq::BioSequence) = findnext(val, seq, 1)
 Base.findlast(val, seq::BioSequence) = findprev(val, seq, lastindex(seq))
 
-# Printing, show and parse
-# ------------------------
-
-function Base.print(io::IO, seq::BioSequence; width::Integer = 0)
-    col = 1
-    for x in seq
-        if width > 0 && col > width
-            write(io, '\n')
-            col = 1
-        end
-        print(io, x)
-        col += 1
-    end
-end
-
-Base.show(io::IO, seq::BioSequence) = showcompact(io, seq)
-
-function Base.show(io::IO, ::MIME"text/plain", seq::BioSequence)
-    println(io, summary(seq), ':')
-    showcompact(io, seq)
-end
-
-function showcompact(io::IO, seq::BioSequence)
-    # don't show more than this many characters
-    # to avoid filling the screen with junk
-    if isempty(seq)
-        print(io, "< EMPTY SEQUENCE >")
-    else
-        width = displaysize()[2]
-        if length(seq) > width
-            half = div(width, 2)
-            for i in 1:half-1
-                print(io, seq[i])
-            end
-            print(io, '…')
-            for i in lastindex(seq)-half+2:lastindex(seq)
-                print(io, seq[i])
-            end
-        else
-            for x in seq
-                print(io, convert(Char, x))
-            end
-        end
-    end
-end
-
-function string_compact(seq::BioSequence)
-    buf = IOBuffer()
-    showcompact(buf, seq)
-    return String(take!(buf))
-end
-
-Base.parse(::Type{S}, str::AbstractString) where {S<:BioSequence} = convert(S, str)
-
+include("printing.jl")
 include("operations.jl")
