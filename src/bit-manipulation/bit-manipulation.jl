@@ -30,7 +30,7 @@ function gc_bitcount(x::UInt64, ::BitsPerSymbol{4})
     return count_ones((c | g) & ~(a | t))
 end
 
-count_a(x::UInt64) = Twiddle.count_zero_bitpairs(x)
-count_c(x::UInt64) = count_ones((((~x) >>> 1)    &   x       ) & repeatbyte(typeof(x), 0x55))
-count_g(x::UInt64) = count_ones(((  x  >>> 1)    & (~x      )) & repeatbyte(typeof(x), 0x55))
-count_t(x::UInt64) = Twiddle.count_one_bitpairs(x)
+count_a(x::UInt64) = Twiddle.count_00_bitpairs(x)
+count_c(x::UInt64) = Twiddle.count_01_bitpairs(x)
+count_g(x::UInt64) = Twiddle.count_10_bitpairs(x)
+count_t(x::UInt64) = Twiddle.count_11_bitpairs(x)
