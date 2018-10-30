@@ -41,9 +41,11 @@ function Base.iterate(it::BioSequences.EachSkipmerIterator)
     end
     
     while pos <= S
+        
         for ni in 1:N
+            
             it.cycle_pos[ni] += 1
-            if it.cycle_pos[ni] == S
+            if it.cycle_pos[ni] == N
                 it.cycle_pos[ni] = 0
             end
             
