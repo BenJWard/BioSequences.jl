@@ -55,6 +55,7 @@ function Base.iterate(it::BioSequences.EachSkipmerIterator)
                 it.rkmer[ni] = (it.rkmer[ni] >> 2) | (UInt64(rbits) << firstoffset(it))
             end
         end
+        pos += 1
     end
     
 end
