@@ -99,7 +99,7 @@ function Base.iterate(it::EachSkipmerIterator, state::Tuple{UInt, UInt})
     fi = ifelse(fi == (N + 1), 0x01, fi + 0x01)
     
     fkmer = it.fkmer[fi]
-    rkmer = fit.rkmer[fi]
+    rkmer = it.rkmer[fi]
     
     outkmer = ifelse(fkmer < rkmer, fkmer, rkmer)
     
