@@ -72,6 +72,8 @@ end
 function Base.iterate(it::EachSkipmerIterator, state::Tuple{UInt, UInt})
     pos = state[1]
     fi  = state[2]
+    N = cycle_len(eltype(it))
+    M = bases_per_cycle(eltype(it))
     
     if pos > lastindex(it.seq)
         return nothing
