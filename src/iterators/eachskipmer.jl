@@ -7,10 +7,9 @@ struct EachSkipmerIterator{SK <: Skipmer, UT <: Unsigned, SQ <: BioSequence}
     rkmer::Vector{UT}
 end
 
-skipmer_type(::Type{EachSkipmerIterator{SK}}) where SK <: Skipmer = SK
-skipmer_type(x::EachSkipmerIterator) = skipmer_type(typeof(x))
+Base.eltype(::Type{EachSkipmerIterator{SK, UT, SQ}}) where {SK <: Skipmer, UT <: Unsigned, SQ <: BioSequence} = SK
 
-kmersize(x::EachSkipmerIterator) = kmersize(typeof(x))
+kmersize(x::EachSkipmerIterator) = kmersize(eltype(x))
 
 firstoffset(x::EachSkipmerIterator) = (kmersize(x) - 1) * 2
 
