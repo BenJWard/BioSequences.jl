@@ -22,7 +22,7 @@ end
 end
 
 function EachSkipmerIterator(::Type{SK}, seq::SQ) where {SK <: Skipmer, SQ <: BioSequence}
-    if span(SK) <= length(seq)
+    if span(SK) > length(seq)
         throw(ArgumentError(string("The span of ", SK, " (", span(SK), ") is greater than the input sequence length ", length(seq), '.')))
     end
     last_unknown = Vector{Int64}(undef, cycle_len(SK))
