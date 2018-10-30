@@ -44,7 +44,7 @@ function Base.iterate(it::BioSequences.EachSkipmerIterator{SK}, state) where {SK
     M = BioSequences.bases_per_cycle(SK)
     while pos <= lastindex(it.seq)
         
-        for ni in 1:S
+        for ni in 1:N
             it.cycle_pos[ni] += 1
             if it.cycle_pos[ni] == S
                 it.cycle_pos[ni] = 0
@@ -71,10 +71,10 @@ function Base.iterate(it::BioSequences.EachSkipmerIterator{SK}, state) where {SK
             end
             if it.last_unknown[fi] + S <= pos
                 if it.fkmer[fi] <= it.rkmer[fi]
-                    return reinterpret(SK, it.fkmer[fi]), (pos, fi)
+                    return reinterpret(SK, it.fkmer[fi]), (pos + 1, fi)
                     #push!(skipmers, reinterpret(Skipmer{T, M, N, K}, it.fkmer[fi]))
                 else
-                    return reinterpret(SK, it.fkmer[fi]), (pos, fi)
+                    return reinterpret(SK, it.fkmer[fi]), (pos + 1, fi)
                     #push!(skipmers, reinterpret(Skipmer{T, M, N, K}, it.rkmer[fi]))
                 end
             end
