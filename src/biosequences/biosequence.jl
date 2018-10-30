@@ -106,6 +106,7 @@ end
 @inline function Alphabet(seq::BioSequence)
     return Alphabet(typeof(seq))
 end
+BioSymbols.alphabet(::Type{BioSequence{A}}) where {A<:Alphabet} = alphabet(A)
 
 BitsPerSymbol(seq::BioSequence) = BitsPerSymbol(Alphabet(seq))
 bits_per_symbol(seq::BioSequence) = bits_per_symbol(Alphabet(seq))
