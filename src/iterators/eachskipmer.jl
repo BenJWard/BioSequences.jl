@@ -52,7 +52,7 @@ function Base.iterate(it::EachSkipmerIterator)
             
             if it.cycle_pos[ni] < M
                 println("Sequence position: ", pos, ", Phase: ", ni)
-                fbits = extract_encoded_symbol(bitindex(it.seq, pos), encoded_data(seq))
+                fbits = extract_encoded_symbol(bitindex(it.seq, pos), encoded_data(it.seq))
                 rbits = ~fbits & 0x03
                 it.fkmer[ni] = ((it.fkmer[ni] << 2) | fbits) & kmer_mask(it)
                 it.rkmer[ni] = (it.rkmer[ni] >> 2) | (UInt64(rbits) << firstoffset(it))
