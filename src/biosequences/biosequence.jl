@@ -94,7 +94,7 @@ encoded_data_eltype(seq::BioSequence) = eltype(encoded_data(seq))
 Return the `Alpahbet` type defining the possible biological symbols
 and their encoding for a given biological sequence.
 """
-@inline function Alphabet(::Type{BioSequence{A}}) where A <: Alphabet
+@inline function Alphabet(::Type{<:BioSequence{A}}) where {A <: Alphabet}
     return A()
 end
 
