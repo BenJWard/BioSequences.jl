@@ -7,7 +7,11 @@ struct EachSkipmerIterator{SK <: Skipmer, UT <: Unsigned, SQ <: BioSequence}
     rkmer::Vector{UT}
 end
 
+
+@inline Base.IteratorSize(::Type{T}) where T <: EachSkipmerIterator = Base.HasLength()
+@inline Base.IteratorEltype(::Type{T}) where T <: EachSkipmerIterator = Base.HasEltype()
 @inline Base.eltype(::Type{EachSkipmerIterator{SK, UT, SQ}}) where {SK <: Skipmer, UT <: Unsigned, SQ <: BioSequence} = SK
+@inline Base.length(it::EachSkipmerIterator) = length(it.seq) - span(eltype(it)) + 1
 
 @inline kmersize(x::EachSkipmerIterator) = kmersize(eltype(x))
 
@@ -36,6 +40,25 @@ end
     end
 end
 
+@inline function _consider_position!(it::EachSkipmerIterator, pos)
+    N = cycle_len(eltype(it))
+    M = bases_per_cycle(eltype(it))
+    for ni in 1:N
+        it.cycle_pos[ni] += 1
+        if it.cycle_pos[ni] == N
+            it.cycle_pos[ni] = 0
+        end
+        
+        if it.cycle_pos[ni] < M
+            #println("Sequence position: ", pos, ", Phase: ", ni)
+            fbits = extract_encoded_symbol(bitindex(it.seq, pos), encoded_data(it.seq))
+            rbits = ~fbits & 0x03
+            it.fkmer[ni] = ((it.fkmer[ni] << 2) | fbits) & kmer_mask(it)
+            it.rkmer[ni] = (it.rkmer[ni] >> 2) | (UInt64(rbits) << firstoffset(it))
+        end
+    end
+end
+
 function Base.iterate(it::EachSkipmerIterator)
     N = cycle_len(eltype(it))
     M = bases_per_cycle(eltype(it))
@@ -44,20 +67,7 @@ function Base.iterate(it::EachSkipmerIterator)
     init_iterator!(it)
     
     for pos in 1:S
-        for ni in 1:N
-            it.cycle_pos[ni] += 1
-            if it.cycle_pos[ni] == N
-                it.cycle_pos[ni] = 0
-            end
-            
-            if it.cycle_pos[ni] < M
-                println("Sequence position: ", pos, ", Phase: ", ni)
-                fbits = extract_encoded_symbol(bitindex(it.seq, pos), encoded_data(it.seq))
-                rbits = ~fbits & 0x03
-                it.fkmer[ni] = ((it.fkmer[ni] << 2) | fbits) & kmer_mask(it)
-                it.rkmer[ni] = (it.rkmer[ni] >> 2) | (UInt64(rbits) << firstoffset(it))
-            end
-        end
+        _consider_position(it, pos)
     end
     
     fkmer = first(it.fkmer)
@@ -79,22 +89,7 @@ function Base.iterate(it::EachSkipmerIterator, state::Tuple{UInt, UInt})
         return nothing
     end
     
-    # Copied from other method
-    for ni in 1:N
-        it.cycle_pos[ni] += 1
-        if it.cycle_pos[ni] == N
-            it.cycle_pos[ni] = 0
-        end
-            
-        if it.cycle_pos[ni] < M
-            println("Sequence position: ", pos, ", Phase: ", ni)
-            fbits = extract_encoded_symbol(bitindex(it.seq, pos), encoded_data(it.seq))
-            rbits = ~fbits & 0x03
-            it.fkmer[ni] = ((it.fkmer[ni] << 2) | fbits) & kmer_mask(it)
-            it.rkmer[ni] = (it.rkmer[ni] >> 2) | (UInt64(rbits) << firstoffset(it))
-        end
-    end
-    ##
+    _consider_position(it, pos)
 
     fi += 1
     fi = ifelse(fi == (N + 1), UInt(1), fi)
