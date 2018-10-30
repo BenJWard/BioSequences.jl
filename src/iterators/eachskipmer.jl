@@ -33,8 +33,8 @@ function Base.iterate(it::BioSequences.EachSkipmerIterator)
     pos = 1
     fi = 0x01
     
-    @inbounds for i in 1:cycle_len(SK)
-        it.cycle_pos[i] = cycle_len(SK) - i
+    @inbounds for i in 1:N
+        it.cycle_pos[i] = N - i
         it.last_unknown[i] = -1
         it.fkmer[i] = 0
         it.rkmer[i] = 0
@@ -49,7 +49,7 @@ function Base.iterate(it::BioSequences.EachSkipmerIterator)
             
             if it.cycle_pos[ni] < M
                 println("Sequence position: ", pos, ", Phase: ", ni)
-                fbits = BioSequences.twobitnucs[reinterpret(UInt8, it.seq[pos]) + 0x01]
+                fbits = twobitnucs[reinterpret(UInt8, it.seq[pos]) + 0x01]
                 rbits = ~fbits & 0x03
                 it.fkmer[ni] = ((it.fkmer[ni] << 2) | fbits) & kmer_mask(it)
                 it.rkmer[ni] = (it.rkmer[ni] >> 2) | (UInt64(rbits) << firstoffset(it))
