@@ -67,7 +67,7 @@ function Base.iterate(it::EachSkipmerIterator)
     init_iterator!(it)
     
     for pos in 1:S
-        _consider_position(it, pos)
+        _consider_position!(it, pos)
     end
     
     fkmer = first(it.fkmer)
@@ -89,7 +89,7 @@ function Base.iterate(it::EachSkipmerIterator, state::Tuple{UInt, UInt})
         return nothing
     end
     
-    _consider_position(it, pos)
+    _consider_position!(it, pos)
 
     fi += 1
     fi = ifelse(fi == (N + 1), UInt(1), fi)
