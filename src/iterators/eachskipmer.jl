@@ -60,11 +60,12 @@ function Base.iterate(it::EachSkipmerIterator)
         end
     end
     
-    if it.fkmer[0x01] <= it.rkmer[0x01]
-        return reinterpret(eltype(it), it.fkmer[fi]), (S + 1, 0x01)
-    else
-        return reinterpret(eltype(it), it.fkmer[fi]), (S + 1, 0x01)
-    end
+    fkmer = it.fkmer[0x01]
+    rkmer = it.rkmer[0x01]
+    
+    outkmer = ifelse(fkmer < rkmer, fkmer, rkmer)
+    
+    return reinterpret(eltype(it), outkmer), (S + 1, 0x01)
     
 end
 
