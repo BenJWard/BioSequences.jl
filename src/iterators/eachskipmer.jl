@@ -18,7 +18,7 @@ end
 end
 
 function EachSkipmerIterator(::Type{SK}, seq::SQ) where {SK <: Skipmer, SQ <: BioSequence}
-    @assert span(SK) >= length(seq)
+    @assert span(SK) <= length(seq)
     last_unknown = Vector{Int64}(undef, cycle_len(SK))
     fkmer = Vector{encoded_data_eltype(SK)}(undef, cycle_len(SK))
     rkmer = Vector{encoded_data_eltype(SK)}(undef, cycle_len(SK))
