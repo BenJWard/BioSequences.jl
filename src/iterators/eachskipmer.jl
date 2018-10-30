@@ -25,15 +25,38 @@ function EachSkipmerIterator(::Type{SK}, seq::SQ) where {SK <: Skipmer, SQ <: Bi
     return EachSkipmerIterator{SK, encoded_data_eltype(SK), SQ}(seq, cycle_pos, last_unknown, fkmer, rkmer)
 end
 
-function Base.iterate(it::BioSequences.EachSkipmerIterator{SK}) where {SK<:Skipmer}
-    @inbounds for i in 1:BioSequences.cycle_len(SK)
-        it.cycle_pos[i] = BioSequences.cycle_len(SK) - i
+function Base.iterate(it::BioSequences.EachSkipmerIterator)
+    N = cycle_len(eltype(it))
+    M = bases_per_cycle(eltype(it))
+    S = span(eltype(it))
+    
+    pos = 1
+    fi = 0x01
+    
+    @inbounds for i in 1:cycle_len(SK)
+        it.cycle_pos[i] = cycle_len(SK) - i
         it.last_unknown[i] = -1
         it.fkmer[i] = 0
         it.rkmer[i] = 0
     end
     
-    return iterate(it, (1, 0x01))
+    while pos <= S
+        for ni in 1:N
+            it.cycle_pos[ni] += 1
+            if it.cycle_pos[ni] == S
+                it.cycle_pos[ni] = 0
+            end
+            
+            if it.cycle_pos[ni] < M
+                println("Sequence position: ", pos, ", Phase: ", ni)
+                fbits = BioSequences.twobitnucs[reinterpret(UInt8, it.seq[pos]) + 0x01]
+                rbits = ~fbits & 0x03
+                it.fkmer[ni] = ((it.fkmer[ni] << 2) | fbits) & kmer_mask(it)
+                it.rkmer[ni] = (it.rkmer[ni] >> 2) | (UInt64(rbits) << firstoffset(it))
+            end
+        end
+    end
+    
 end
 
 function Base.iterate(it::BioSequences.EachSkipmerIterator{SK}, state) where {SK<:Skipmer}
