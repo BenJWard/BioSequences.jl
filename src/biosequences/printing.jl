@@ -3,8 +3,8 @@
 
 Base.summary(seq::BioSequence{<:DNAAlphabet}) = string(length(seq), "nt ", "DNA Sequence")
 Base.summary(seq::BioSequence{<:RNAAlphabet}) = string(length(seq), "nt ", "RNA Sequence")
-Base.summary(seq::BioSequence{AminoAcidAlphabet}) = string(length(seq), "aa ", "Amino Acid Sequence")
-Base.summary(seq::CharSequence) = string(length(seq), "char ", "Char Sequence")
+Base.summary(seq::BioSequence{<:AminoAcidAlphabet}) = string(length(seq), "aa ", "Amino Acid Sequence")
+Base.summary(seq::BioSequence{<:CharAlphabet}) = string(length(seq), "char ", "Char Sequence")
 
 function Base.print(io::IO, seq::BioSequence; width::Integer = 0)
     col = 1
