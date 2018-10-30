@@ -27,7 +27,8 @@ function EachSkipmerIterator(::Type{SK}, seq::SQ) where {SK <: Skipmer, SQ <: Bi
 end
 
 @inline function init_iterator!(it::EachSkipmerIterator)
-    @inbounds for i in 1:cycle_len(eltype(it))
+    N = cycle_len(eltype(it))
+    @inbounds for i in 1:N
         it.cycle_pos[i] = N - i
         it.last_unknown[i] = -1
         it.fkmer[i] = 0
