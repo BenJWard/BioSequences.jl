@@ -2,12 +2,12 @@
 # ====================
 
 primitive type Skipmer{A <: NucleicAcidAlphabet{2}, M, N, K} <: ShortSequence{64, A} 64 end
-const Kmer{A <: NucleicAcidAlphabet{2}, K} = Skipmer{T, 1, 1, K}
+const Kmer{A <: NucleicAcidAlphabet{2}, K} = Skipmer{A, 1, 1, K}
 const DNAKmer{K} = Kmer{DNAAlphabet{2}, K}
 const RNAKmer{K} = Kmer{RNAAlphabet{2}, K}
 
 primitive type BigSkipmer{A <: NucleicAcidAlphabet{2}, M, N, K} <: ShortSequence{128, A} 128 end
-const BigKmer{A <: NucleicAcidAlphabet{2}, K} = BigSkipmer{T, 1, 1, K}
+const BigKmer{A <: NucleicAcidAlphabet{2}, K} = BigSkipmer{A, 1, 1, K}
 const BigDNAKmer{K} = BigKmer{DNAAlphabet{2}, K}
 const BigRNAKmer{K} = BigKmer{RNAAlphabet{2}, K}
 
