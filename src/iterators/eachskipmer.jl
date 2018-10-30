@@ -60,16 +60,50 @@ function Base.iterate(it::EachSkipmerIterator)
         end
     end
     
-    fkmer = it.fkmer[0x01]
-    rkmer = it.rkmer[0x01]
+    fkmer = first(it.fkmer)
+    rkmer = first(it.rkmer)
     
     outkmer = ifelse(fkmer < rkmer, fkmer, rkmer)
     
-    return reinterpret(eltype(it), outkmer), (S + 1, 0x01)
+    return reinterpret(eltype(it), outkmer), (S + 1, UInt(1))
     
 end
 
+function Base.iterate(it::EachSkipmerIterator, state::Tuple{UInt, UInt})
+    pos = state[1]
+    fi  = state[2]
+    
+    if pos > lastindex(it.seq)
+        return nothing
+    end
+    
+    # Copied from other method
+    for ni in 1:N
+        it.cycle_pos[ni] += 1
+        if it.cycle_pos[ni] == N
+            it.cycle_pos[ni] = 0
+        end
+            
+        if it.cycle_pos[ni] < M
+            println("Sequence position: ", pos, ", Phase: ", ni)
+            fbits = extract_encoded_symbol(bitindex(it.seq, pos), encoded_data(it.seq))
+            rbits = ~fbits & 0x03
+            it.fkmer[ni] = ((it.fkmer[ni] << 2) | fbits) & kmer_mask(it)
+            it.rkmer[ni] = (it.rkmer[ni] >> 2) | (UInt64(rbits) << firstoffset(it))
+        end
+    end
+    ##
 
+    fi = ifelse(fi == (N + 1), 0x01, fi + 0x01)
+    
+    fkmer = it.fkmer[fi]
+    rkmer = fit.rkmer[fi]
+    
+    outkmer = ifelse(fkmer < rkmer, fkmer, rkmer)
+    
+    return reinterpret(eltype(it), outkmer), (pos + 1, fi)  
+    
+end
 
 
 
