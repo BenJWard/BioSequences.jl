@@ -15,7 +15,7 @@
         xs = [convert(String, x)
               for (i, x) in collect(each(Kmer{BioSequences.minimal_alphabet(Alphabet(S)),k}, S(seq), step))]
         ys = [convert(String, x)
-              for (i, x) in collect(eachkmer(GeneralSequence{S}(seq), k, step))]
+              for (i, x) in collect(eachkmer(S(seq), k, step))]
         zs = string_eachkmer(seq, k, step)
 
         @test xs == ys == zs
