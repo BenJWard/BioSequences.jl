@@ -150,8 +150,8 @@ global reps = 10
     @test_throws ArgumentError Kmer(dna"ACGNT") # no Ns in kmers
     @test_throws ArgumentError DNAKmer(dna"ACGNT") # no Ns in kmers
     @test_throws MethodError Kmer(RNA_A, DNA_A) # no mixing of RNA and DNA
-    @test_throws ArgumentError Kmer{RNA}(random_rna(33)) # no kmer larger than 32nt
-    @test_throws ArgumentError Kmer{DNA}(random_dna(33)) # no kmer larger than 32nt
+    @test_throws ArgumentError Kmer{RNAAlphabet{2}}(random_rna(33)) # no kmer larger than 32nt
+    @test_throws ArgumentError Kmer{DNAAlphabet{2}}(random_dna(33)) # no kmer larger than 32nt
     @test_throws ArgumentError Kmer(
                       RNA_A, RNA_C, RNA_G, RNA_U, # no kmer larger than 32nt
                       RNA_A, RNA_C, RNA_G, RNA_U,
