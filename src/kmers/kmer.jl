@@ -43,7 +43,7 @@ span(skipmer::T) where T <: Union{Skipmer, BigSkipmer} = span(typeof(skipmer))
 end
 
 @inline function checkskipmer(::Type{BigSkipmer{A, M, N, K}}) where {A, M, N, K}
-    if !(T <: NucleicAcid)
+    if !(A <: NucleicAcidAlphabet{2})
         throw(ArgumentError("BigSkipmer must have a NucleicAcidAlphabet{2}"))
     end
     if !(1 ≤ K ≤ 64)
