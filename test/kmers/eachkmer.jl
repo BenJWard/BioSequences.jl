@@ -13,9 +13,9 @@
 
     function test_eachkmer(S, seq::AbstractString, k, step)
         xs = [convert(String, x)
-              for (i, x) in collect(each(Kmer{Alphabet(S),k}, S(seq), step))]
+              for (i, x) in collect(each(Kmer{BioSequences.minimal_alphabet(Alphabet(S)),k}, S(seq), step))]
         ys = [convert(String, x)
-              for (i, x) in collect(eachkmer(Alphabet(seq), k, step))]
+              for (i, x) in collect(eachkmer(BioSequences.minimal_alphabet(Alphabet(seq)), k, step))]
         zs = string_eachkmer(seq, k, step)
 
         @test xs == ys == zs
