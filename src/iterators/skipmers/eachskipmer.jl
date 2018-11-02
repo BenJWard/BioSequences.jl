@@ -100,7 +100,7 @@ function Base.iterate(it::CanonicalSkipmers{SK, UT, SQ}) where
     S = span(eltype(it))
     init_iterator!(it)
     pos = firstindex(it.seq)
-    lastpos = lastindex(seq)
+    lastpos = lastindex(it.seq)
     
     while pos <= lastpos
         
@@ -112,7 +112,7 @@ function Base.iterate(it::CanonicalSkipmers{SK, UT, SQ}) where
             
             if cycle_pos[ni] < M
                 println("Sequence position: ", p, ", Phase: ", ni)
-                fbits = BioSequences.twobitnucs[reinterpret(UInt8, seq[pos]) + 0x01]
+                fbits = BioSequences.twobitnucs[reinterpret(UInt8, it.seq[pos]) + 0x01]
                 if fbits == 0xFF
                     it.last_unknown[ni] = pos
                     fbits = 0x00
