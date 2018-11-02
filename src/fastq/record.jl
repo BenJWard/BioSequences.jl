@@ -195,7 +195,11 @@ function sequence(::Type{S}, record::Record, part::UnitRange{Int}=1:lastindex(re
     return S(record.data, first(seqpart), last(seqpart))
 end
 
-function Base.copyto!(dest::BioSequence, doff = 1, src::Record, soff = 1, N = lastindex(src.sequence))
+function Base.copyto!(dest::BioSequence, src::Record)
+    return copyto!(dest, 1, src, 1, lastindex(src.sequence))
+end
+
+function Base.copyto!(dest::BioSequence, doff, src::Record, soff, N)
     checkfilled(src)
     if !hassequence(src)
         missingerror(:sequence)
