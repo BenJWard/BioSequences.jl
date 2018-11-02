@@ -205,7 +205,7 @@ function Base.copyto!(dest::BioSequences.BioSequence, doff, src::Record, soff, N
         missingerror(:sequence)
     end
     srcrange = src.sequence[soff:N]
-    return BioSequences.encode_copy!(dest, doff, src, first(srcrange), last(srcrange))
+    return BioSequences.encode_copy!(dest, doff, src.data, first(srcrange), last(srcrange))
 end
 #=
 function GeneralSequence{A}(
@@ -249,6 +249,8 @@ function hassequence(record::Record)
     # zero-length sequence may exist
     return isfilled(record)
 end
+
+seqlen(record::Record) = length(record.sequence)
 
 """
     quality(record::Record, [offset::Integer=33, [part::UnitRange]])::Vector{UInt8}
