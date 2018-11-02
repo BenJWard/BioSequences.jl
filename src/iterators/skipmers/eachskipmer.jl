@@ -105,7 +105,7 @@ end
             
         if it.cycle_pos[ni] < M
             println("Sequence position: ", pos, ", Phase: ", ni)
-            fbits = BioSequences.twobitnucs[reinterpret(UInt8, it.seq[pos]) + 0x01]
+            fbits = BioSequences.twobitnucs[extract_encoded_symbol(bitindex(it.seq, pos), encoded_data(it.seq)) + 0x01]
             if fbits == 0xFF
                 it.last_unknown[ni] = pos
                 fbits = 0x00
@@ -136,7 +136,6 @@ function Base.iterate(it::CanonicalSkipmers{SK, UT, SQ}) where
             if fi == (N + 1)
                 fi = 0x01
             end
-            
             if it.last_unknown[fi] + S <= pos
                 fkmer = it.fkmer[fi]
                 rkmer = it.rkmer[fi]
@@ -167,13 +166,9 @@ function Base.iterate(it::CanonicalSkipmers{SK, UT, SQ}, state) where
         
         # If we are at pos, the skip-mer that started at pos-S is now done. 
         if pos >= S
-            if pos == S
+            fi += 0x01
+            if fi == (N + 1)
                 fi = 0x01
-            else
-                fi += 0x01
-                if fi == (N + 1)
-                    fi = 0x01
-                end
             end
             if it.last_unknown[fi] + S <= pos
                 fkmer = it.fkmer[fi]
