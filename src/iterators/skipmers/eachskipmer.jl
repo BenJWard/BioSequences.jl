@@ -120,6 +120,7 @@ end
 function Base.iterate(it::CanonicalSkipmers{SK, UT, SQ}) where 
         {SK, UT, A <: NucleicAcidAlphabet{4}, SQ <: BioSequence{A}}
     S = span(eltype(it))
+    N = cycle_len(eltype(it))
     init_iterator!(it)
     pos = firstindex(it.seq)
     lastpos = lastindex(it.seq)
@@ -157,6 +158,7 @@ function Base.iterate(it::CanonicalSkipmers{SK, UT, SQ}, state) where
     pos = state[1]
     fi  = state[2]
     S = span(eltype(it))
+    N = cycle_len(eltype(it))
     lastpos = lastindex(it.seq)
     
     while pos <= lastpos
