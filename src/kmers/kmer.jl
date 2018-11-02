@@ -117,7 +117,7 @@ neighbors(x::Kmer{A,K}) where {A,K} = KmerNeighborIterator{A,K}(x)
 Base.length(::KmerNeighborIterator) = 4
 Base.eltype(::Type{KmerNeighborIterator{A,K}}) where {A,K} = Kmer{A,K}
 
-function Base.iterate(it::KmerNeighborIterator{A, K}, i::UInt64=UInt64(0)) where {A,K}
+function Base.iterate(it::KmerNeighborIterator{A, K}, i::UInt64 = UInt64(0)) where {A,K}
     if i == 4
         return nothing
     else
