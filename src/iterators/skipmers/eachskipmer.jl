@@ -96,6 +96,7 @@ end
 @inline function _consider_position!(it::CanonicalSkipmers{SK, UT, SQ}, pos) where
         {SK, UT, A <: NucleicAcidAlphabet{4}, SQ <: BioSequence{A}}
     N = cycle_len(eltype(it))
+    M = bases_per_cycle(eltype(it))
     for ni in 1:N
         it.cycle_pos[ni] += 1
         if it.cycle_pos[ni] == N
@@ -118,7 +119,6 @@ end
 
 function Base.iterate(it::CanonicalSkipmers{SK, UT, SQ}) where 
         {SK, UT, A <: NucleicAcidAlphabet{4}, SQ <: BioSequence{A}}
-    M = bases_per_cycle(eltype(it))
     S = span(eltype(it))
     init_iterator!(it)
     pos = firstindex(it.seq)
@@ -156,7 +156,6 @@ function Base.iterate(it::CanonicalSkipmers{SK, UT, SQ}, state) where
         {SK, UT, A <: NucleicAcidAlphabet{4}, SQ <: BioSequence{A}}
     pos = state[1]
     fi  = state[2]
-    M = bases_per_cycle(eltype(it))
     S = span(eltype(it))
     lastpos = lastindex(it.seq)
     
