@@ -133,8 +133,8 @@ function Base.iterate(it::CanonicalSkipmers{SK, UT, SQ}) where
                     fi = 0x01
                 end
             end
-            if last_unknown[fi] + S <= pos
-                outkmer = ifelse(fkmer[fi] <= rkmer[fi], fkmer[fi], rkmer[fi])
+            if it.last_unknown[fi] + S <= pos
+                outkmer = ifelse(it.fkmer[fi] <= it.rkmer[fi], it.fkmer[fi], it.rkmer[fi])
                 return reinterpret(SK, outkmer), (pos + 1, fi)
             end
         end
