@@ -205,7 +205,7 @@ function Base.copyto!(dest::BioSequences.BioSequence, doff, src::Record, soff, N
         missingerror(:sequence)
     end
     srcrange = src.sequence[soff:N]
-    return encode_copy!(dest, doff, src, first(srcrange), last(srcrange))
+    return BioSequences.encode_copy!(dest, doff, src, first(srcrange), last(srcrange))
 end
 #=
 function GeneralSequence{A}(
