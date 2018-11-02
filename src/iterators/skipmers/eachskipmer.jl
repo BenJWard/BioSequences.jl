@@ -105,12 +105,12 @@ function Base.iterate(it::CanonicalSkipmers{SK, UT, SQ}) where
     while pos <= lastpos
         
         for ni in 1:N
-            cycle_pos[ni] += 1
-            if cycle_pos[ni] == N
-                cycle_pos[ni] = 0
+            it.cycle_pos[ni] += 1
+            if it.cycle_pos[ni] == N
+                it.cycle_pos[ni] = 0
             end
             
-            if cycle_pos[ni] < M
+            if it.cycle_pos[ni] < M
                 println("Sequence position: ", p, ", Phase: ", ni)
                 fbits = BioSequences.twobitnucs[reinterpret(UInt8, it.seq[pos]) + 0x01]
                 if fbits == 0xFF
@@ -118,8 +118,8 @@ function Base.iterate(it::CanonicalSkipmers{SK, UT, SQ}) where
                     fbits = 0x00
                 end
                 rbits = ~fbits & 0x03
-                fkmer[ni] = ((fkmer[ni] << 2) | fbits) & kmer_mask
-                rkmer[ni] = (rkmer[ni] >> 2) | (UInt64(rbits) << firstoffset)
+                it.fkmer[ni] = ((it.fkmer[ni] << 2) | fbits) & kmer_mask
+                it.rkmer[ni] = (it.rkmer[ni] >> 2) | (UInt64(rbits) << firstoffset(it))
             end
         end
         
