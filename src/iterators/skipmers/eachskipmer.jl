@@ -118,7 +118,7 @@ function Base.iterate(it::CanonicalSkipmers{SK, UT, SQ}) where
                     fbits = 0x00
                 end
                 rbits = ~fbits & 0x03
-                it.fkmer[ni] = ((it.fkmer[ni] << 2) | fbits) & kmer_mask
+                it.fkmer[ni] = ((it.fkmer[ni] << 2) | fbits) & kmer_mask(it)
                 it.rkmer[ni] = (it.rkmer[ni] >> 2) | (UInt64(rbits) << firstoffset(it))
             end
         end
