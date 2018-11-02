@@ -117,14 +117,46 @@ end
     end
 end
 
-function Base.iterate(it::CanonicalSkipmers{SK, UT, SQ}, state = (1, 0x00)) where
+function _iterate_kernel!(it::CanonicalSkipmers{SK, UT, SQ}, pos, fi) where
         {SK, UT, A <: NucleicAcidAlphabet{4}, SQ <: BioSequence{A}}
-    pos = state[1]
-    fi  = state[2]
     S = span(eltype(it))
     N = cycle_len(eltype(it))
     lastpos = lastindex(it.seq)
-    
+    while pos <= lastpos
+            
+        _consider_position!(it, pos)
+            
+        # If we are at pos, the skip-mer that started at pos-S is now done. 
+        if pos >= S
+            fi += 0x01
+            if fi == (N + 1)
+                fi = 0x01
+            end
+            if it.last_unknown[fi] + S <= pos
+                fkmer = it.fkmer[fi]
+                rkmer = it.rkmer[fi]
+                outkmer = ifelse(fkmer <= rkmer, fkmer, rkmer)
+                return reinterpret(SK, outkmer), (pos + 1, fi)
+            end
+        end
+            
+        pos += 1
+            
+    end
+        
+    return nothing
+end
+
+function Base.iterate(it::CanonicalSkipmers{SK, UT, SQ}) where 
+        {SK, UT, A <: NucleicAcidAlphabet{4}, SQ <: BioSequence{A}}
+    #S = span(eltype(it))
+    #N = cycle_len(eltype(it))
+    init_iterator!(it)
+    pos = firstindex(it.seq)
+    #lastpos = lastindex(it.seq)
+    fi = 0x00
+    return _iterate_kernel!(it, pos, fi)
+    #=
     while pos <= lastpos
         
         _consider_position!(it, pos)
@@ -148,6 +180,39 @@ function Base.iterate(it::CanonicalSkipmers{SK, UT, SQ}, state = (1, 0x00)) wher
     end
     
     return nothing
+    =#
+end
+
+function Base.iterate(it::CanonicalSkipmers{SK, UT, SQ}, state) where
+        {SK, UT, A <: NucleicAcidAlphabet{4}, SQ <: BioSequence{A}}
+    return _iterate_kernel!(it, state[1], state[2])
+    #S = span(eltype(it))
+    #N = cycle_len(eltype(it))
+    #lastpos = lastindex(it.seq)
+    #=
+    while pos <= lastpos
+        
+        _consider_position!(it, pos)
+        
+        # If we are at pos, the skip-mer that started at pos-S is now done. 
+        if pos >= S
+            fi += 0x01
+            if fi == (N + 1)
+                fi = 0x01
+            end
+            if it.last_unknown[fi] + S <= pos
+                fkmer = it.fkmer[fi]
+                rkmer = it.rkmer[fi]
+                outkmer = ifelse(fkmer <= rkmer, fkmer, rkmer)
+                return reinterpret(SK, outkmer), (pos + 1, fi)
+            end
+        end
+        
+        pos += 1
+        
+    end
     
+    return nothing
+    =#
 end
 
