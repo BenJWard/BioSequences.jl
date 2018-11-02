@@ -134,7 +134,9 @@ function Base.iterate(it::CanonicalSkipmers{SK, UT, SQ}) where
                 end
             end
             if it.last_unknown[fi] + S <= pos
-                outkmer = ifelse(it.fkmer[fi] <= it.rkmer[fi], it.fkmer[fi], it.rkmer[fi])
+                fkmer = it.fkmer[fi]
+                rkmer = it.rkmer[fi]
+                outkmer = ifelse(fkmer <= rkmer, fkmer, rkmer)
                 return reinterpret(SK, outkmer), (pos + 1, fi)
             end
         end
@@ -147,4 +149,59 @@ function Base.iterate(it::CanonicalSkipmers{SK, UT, SQ}) where
     
 end
 
+function Base.iterate(it::CanonicalSkipmers{SK, UT, SQ}, state) where
+        {SK, UT, A <: NucleicAcidAlphabet{4}, SQ <: BioSequence{A}}
+    pos = state[1]
+    fi  = state[2]
+    N = cycle_len(eltype(it))
+    M = bases_per_cycle(eltype(it))
+    S = span(eltype(it))
+    lastpos = lastindex(it.seq)
+    
+    while pos <= lastpos
+        
+        for ni in 1:N
+            it.cycle_pos[ni] += 1
+            if it.cycle_pos[ni] == N
+                it.cycle_pos[ni] = 0
+            end
+            
+            if it.cycle_pos[ni] < M
+                println("Sequence position: ", pos, ", Phase: ", ni)
+                fbits = BioSequences.twobitnucs[reinterpret(UInt8, it.seq[pos]) + 0x01]
+                if fbits == 0xFF
+                    it.last_unknown[ni] = pos
+                    fbits = 0x00
+                end
+                rbits = ~fbits & 0x03
+                it.fkmer[ni] = ((it.fkmer[ni] << 2) | fbits) & kmer_mask(it)
+                it.rkmer[ni] = (it.rkmer[ni] >> 2) | (UInt64(rbits) << firstoffset(it))
+            end
+        end
+        
+        # If we are at pos, the skip-mer that started at pos-S is now done. 
+        if pos >= S
+            if pos == S
+                fi = 0x01
+            else
+                fi += 0x01
+                if fi == (N + 1)
+                    fi = 0x01
+                end
+            end
+            if it.last_unknown[fi] + S <= pos
+                fkmer = it.fkmer[fi]
+                rkmer = it.rkmer[fi]
+                outkmer = ifelse(fkmer <= rkmer, fkmer, rkmer)
+                return reinterpret(SK, outkmer), (pos + 1, fi)
+            end
+        end
+        
+        pos += 1
+        
+    end
+    
+    return nothing
+    
+end
 
