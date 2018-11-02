@@ -111,7 +111,7 @@ function Base.iterate(it::CanonicalSkipmers{SK, UT, SQ}) where
             end
             
             if it.cycle_pos[ni] < M
-                println("Sequence position: ", p, ", Phase: ", ni)
+                println("Sequence position: ", pos, ", Phase: ", ni)
                 fbits = BioSequences.twobitnucs[reinterpret(UInt8, it.seq[pos]) + 0x01]
                 if fbits == 0xFF
                     it.last_unknown[ni] = pos
