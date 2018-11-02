@@ -102,9 +102,7 @@ end
         if it.cycle_pos[ni] == N
             it.cycle_pos[ni] = 0
         end
-            
         if it.cycle_pos[ni] < M
-            println("Sequence position: ", pos, ", Phase: ", ni)
             fbits = BioSequences.twobitnucs[extract_encoded_symbol(bitindex(it.seq, pos), encoded_data(it.seq)) + 0x01]
             if fbits == 0xFF
                 it.last_unknown[ni] = pos

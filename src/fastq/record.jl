@@ -195,6 +195,27 @@ function sequence(::Type{S}, record::Record, part::UnitRange{Int}=1:lastindex(re
     return S(record.data, first(seqpart), last(seqpart))
 end
 
+function Base.copyto!(dest::BioSequence, doff = 1, src::Record, soff = 1, N = lastindex(src.sequence))
+    checkfilled(src)
+    if !hassequence(src)
+        missingerror(:sequence)
+    end
+    srcrange = src.sequence[soff:N]
+    return encode_copy!(dest, doff, src, first(srcrange), last(srcrange))
+end
+#=
+function GeneralSequence{A}(
+        src::Union{AbstractString,AbstractVector},
+        startpos::Integer=1,
+        stoppos::Integer=length(src)) where {A<:Alphabet}
+    len = stoppos - startpos + 1
+    seq = GeneralSequence{A}(len)
+    #println("Made empty sequence ", seq)
+    #println("Making the encode_copy!")
+    return encode_copy!(seq, 1, src, startpos, len)
+end
+=#
+
 function sequence(::Type{String}, record::Record, part::UnitRange{Int}=1:lastindex(record.sequence))::String
     checkfilled(record)
     if !hassequence(record)
@@ -202,6 +223,8 @@ function sequence(::Type{String}, record::Record, part::UnitRange{Int}=1:lastind
     end
     return String(record.data[record.sequence[part]])
 end
+
+
 
 """
     sequence(record::Record, [part::UnitRange{Int}])::BioSequences.DNASequence
