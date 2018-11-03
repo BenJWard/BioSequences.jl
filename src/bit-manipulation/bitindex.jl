@@ -70,6 +70,7 @@ bitmask(::Type{T}, n::Integer) where {T} = (one(T) << n) - one(T)
 bitmask(n::Integer) = bitmask(UInt64, n)
 bitmask(::Type{T}, ::Val{N}) where {T, N} = (one(T) << N) - one(T)
 bitmask(bidx::BitIndex{N, W}) where {N, W} = bitmask(W, N)
+mask2offset(bidx::BitIndex{N, W}) where {N, W} = bitmask(W, offset(bidx))
 
 # TODO: Work out places this is used and see if it is really nessecery given the
 # bitmask methods above.

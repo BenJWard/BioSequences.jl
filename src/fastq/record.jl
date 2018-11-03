@@ -206,18 +206,6 @@ function Base.copyto!(dest::BioSequences.BioSequence, doff, src::Record, soff, N
     end
     return BioSequences.encode_copy!(dest, doff, src.data, src.sequence[soff], N)
 end
-#=
-function GeneralSequence{A}(
-        src::Union{AbstractString,AbstractVector},
-        startpos::Integer=1,
-        stoppos::Integer=length(src)) where {A<:Alphabet}
-    len = stoppos - startpos + 1
-    seq = GeneralSequence{A}(len)
-    #println("Made empty sequence ", seq)
-    #println("Making the encode_copy!")
-    return encode_copy!(seq, 1, src, startpos, len)
-end
-=#
 
 function sequence(::Type{String}, record::Record, part::UnitRange{Int}=1:lastindex(record.sequence))::String
     checkfilled(record)
