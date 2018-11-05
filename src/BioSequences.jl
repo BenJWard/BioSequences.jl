@@ -235,6 +235,7 @@ include("fasta/fasta.jl")
 include("fastq/fastq.jl")
 include("twobit/twobit.jl")
 include("abif/abif.jl")
+include("datastores/pairedreads.jl")
 
 include("search/exact.jl")
 include("search/approx.jl")
