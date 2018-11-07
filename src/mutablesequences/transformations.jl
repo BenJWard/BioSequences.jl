@@ -125,7 +125,9 @@ function Base.resize!(seq::GeneralSequence{A}, size::Integer) where {A}
     orphan!(seq, size)
     resize!(seq.data, seq_data_len(A, size + seq.part.start - 1))
     seq.part = seq.part.start:seq.part.start+size-1
-    seq.data[end] = seq.data[end] & mask2offset(bitindex(seq, lastindex(seq) + 1))
+    if length(seq.data) > 0
+        seq.data[end] = seq.data[end] & mask2offset(bitindex(seq, lastindex(seq) + 1))
+    end
     return seq
 end
 
