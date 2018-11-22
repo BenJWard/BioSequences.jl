@@ -43,7 +43,7 @@ function showcompact(io::IO, seq::BioSequence)
             end
         else
             for x in seq
-                print(io, convert(Char, x))
+                print(io, x)
             end
         end
     end
