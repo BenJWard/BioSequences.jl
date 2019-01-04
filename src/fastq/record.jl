@@ -183,16 +183,28 @@ end
 
 Get the sequence of `record`.
 
-`S` can be either a subtype of `BioSequences.Sequence` or `String`.
+`S` can be either a subtype of `BioSequences.BioSequence` or `String`.
 If `part` argument is given, it returns the specified part of the sequence.
 """
-function sequence(::Type{S}, record::Record, part::UnitRange{Int}=1:lastindex(record.sequence))::S where S <: BioSequences.Sequence
+function sequence(::Type{S}, record::Record, part::UnitRange{Int}=1:lastindex(record.sequence))::S where S <: BioSequences.BioSequence
     checkfilled(record)
     if !hassequence(record)
         missingerror(:sequence)
     end
     seqpart = record.sequence[part]
     return S(record.data, first(seqpart), last(seqpart))
+end
+
+function Base.copyto!(dest::BioSequences.BioSequence, src::Record)
+    return copyto!(dest, 1, src, 1, lastindex(src.sequence))
+end
+
+function Base.copyto!(dest::BioSequences.BioSequence, doff, src::Record, soff, N)
+    checkfilled(src)
+    if !hassequence(src)
+        missingerror(:sequence)
+    end
+    return BioSequences.encode_copy!(dest, doff, src.data, src.sequence[soff], N)
 end
 
 function sequence(::Type{String}, record::Record, part::UnitRange{Int}=1:lastindex(record.sequence))::String
@@ -202,6 +214,8 @@ function sequence(::Type{String}, record::Record, part::UnitRange{Int}=1:lastind
     end
     return String(record.data[record.sequence[part]])
 end
+
+
 
 """
     sequence(record::Record, [part::UnitRange{Int}])::BioSequences.DNASequence
@@ -222,6 +236,8 @@ function hassequence(record::Record)
     # zero-length sequence may exist
     return isfilled(record)
 end
+
+seqlen(record::Record) = length(record.sequence)
 
 """
     quality(record::Record, [offset::Integer=33, [part::UnitRange]])::Vector{UInt8}
@@ -284,7 +300,7 @@ function BioCore.sequence(record::Record)
     return sequence(record)
 end
 
-function BioCore.sequence(::Type{S}, record::Record) where S <: BioSequences.Sequence
+function BioCore.sequence(::Type{S}, record::Record) where S <: BioSequences.BioSequence
     return sequence(S, record)
 end
 
